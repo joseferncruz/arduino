@@ -51,8 +51,9 @@ void loop() {
     delay(5 * 1000);
     // Test the LEDs
     Serial.println("Testing LEDs");
+    digitalWrite(9, HIGH);
     delay(10*1000); // 10 seconds
-
+    digitalWrite(9, LOW);
     
     Serial.println("Acclimation: 5 seconds");
     delay(5 * 1000);
