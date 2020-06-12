@@ -19,6 +19,7 @@ int itintervals[] = {6, 9, 12, 16, 18};
 void setup() {
   // Start serial
   Serial.begin(9600); // serial will be read by bonsai
+  delay(5 * 1000);
   Serial.println("LeDoux Lab: Classical Threat Conditioning Procedure");
   
   // Digital Output pins
@@ -44,10 +45,10 @@ void loop() {
 
   // Only start if the switch is pressed
   if (switchstate == HIGH) { 
-    
+
     // Signal the start
     Serial.println("START");
-
+    delay(5 * 1000);
     // Test the LEDs
     Serial.println("Testing LEDs");
     delay(10*1000); // 10 seconds
