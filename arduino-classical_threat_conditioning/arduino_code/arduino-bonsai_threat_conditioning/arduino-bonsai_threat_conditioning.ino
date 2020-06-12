@@ -29,7 +29,7 @@ void setup() {
   pinMode(12, OUTPUT); // Signal the deliver of the US
 
   // Button to start the experiment.
-  pinMode(2, INPUT);
+  pinMode(2, INPUT); // single puch to start
   
 }
 
