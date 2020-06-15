@@ -1,8 +1,10 @@
 
 #include <TimeLib.h>
 #include <TimeAlarms.h>
+#include <millisDelay.h>
 
-
+// tutorials:
+// https://www.instructables.com/id/Coding-Timers-and-Delays-in-Arduino/
 
 // Lever pressing with random reward at random n lever presses (average 1 reward per 
 
@@ -22,8 +24,9 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   while (!Serial) ; // wait for Arduino Serial Monitor
-  
   Serial.println("Lever Press Testing");
+
+  
 
   // Set a couple of pins
   pinMode(13, INPUT); // Read the lever press
@@ -33,9 +36,7 @@ void setup() {
 }
 
 void loop() {
-  digitalClockDisplay();
-  Alarm.delay(1000);
- 
+
    Alarm.timerOnce(5, deliver_reward);
    
   // Check the state of the lever
