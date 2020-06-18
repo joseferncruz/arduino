@@ -7,6 +7,7 @@
 int cs_len = 5; // number of seconds per cs
 int us_len = 2; // number of seconds per us
 int switchstate = 0; // Button starts the experiment
+int switchstate_test_led = 0; // Test the led
 
 int detect_cs = 0; // detect if the cs was delivered.
 int detect_us = 0; // detect if the us was delivered
@@ -31,6 +32,7 @@ void setup() {
 
   // Button to start the experiment.
   pinMode(2, INPUT); // single puch to start
+  pinMode(3, INPUT); // button to test LEDs
   
 }
 
@@ -40,6 +42,15 @@ void loop() {
   
   // variable to keep track of the number of CS at a give time
   int current_cs = 1;
+  switchstate_test_led = digitalRead(3);
+
+  if (switchstate_test_led == HIGH) {
+    Serial.println("Testing Chamber LED: ON");
+    digitalWrite(9, HIGH);
+    delay(5000);
+    digitalWrite(9, LOW);
+    Serial.println("Testing Chamber LED: OFF");
+  }
   
   switchstate = digitalRead(2);
 
@@ -47,6 +58,7 @@ void loop() {
   if (switchstate == HIGH) { 
 
     // Signal the start
+    Serial.println("NEW EXPERIMENT");
     Serial.println("START");
     delay(5 * 1000);
     // Test the LEDs
