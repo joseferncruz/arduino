@@ -10,15 +10,15 @@
 
 // Constants
 
-const int acclimation_seconds = 1 * 10; // IN SECONDS
-const int cooldown_seconds = 1 * 10;    // IN SECONDS
+const int acclimation_seconds = 5 * 60; // IN SECONDS
+const int cooldown_seconds = 5 * 60;    // IN SECONDS
 
-const int cs_len = 10;              // DURATION CS
+const int cs_len = 30;              // DURATION CS
 const int us_len = 2;              // DURATION US
 
 // Variables
 
-int total_cs_number = 4;          // NUMBER OF CS 
+int total_cs_number = 5;          // NUMBER OF CS 
 
 int switchstate = 0; // Button starts the experiment
 int switchstate_test_led = 0; // Test the led
