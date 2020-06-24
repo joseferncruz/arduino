@@ -12,7 +12,7 @@
 
 const int acclimation_seconds = 5 * 60; // IN SECONDS
 const int cooldown_seconds = 5 * 60;    // IN SECONDS
-const int habituation_seconds = 20 * 60 // IN SECONDS
+const int habituation_seconds = 20 * 60; // IN SECONDS
 
 
 
@@ -101,7 +101,7 @@ void loop() {
 
 
   // Delay over the HABITUATION PERIOD
-  delay(habituation_seconds
+  delay(habituation_seconds);
 
   // COOLDOWN AFTER EXPERIMENT CYCLE
   Serial.print("COOLDOWN (sec): ");
