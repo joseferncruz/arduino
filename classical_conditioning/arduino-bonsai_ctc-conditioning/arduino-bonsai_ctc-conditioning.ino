@@ -1,11 +1,24 @@
 
-// get some packages
+/* --------------------------------------------------------------------------------
+ * LeDoux Lab 2020
+ * 
+ * Jose Oliveira da Cruz 
+ * jose.cruz@nyu.edu
+ * 
+ * --------------------------------------------------------------------------------
+ */
+
+// Constants
+
+const int acclimation_seconds = 5; // IN SECONDS
+const int cooldown_seconds = 5; // IN SECONDS
+
+const int cs_len = 5; // DURATION CS
+const int us_len = 2; // DURATION US
 
 
-// set up some constants and variables
+// Variables
 
-int cs_len = 5; // number of seconds per cs
-int us_len = 2; // number of seconds per us
 int switchstate = 0; // Button starts the experiment
 int switchstate_test_led = 0; // Test the led
 
@@ -27,8 +40,8 @@ void setup() {
   pinMode(7, OUTPUT); // Delivering the CS
   pinMode(8, OUTPUT); // Delivering the US
   pinMode(9, OUTPUT); // Delivering the CHAMBER LED when the CS is delivered.
-  pinMode(11, OUTPUT); // Signal the deliver of CS
-  pinMode(12, OUTPUT); // Signal the deliver of the US
+  pinMode(11, OUTPUT); // Signal the deliver of CS to LED
+  pinMode(12, OUTPUT); // Signal the deliver of US to LED
 
   // Button to start the experiment.
   pinMode(2, INPUT); // single puch to start
@@ -42,6 +55,9 @@ void loop() {
   
   // variable to keep track of the number of CS at a give time
   int current_cs = 1;
+
+
+  // This block controls the chamber's LEDs
   switchstate_test_led = digitalRead(3);
 
   if (switchstate_test_led == HIGH) {
@@ -56,19 +72,26 @@ void loop() {
 
   // Only start if the switch is pressed
   if (switchstate == HIGH) { 
-
-    // Signal the start
-    Serial.println("NEW EXPERIMENT");
-    Serial.println("START");
-    delay(5 * 1000);
-    // Test the LEDs
-    Serial.println("Testing LEDs");
+    
+    
+    // TEST CHAMBER LEDs
+    Serial.println("LED: ON");
     digitalWrite(9, HIGH);
     delay(10*1000); // 10 seconds
     digitalWrite(9, LOW);
-    
-    Serial.println("Acclimation: 5 seconds");
+    Serial.println("LED: OFF");
     delay(5 * 1000);
+
+
+    // START EXPERIMENT
+    Serial.println("NEW EXPERIMENT: CLASSICAL THREAT CONDITIONING");
+    delay(1000);
+    
+    Serial.println("START");
+    delay(1000);
+    
+    Serial.println("ACCLIMATION");
+    delay(acclimation_seconds * 1000);
     
     while (total_cs_number > 0) {
 
@@ -77,19 +100,19 @@ void loop() {
       
       // CS --> ON
       digitalWrite(7, HIGH);
-      digitalWrite(9, HIGH); // Deliver Chamber LED
-      digitalWrite(11, HIGH);
+      digitalWrite(9, HIGH); // CHAMBER LED: ON
+      digitalWrite(11, HIGH); // ARDUINO LED: ON 
       
-      // 
+      // CS-US interval
       delay( (cs_len - us_len) * 1000);
       
       // US --> ON
       digitalWrite(8, HIGH);
-      digitalWrite(12, HIGH);
+      digitalWrite(12, HIGH); // ARDUINO LED: ON 
       Serial.println("Delivering US");
 
       // US/US --> Paired
-      delay(us_len * 1000); // Transform in seconds
+      delay(us_len * 1000); // IN SECONDS
     
       // US/CS --> OFF
       for (int i = 7; i < 9; i = i + 1) {
@@ -100,17 +123,17 @@ void loop() {
       }
       digitalWrite(9, LOW);
     
-      // Wait one second before restarting
+      // WAIT ONE SECOND
       delay(1000);
 
-      // Calculate the remaining CS
+      // CALCULATE REMAINING CS
       total_cs_number = total_cs_number - 1;
       
-      // Current cs
+      // CURRENT CS NUMBER
       current_cs = current_cs + 1;
 
       
-      // Display the inter-trial-interval 
+      // PRINT INTER-TRIAL-INTERVAL 
       int delay_iti = itintervals[random(0, 5)];
       
       Serial.print("Inter-Trial-Interval (sec): ");
@@ -120,9 +143,11 @@ void loop() {
       
     }
 
-  // Cooldown before finishing the experiment")
-  Serial.println("Cooldown: 10 seconds");
-  delay(10 * 1000);
+  // COOLDOWN AFTER EXPERIMENT CYCLE
+  Serial.println("COOLDOWN");
+  delay(cooldown_seconds * 1000);
+
+  
   Serial.println("END");
   }
 }
