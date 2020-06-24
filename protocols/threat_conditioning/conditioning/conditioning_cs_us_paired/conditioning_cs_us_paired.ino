@@ -13,12 +13,12 @@
 const int acclimation_seconds = 1 * 10; // IN SECONDS
 const int cooldown_seconds = 1 * 10;    // IN SECONDS
 
-const int cs_len = 5;              // DURATION CS
+const int cs_len = 10;              // DURATION CS
 const int us_len = 2;              // DURATION US
 
 // Variables
 
-int total_cs_number = 10;     // NUMBER OF CS 
+int total_cs_number = 4;          // NUMBER OF CS 
 
 int switchstate = 0; // Button starts the experiment
 int switchstate_test_led = 0; // Test the led
@@ -87,10 +87,6 @@ void loop() {
     Serial.println("LED: OFF");
     delay(5 * 1000);
 
-    Serial.println("NEW EXPERIMENT: START");
-    delay(1000);
-
-
     //  PRINT INFORMATION ABOUT SESSION
 
     Serial.print("NUMBER OF CSs: ");
@@ -109,6 +105,14 @@ void loop() {
     Serial.println(us_len);
     delay(500);
 
+    Serial.print("US START AT (CS DURATION - US DURATION): ");
+    Serial.println((cs_len - us_len));
+    delay(500);
+
+    // START THE EXPERIMENT
+    
+    Serial.println("NEW EXPERIMENT: START");
+    delay(1000);
 
     Serial.print("ACCLIMATION (sec): ");
     Serial.println(acclimation_seconds);
@@ -168,7 +172,7 @@ void loop() {
   Serial.println(cooldown_seconds);
   delay(cooldown_seconds * 1000);
 
-  
+ 
   Serial.println("NEW EXPERIMENT: END");
   }
 }
