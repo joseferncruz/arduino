@@ -10,8 +10,8 @@
 
 // Constants
 
-const int acclimation_seconds = 5 * 60; // IN SECONDS
-const int cooldown_seconds = 5 * 60;    // IN SECONDS
+const int acclimation_seconds = 5 * 60L; // IN SECONDS
+const int cooldown_seconds = 5 * 60L;    // IN SECONDS
 
 const int cs_len = 30;              // DURATION CS
 
@@ -25,7 +25,7 @@ int detect_cs = 0; // detect if the cs was delivered.
 int detect_us = 0; // detect if the us was delivered
 
 // list of the inter-trial-intervals: ITI
-int itintervals[] = {6, 9, 12, 16, 18};
+int itintervals[] = {60, 90, 120, 160, 180};
 
 
 void setup() {
@@ -104,7 +104,7 @@ void loop() {
 
     Serial.print("ACCLIMATION (sec): ");
     Serial.println(acclimation_seconds);
-    delay(acclimation_seconds * 1000);
+    delay(acclimation_seconds * 1000L);
     
     while (total_cs_number > 0) {
 
@@ -117,7 +117,7 @@ void loop() {
       digitalWrite(11, HIGH); // ARDUINO LED: ON 
       
       // CS DURATION
-      delay( (cs_len) * 1000);
+      delay( (cs_len) * 1000L);
       
       // CS --> OFF
       digitalWrite(7, LOW);
@@ -141,14 +141,14 @@ void loop() {
       Serial.print("INTER-TRIAL-INTERVAL (sec): ");
       Serial.println(delay_iti);
       
-      delay(delay_iti * 1000); // Transform the delay into seconds
+      delay(delay_iti * 1000L); // Transform the delay into seconds
       
     }
 
   // COOLDOWN AFTER EXPERIMENT CYCLE
   Serial.print("COOLDOWN (sec): ");
   Serial.println(cooldown_seconds);
-  delay(cooldown_seconds * 1000);
+  delay(cooldown_seconds * 1000L);
 
  
   Serial.println("NEW EXPERIMENT: END");
