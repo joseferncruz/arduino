@@ -10,9 +10,9 @@
 
 // Constants
 
-const int acclimation_seconds = 5 * 60; // IN SECONDS
-const int cooldown_seconds = 5 * 60;    // IN SECONDS
-const int habituation_seconds = 20 * 60; // IN SECONDS
+const int acclimation_seconds = 5 * 60L; // IN SECONDS
+const int cooldown_seconds = 5 * 60L;    // IN SECONDS
+const int habituation_seconds = 20 * 60L; // IN SECONDS
 
 
 
@@ -71,7 +71,7 @@ void loop() {
 
     Serial.println("NEW EXPERIMENT: CLASSICAL THREAT CONDITIONING");
     delay(1000);
-    Serial.println("PROTOCOL: HABITUATION"); // SESSION NAME
+    Serial.println("SESSION: HABITUATION"); // SESSION NAME
     delay(1000);
     
     // TEST CHAMBER LEDs
@@ -97,7 +97,7 @@ void loop() {
 
     Serial.print("ACCLIMATION (sec): ");
     Serial.println(acclimation_seconds);
-    delay(acclimation_seconds * 1000);
+    delay(acclimation_seconds * 1000L);
 
 
   // Delay over the HABITUATION PERIOD
@@ -106,7 +106,7 @@ void loop() {
   // COOLDOWN AFTER EXPERIMENT CYCLE
   Serial.print("COOLDOWN (sec): ");
   Serial.println(cooldown_seconds);
-  delay(cooldown_seconds * 1000);
+  delay(cooldown_seconds * 1000L);
 
  
   Serial.println("NEW EXPERIMENT: END");
