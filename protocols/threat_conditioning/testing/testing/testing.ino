@@ -74,7 +74,7 @@ void loop() {
 
     Serial.println("NEW EXPERIMENT: CLASSICAL THREAT CONDITIONING");
     delay(1000);
-    Serial.println("PROTOCOL: TESTING"); // SESSION NAME
+    Serial.println("SESSION: TESTING"); // SESSION NAME
     delay(1000);
     
     // TEST CHAMBER LEDs
