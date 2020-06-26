@@ -114,7 +114,7 @@ void loop() {
 
     Serial.print("ACCLIMATION (sec): ");
     Serial.println(300);
-    delay(300000);
+    delay(1000);
     
     while (total_cs_number > 0) {
 
@@ -161,7 +161,7 @@ void loop() {
       Serial.print("INTER-TRIAL-INTERVAL (sec): ");
       Serial.println(delay_iti);
       
-      delay(delay_iti * 1000); // Transform the delay into seconds
+      delay(delay_iti*1000L); // Transform the delay into seconds
       
     }
 
