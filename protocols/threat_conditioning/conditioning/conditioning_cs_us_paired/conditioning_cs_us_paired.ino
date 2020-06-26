@@ -24,7 +24,7 @@ int detect_cs = 0; // detect if the cs was delivered.
 int detect_us = 0; // detect if the us was delivered
 
 // list of the inter-trial-intervals: ITI
-int itintervals[] = {6, 9, 12, 16, 18};
+int itintervals[] = {60, 90, 120, 160, 180};
 
 
 void setup() {
