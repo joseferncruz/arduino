@@ -10,6 +10,8 @@
 
 // Constants
 
+const int acclimation_seconds = 5 * 60L; // IN SECONDS
+const int cooldown_seconds = 5 * 60L;    // IN SECONDS
 
 const int cs_len = 30;              // DURATION CS
 const int us_len = 2;              // DURATION US
@@ -113,8 +115,8 @@ void loop() {
     delay(1000);
 
     Serial.print("ACCLIMATION (sec): ");
-    Serial.println(300);
-    delay(1000);
+    Serial.println(acclimation_seconds);
+    delay(acclimation_seconds*1000L);
     
     while (total_cs_number > 0) {
 
@@ -167,8 +169,8 @@ void loop() {
 
   // COOLDOWN AFTER EXPERIMENT CYCLE
   Serial.print("COOLDOWN (sec): ");
-  Serial.println(300);
-  delay(300000);
+  Serial.println(cooldown_seconds);
+  delay(cooldown_seconds*1000L);
 
  
   Serial.println("NEW EXPERIMENT: END");
