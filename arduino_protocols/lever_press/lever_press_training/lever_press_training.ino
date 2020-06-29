@@ -21,8 +21,12 @@ const int food_tray_led = 12;
 
 const int lever_press = 7;
 
-int detect_level_press = 0;
+int clockwise = 0;
+
+int lever_state = 0;
 int press_lapse = 0;
+
+int counting_presses = 0;
 
 // for your motor
 
@@ -45,47 +49,67 @@ void setup() {
 
 void loop() {
   
-  // Detect first lever press
-  detect_level_press = digitalRead(lever_press);
-  //Serial.println(detect_level_press);
-  if ((detect_level_press == HIGH) && (press_lapse == 0)) {
+  // DETECT LEVER STATE
+  lever_state = digitalRead(lever_press);
+
+  // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
+  if ((lever_state == HIGH) && (press_lapse == 0)) {
     Serial.println("--------------------------------------");
     press_lapse = 1;
     Serial.println("LEVER ON");
-    delay(100);
-  } else if ((detect_level_press == HIGH) && (press_lapse == 1)){
+
+    if (clockwise == 0) {  
+      Serial.println("REWARD");
+      digitalWrite(food_tray_led, HIGH);
+      myStepper.step(stepsPerRevolution);
+      delay(6*1000L);
+      digitalWrite(food_tray_led, LOW);
+      delay(2000);
+      counting_presses = 0; 
+      clockwise = 1;
+    } else if (clockwise == 1) {
+      Serial.println("REWARD");
+      digitalWrite(food_tray_led, HIGH);
+      myStepper.step(-stepsPerRevolution);
+      delay(6*1000L);
+      digitalWrite(food_tray_led, LOW);
+      delay(2000);
+      counting_presses = 0; 
+      clockwise = 0;
+    }
+
     
-  } else if ((detect_level_press == LOW) && (press_lapse == 1)) {
+    delay(100);
+    counting_presses ++;
+  } 
+  // IF LEVER ON AND NOT THE FIRST TIME IT HAS BEEN PRESSED
+  else if ((lever_state == HIGH) && (press_lapse == 1)){
+    // DO NOTHING
+  } 
+
+  // WHEN LEVER IS OFF, RESET THE RECORD
+  else if ((lever_state == LOW) && (press_lapse == 1)) {
     press_lapse = 0;
     Serial.println("LEVER OFF");
     delay(100);
   }
+
+  // ELSE DO NOTHING
   else {
   }
-  
-  
+
 /*
-  if ((detect_level_press > 0) && (press_lapse == 0)) {
-    Serial.println("lever pressed");
-    Serial.println(press_lapse);
-    press_lapse = 1;
-    delay(200);
+ 
+  // TRIGGER THE REWARD
+  if (counting_presses >= 30) {
+    Serial.println("REWARD");
+    digitalWrite(food_tray_led, HIGH);
+    myStepper.step(stepsPerRevolution);
+    delay(15*1000L);
+    digitalWrite(food_tray_led, LOW);
+    delay(2000);
+    counting_presses = 0;    
   }
-  else if ((detect_level_press > 0) && (press_lapse == 0)) {
-    delay(15);
-    
-  }
-  else {
-    press_lapse = 0;
-    delay(15);
-  }
- */ 
-  
-  // step one revolution  in one direction:
-  //Serial.println("deliver reward");
-  //digitalWrite(food_tray_led, HIGH);
-  //myStepper.step(stepsPerRevolution);
-  //delay(15*1000L);
-  //digitalWrite(food_tray_led, LOW);
-  //delay(2000);
+
+*/
 }
