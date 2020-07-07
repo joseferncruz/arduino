@@ -19,7 +19,7 @@ This protocols is build to habituate a subject to the food dispenser in the Coul
 const int stepsPerRevolution = 200;  // steps per revolution
 const int food_tray_led = 12;        // LED in the chamber food tray 
 const int session_len = 25;          // Length of the Session
-const int acclimation_len = 5;       // Len
+const int acclimation_len = 5;       // Len in seconds.
 
 const int lever_press = 7;           // LEVER_PRESS DECTECTOR
 
@@ -31,13 +31,17 @@ void setup() {
   myStepper.setSpeed(70); // Speed of the stepper.
   // initialize the serial port:
   Serial.begin(9600);
+  Serial.println("LEDOUX LAB");
   Serial.println("MAGAZINE_TRAINING");
-  delay(5000);
+  Serial.println("STARTING IN (sec): 10");
+  delay(10 * 1000L);
   
 }
 
 void loop() {
-
+  Serial.println("SESSION: START");
+  delay(1000);
+  
   // ACCLIMATION
   Serial.print("ACCLIMATION (SEC): ");
   Serial.println(acclimation_len);
@@ -47,10 +51,13 @@ void loop() {
   for (int x = 1; x < session_len; x++) {
   Serial.println("MAGAZINE: ON");
   myStepper.step(stepsPerRevolution/2);            // EQUIVALENT TO 1/2 PELLETS
-  delay(6*1000L);
+  delay(60*1000L);
   Serial.print("REMAINING MINUTES: ");
   Serial.println(session_len - x);
-
   }
-
+  
+  Serial.println("SESSION: END");
+  
+  // ENDLESS LOOP TO ALLOW EXPERIMENTER TO SWITCH SUBJECT AND RESTART
+  while(1) { }
 }
