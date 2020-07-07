@@ -17,9 +17,9 @@ This protocols is build to the subject to lever press in order to get the food i
 
 
 const int stepsPerRevolution = 200;  // steps per revolution
-const int food_tray_led = 12;        // LED in the chamber food tray 
+const int food_tray_led = 9;        // LED in the chamber food tray 
 
-const int lever_press = 7;           // LEVER_PRESS DECTECTOR
+const int lever_press = 8;           // LEVER_PRESS DECTECTOR
 
 
 int lever_state = 0;
@@ -29,7 +29,7 @@ int counting_presses = 0;
 
 
 // initialize the stepper library on pins 8 through 11:
-Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
+Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
 
 void setup() {
   myStepper.setSpeed(80); // Speed of the step.

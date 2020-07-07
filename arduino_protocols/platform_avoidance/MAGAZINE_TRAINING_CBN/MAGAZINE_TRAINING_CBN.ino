@@ -21,11 +21,9 @@ const int food_tray_led = 12;        // LED in the chamber food tray
 const int session_len = 25;          // Length of the Session
 const int acclimation_len = 5;       // Len in seconds.
 
-const int lever_press = 7;           // LEVER_PRESS DECTECTOR
 
-
-// initialize the stepper library on pins 8 through 11:
-Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
+// initialize the stepper library
+Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
 
 void setup() {
   myStepper.setSpeed(70); // Speed of the stepper.
