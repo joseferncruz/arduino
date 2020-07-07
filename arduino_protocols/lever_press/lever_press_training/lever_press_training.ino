@@ -35,7 +35,7 @@ Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
 
 void setup() {
   // set the speed at 60 rpm:
-  myStepper.setSpeed(50);
+  myStepper.setSpeed(80);
   // initialize the serial port:
   Serial.begin(9600);
   Serial.println("LEVER PRESS TRAINING PROTOCOL");
@@ -61,8 +61,8 @@ void loop() {
     if (clockwise == 0) {  
       Serial.println("REWARD");
       digitalWrite(food_tray_led, HIGH);
-      myStepper.step(stepsPerRevolution/5);
-      delay(6*1000L);
+      myStepper.step(stepsPerRevolution/2);
+      delay(3*1000L);
       digitalWrite(food_tray_led, LOW);
       delay(2000);
       counting_presses = 0; 
@@ -70,7 +70,7 @@ void loop() {
     } else if (clockwise == 1) {
       Serial.println("REWARD");
       digitalWrite(food_tray_led, HIGH);
-      myStepper.step(-stepsPerRevolution/5);
+      myStepper.step(stepsPerRevolution/2);
       delay(6*1000L);
       digitalWrite(food_tray_led, LOW);
       delay(2000);
