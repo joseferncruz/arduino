@@ -4,7 +4,6 @@
 LeDoux Lab | 2020
 Jose Oliveira da Cruz, jose.cruz@nyu.edu
 
-
 LEVER_PRESS_TRAINING_CBN
 ----------------------
 This protocols is build to the subject to lever press in order to get the food in the Coulbourn Chambers. 
@@ -19,13 +18,16 @@ This protocols is build to the subject to lever press in order to get the food i
 /* time variables */
 
 // 
-const unsigned long variable_interval = 30;
+const unsigned long variable_interval = 10 * 1000L;
+unsigned long previous_time = millis();
+
+bool access = false;
+
 
 int variable_ratio = 4;
 
 
 int track_lever = 0;
-
 const int stepsPerRevolution = 200;  // steps per revolution
 const int food_tray_led = 8;         // LED in the chamber food tray 
 const int lever_press = 9;           // LEVER_PRESS DECTECTOR
@@ -42,6 +44,7 @@ Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
 
 void setup() {
   myStepper.setSpeed(80); // Speed of the step.
+  
   // initialize the serial port:
   Serial.begin(9600);
   Serial.println("LEVER_PRESS_TRAINING");
@@ -54,10 +57,19 @@ void setup() {
   
 }
 
+
+
 void loop() {
 
+  unsigned long current_time = millis();
+  if (current_time - previous_time <= variable_interval) {
+    access = false; 
+  } else {
+    access = true;
+  }
 
-
+  if (access == true) {
+  
   if (counting_presses < variable_ratio){
   
   // DETECT LEVER STATE
@@ -80,6 +92,27 @@ void loop() {
     Serial.println("CODE TO DELIVER FOOD");
     counting_presses = 0;
     variable_ratio = random(1, 5);
+
+    access = false;
+    previous_time = millis();
+  } } else {
+      // DETECT LEVER STATE
+  lever_state = digitalRead(lever_press);
+  // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
+  if ((lever_state == HIGH) && (press_lapse == 0)) {
+    press_lapse = 1;
+    Serial.println("LEVER -> ON");
+    delay(100);
+
+    // KEEP TRACK OF THE NUMBER OF LEVER PRESSES
+    counting_presses ++;
+  } else if ((lever_state == HIGH) && (press_lapse == 1)){
+    // DO NOTHING
+  } else if ((lever_state == LOW) && (press_lapse == 1)) {
+    press_lapse = 0;
+  } else {
+  }
+    
   }
 
 }
