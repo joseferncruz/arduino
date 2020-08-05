@@ -15,20 +15,23 @@ This protocols is build to the subject to lever press in order to get the food i
 #include <Stepper.h>
 
 
-/* time variables */
 
-// 
-unsigned long variable_interval = 1 * 1000L;
-int variable_ratio = 4;
+// VI30 AND VR04
+unsigned long variable_interval = 1 * 1000L; // STARTING VALUE FOR VI
+int variable_ratio = 4;                      // STARTING VALUE FOR VR
 
+// CONTROL TRANSITION BETWEEN VI30 AND VR04
 unsigned long previous_time = millis();
 bool access = false;
 
-// Experimental variables
+// TO KEEP TRACK OF LP/MIN
 unsigned long START = millis();
 unsigned long INTERVAL = 60*1000L;
 int LP_MIN = 0;
 
+// TRIAL INFORMATION
+int TRIAL_N = 50;    
+int TRIAL_START = 1; // acts as bool
 
 
 int track_lever = 0;
@@ -36,11 +39,10 @@ const int stepsPerRevolution = 200;  // steps per revolution
 const int food_tray_led = 8;         // LED in the chamber food tray 
 const int lever_press = 9;           // LEVER_PRESS DECTECTOR
 
-
+// VARIABLES FOR LEVER PRESSING
 int lever_state = 0;
 int press_lapse = 0;
 int counting_presses = 0;
-
 
 
 // initialize the stepper library on pins 8 through 11:
@@ -54,7 +56,6 @@ void setup() {
   // INITIALIZE SERIAL
   Serial.begin(9600);
   
-
   // PRINT INITIAL INFORMATION
   Serial.println("LEVER_PRESS_TRAINING");
   Serial.println("VI30 | VR04");
@@ -71,8 +72,33 @@ void setup() {
 
 void loop() {
 
-  // 
 
+  // ACCLIMATION PERIOD
+  if (TRIAL_START == 1) {
+    Serial.println("ACCLIMATION (min): 3");
+    unsigned long interval_acclimation = 60*3*1000L;
+    unsigned long start_acclimation = millis();
+    unsigned long current_acclimation = millis();
+
+    // KEEP ARDUINO IN A LOOP TO SIMULATE THE DELAY
+    while (current_acclimation - start_acclimation < interval_acclimation) {
+      current_acclimation = millis();
+    }
+    TRIAL_START = 0; // allow the normal code to be executed
+    START = millis();
+  }
+  
+  
+  // COOLDOWN PERIOD IF TRIAL REACHES 0
+  if (TRIAL_N == 0) {
+    Serial.println("COOLDOWN (min): 3");
+    delay(60*3*1000L);
+    Serial.println("END");
+    while(1){}                          // infinite loop until the  program is stopped by user
+  }
+  
+
+  // CALCULATE LEVER PRESSES PER MINUTE
   unsigned long CURRENT = millis();
   if (CURRENT - START >= INTERVAL) {
     START = millis();
@@ -81,7 +107,7 @@ void loop() {
   }
 
 
-  // GET CURRENt TIME
+  // GET CURRENT TIME
   unsigned long current_time = millis();
 
   // CHECK IF VI30 IS OVER
@@ -122,6 +148,7 @@ void loop() {
 
     // MOVE HALF OF THE STEPPER REVOLUTIONS
     myStepper.step(stepsPerRevolution/2);
+    
 
     // RESET COUNTING PRESSES FOR VR04
     counting_presses = 0;
