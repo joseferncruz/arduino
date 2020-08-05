@@ -9,12 +9,17 @@ LEVER_PRESS_TRAINING_CBN
 This protocols is build to the subject to lever press in order to get the food in the Coulbourn Chambers. 
 
 
+
+
+
+
  */
 
 // Library used to control the stepper associated with the food magazine.
 #include <Stepper.h>
 
-
+// ENSURE REPRODUCIBILITY 
+randomSeed(31)
 
 // VI30 AND VR04
 unsigned long variable_interval = 1 * 1000L; // STARTING VALUE FOR VI
@@ -28,13 +33,14 @@ bool access = false;
 unsigned long START = millis();
 unsigned long INTERVAL = 60*1000L;
 int LP_MIN = 0;
+int LP = 0;
+int LP_MINS = 0;
 
 // TRIAL INFORMATION
 int TRIAL_N = 50;    
-int TRIAL_START = 1; // acts as bool
+bool TRIAL_START = true; // acts as boolean
 
-
-int track_lever = 0;
+// SETTINGS FOR BOARD AND STEPPER
 const int stepsPerRevolution = 200;  // steps per revolution
 const int food_tray_led = 8;         // LED in the chamber food tray 
 const int lever_press = 9;           // LEVER_PRESS DECTECTOR
@@ -69,12 +75,10 @@ void setup() {
 }
 
 
-
 void loop() {
 
-
   // ACCLIMATION PERIOD
-  if (TRIAL_START == 1) {
+  if (TRIAL_START == true) {
     Serial.println("ACCLIMATION (min): 3");
     unsigned long interval_acclimation = 60*3*1000L;
     unsigned long start_acclimation = millis();
@@ -84,7 +88,7 @@ void loop() {
     while (current_acclimation - start_acclimation < interval_acclimation) {
       current_acclimation = millis();
     }
-    TRIAL_START = 0; // allow the normal code to be executed
+    TRIAL_START = false; // allow the normal code to be executed
     START = millis();
   }
   
@@ -101,15 +105,22 @@ void loop() {
   // CALCULATE LEVER PRESSES PER MINUTE
   unsigned long CURRENT = millis();
   if (CURRENT - START >= INTERVAL) {
+
+    // ADD ONE MINUTE TO COUNTER
+    LP_MINS ++;
     START = millis();
-    Serial.print("LP/MIN: "); Serial.println(LP_MIN);
+
+    // CALCULATE AVERAGE LP PER MIN GLOBALY
+    float LP_AVG = LP / LP_MINS;
+    Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
+    Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
     LP_MIN = 0;
   }
 
 
   // GET CURRENT TIME
   unsigned long current_time = millis();
-
+  
   // CHECK IF VI30 IS OVER
   if (current_time - previous_time <= variable_interval) {
     // IF NO THEN
@@ -132,6 +143,7 @@ void loop() {
           if ((lever_state == HIGH) && (press_lapse == 0)) {
             press_lapse = 1;
             Serial.println("LEVER -> ON");
+            LP ++;
             LP_MIN ++;
             delay(20);
             
@@ -174,6 +186,7 @@ void loop() {
             if ((lever_state == HIGH) && (press_lapse == 0)) {
               press_lapse = 1;
               Serial.println("LEVER -> ON");
+              LP ++;
               LP_MIN ++;
               delay(20);
           
