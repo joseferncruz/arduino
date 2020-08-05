@@ -18,9 +18,6 @@ This protocols is build to the subject to lever press in order to get the food i
 // Library used to control the stepper associated with the food magazine.
 #include <Stepper.h>
 
-// ENSURE REPRODUCIBILITY 
-randomSeed(31)
-
 // VI30 AND VR04
 unsigned long variable_interval = 1 * 1000L; // STARTING VALUE FOR VI
 int variable_ratio = 4;                      // STARTING VALUE FOR VR
@@ -35,6 +32,7 @@ unsigned long INTERVAL = 60*1000L;
 int LP_MIN = 0;
 int LP = 0;
 int LP_MINS = 0;
+int LP_AVG= 0;
 
 // TRIAL INFORMATION
 int TRIAL_N = 50;    
@@ -71,7 +69,11 @@ void setup() {
   // SET UP PINs
   pinMode(food_tray_led, OUTPUT);
   pinMode(lever_press, INPUT);
-  
+
+  // ENSURE REPRODUCIBILITY 
+  unsigned long seed = 31;
+  randomSeed(seed);
+
 }
 
 
@@ -111,7 +113,7 @@ void loop() {
     START = millis();
 
     // CALCULATE AVERAGE LP PER MIN GLOBALY
-    float LP_AVG = LP / LP_MINS;
+    LP_AVG = LP / LP_MINS;
     Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
     Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
     LP_MIN = 0;
