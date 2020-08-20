@@ -15,12 +15,16 @@ pre determined variable interval and ratio.
 // STEPPER LIBRARY FOR STEPPER CONTROL
 #include <Stepper.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3bc4cffb213521df1e0aeb07ad6422db6c70b0ff
 // VI AND VR
 unsigned long session_length = 15 * 60 * 1000L; // DURATION OF THE SESSION >> "MIN * SEC * MS"
 int max_vr = 4;                                 // MAX VARIABLE RATIO FOR RANDOM GENERATOR
 int max_vi = 30;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
+<<<<<<< HEAD
 unsigned long variable_interval = 1 * 1000L;    // STARTING VALUE FOR VI
 int variable_ratio = 1;                         // STARTING VALUE FOR VR: MIN-MAX (EXCLUSIVE)
 
@@ -31,6 +35,12 @@ unsigned long acclimation_length = 0; // DURATION IN MIN
 unsigned long cooldown_length = 0;    // DURATION IN MIN 
 
 
+=======
+
+unsigned long variable_interval = 1 * 1000L;    // STARTING VALUE FOR VI
+int variable_ratio = 1;                         // STARTING VALUE FOR VR: MIN-MAX (EXCLUSIVE)
+
+>>>>>>> 3bc4cffb213521df1e0aeb07ad6422db6c70b0ff
 // CONTROL TRANSITION BETWEEN VI AND VR
 unsigned long previous_time = millis();
 bool access = false;
@@ -88,7 +98,11 @@ void setup() {
   Serial.print(" | VR0"); Serial.println(max_vr);
   Serial.println("----------------------------------");
   Serial.print("STARTING VI (SEC): "); Serial.print(variable_interval / 1000);
+<<<<<<< HEAD
   Serial.print(" | STARTING VR: "); Serial.println(variable_ratio);
+=======
+  Serial.print("| STARTING VR: "); Serial.println(variable_ratio);
+>>>>>>> 3bc4cffb213521df1e0aeb07ad6422db6c70b0ff
   Serial.println("PRESS GREEN BUTTON TO START");
 
   // SET UP PINS
