@@ -46,6 +46,7 @@ const int lever_press = 9;           // LEVER_PRESS DECTECTOR
 int lever_state = 0;
 int press_lapse = 0;
 int counting_presses = 0;
+int cumsum_presses = 0;
 
 // PUSH BUTTON TO START EXPERIMENT
 const int push_button = 2;  
@@ -148,6 +149,7 @@ void loop() {
             LP_AVG = LP / LP_MINS;
             Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
             Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
+            Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
             LP_MIN = 0;
           }
         
@@ -177,6 +179,7 @@ void loop() {
                     press_lapse = 1;
                     Serial.println("LEVER -> ON");
                     LP ++;
+                    cumsum_presses ++;
                     LP_MIN ++;
                     delay(20);
                     
@@ -219,6 +222,7 @@ void loop() {
                       press_lapse = 1;
                       Serial.println("LEVER -> ON");
                       LP ++;
+                      cumsum_presses ++;
                       LP_MIN ++;
                       delay(20);
                   
