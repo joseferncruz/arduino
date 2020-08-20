@@ -6,29 +6,28 @@ Jose Oliveira da Cruz, jose.cruz@nyu.edu
 
 LEVER_PRESS_TRAINING_CBN
 ----------------------
-This protocols is build to the subject to lever press in order to get the food in the Coulbourn Chambers. 
+Log lever presses and deliver food pellets when due. 
 
 
+*/
 
-
-
-
- */
-
-// Library used to control the stepper associated with the food magazine.
+// STEPPER LIBRARY FOR STEPPER CONTROL
 #include <Stepper.h>
 
 // VI30 AND VR04
-unsigned long variable_interval = 1 * 1000L; // STARTING VALUE FOR VI
-int variable_ratio = 4;                      // STARTING VALUE FOR VR
+unsigned long session_length = 15 * 60 * 1000L; // DURATION OF THE SESSION
+unsigned long variable_interval = 1 * 1000L;    // STARTING VALUE FOR VI
+int variable_ratio = 4;                         // STARTING VALUE FOR VR
 
-// CONTROL TRANSITION BETWEEN VI30 AND VR04
+// CONTROL TRANSITION BETWEEN VI30 AND VR
 unsigned long previous_time = millis();
 bool access = false;
 
 // TO KEEP TRACK OF LP/MIN
 unsigned long START = millis();
 unsigned long INTERVAL = 60*1000L;
+
+// BASIC LP STATS
 int LP_MIN = 0;
 int LP = 0;
 int LP_MINS = 0;
@@ -48,156 +47,190 @@ int lever_state = 0;
 int press_lapse = 0;
 int counting_presses = 0;
 
+// PUSH BUTTON TO START EXPERIMENT
+const int push_button = 2;  
 
-// initialize the stepper library on pins 8 through 11:
+
+// INITIALIZE STEPPER:
 Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
+
 
 void setup() {
 
   // SET STEPPER SPEED
-  myStepper.setSpeed(80); // Speed of the step.
+  myStepper.setSpeed(80); // STEPPER SPEED
   
   // INITIALIZE SERIAL
   Serial.begin(9600);
   
   // PRINT INITIAL INFORMATION
-  Serial.println("LEVER_PRESS_TRAINING");
-  Serial.println("VI30 | VR04");
+  Serial.print("LEVER_PRESS_TRAINING");
+  Serial.println(" | VI30 | VR04");
   Serial.print("STARTING VI30 (ms): "); Serial.print(variable_interval);
   Serial.print("| STARTING VR04: "); Serial.println(variable_ratio);
+  Serial.println("PRESS GREEN BUTTON TO START");
 
-  // SET UP PINs
+  // SET UP PINS
   pinMode(food_tray_led, OUTPUT);
   pinMode(lever_press, INPUT);
+  pinMode(push_button, INPUT);
 
   // ENSURE REPRODUCIBILITY 
   unsigned long seed = 31;
   randomSeed(seed);
 
+ 
 }
 
 
 void loop() {
 
-  // ACCLIMATION PERIOD
-  if (TRIAL_START == true) {
-    Serial.println("ACCLIMATION (min): 3");
-    unsigned long interval_acclimation = 60*3*1000L;
-    unsigned long start_acclimation = millis();
-    unsigned long current_acclimation = millis();
+  // START TRIAL 
+  int button_state = 0;
+  button_state = digitalRead(push_button);
+  unsigned long session_start_time = millis();
+  unsigned long session_current_time = millis();
 
-    // KEEP ARDUINO IN A LOOP TO SIMULATE THE DELAY
-    while (current_acclimation - start_acclimation < interval_acclimation) {
-      current_acclimation = millis();
-    }
-    TRIAL_START = false; // allow the normal code to be executed
-    START = millis();
-  }
+  int session_status = 1; // Way to control the session loops 
   
-  
-  // COOLDOWN PERIOD IF TRIAL REACHES 0
-  if (TRIAL_N == 0) {
-    Serial.println("COOLDOWN (min): 3");
-    delay(60*3*1000L);
-    Serial.println("END");
-    while(1){}                          // infinite loop until the  program is stopped by user
-  }
-  
+  if (button_state == HIGH) {
+    Serial.println("SESSION: START");
+    
+    while (session_status == 1) {
 
-  // CALCULATE LEVER PRESSES PER MINUTE
-  unsigned long CURRENT = millis();
-  if (CURRENT - START >= INTERVAL) {
-
-    // ADD ONE MINUTE TO COUNTER
-    LP_MINS ++;
-    START = millis();
-
-    // CALCULATE AVERAGE LP PER MIN GLOBALY
-    LP_AVG = LP / LP_MINS;
-    Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
-    Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
-    LP_MIN = 0;
-  }
-
-
-  // GET CURRENT TIME
-  unsigned long current_time = millis();
-  
-  // CHECK IF VI30 IS OVER
-  if (current_time - previous_time <= variable_interval) {
-    // IF NO THEN
-    access = false; 
-  } else {
-    // ALLOW THE LEVER PRESSES TO COUNT TOWARDS VR04
-    access = true;
-  }
-
-  // ACCESS == TRUE > INITIATE VR04
-  if (access == true) {
-
-  // COUNT LEVER PRESSES NECESSARY FOR THE APPROPRIATE VR04
-  if (counting_presses < variable_ratio){
-
-          // DETECT LEVER STATE
-          lever_state = digitalRead(lever_press); 
-          
-          // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
-          if ((lever_state == HIGH) && (press_lapse == 0)) {
-            press_lapse = 1;
-            Serial.println("LEVER -> ON");
-            LP ++;
-            LP_MIN ++;
-            delay(20);
+          // ACCLIMATION PERIOD
+          if (TRIAL_START == true) {
+                        
+            Serial.println("ACCLIMATION (MIN): 0");
+            unsigned long interval_acclimation = 60*0*1000L;
+            unsigned long start_acclimation = millis();
+            unsigned long current_acclimation = millis();
+        
+            // KEEP ARDUINO IN A LOOP TO SIMULATE THE DELAY
+            while (current_acclimation - start_acclimation < interval_acclimation) {
+              current_acclimation = millis();
+            }
             
-            // KEEP TRACK OF THE NUMBER OF LEVER PRESSES
-            counting_presses ++;
-          } else if ((lever_state == HIGH) && (press_lapse == 1)){
+            TRIAL_START = false;
+            START = millis();
+            Serial.println("ACCLIMATION: OFF");
+          }
+            
+          /*#################################################*/
+          
+          // STOP SESSION AFTER SESSION LENGTH IS DUE
+          if (session_current_time - session_start_time < session_length) {
             // DO NOTHING
-          } else if ((lever_state == LOW) && (press_lapse == 1)) {
-            press_lapse = 0;
-          } else {}
-
-  } else {
-    Serial.println("DELIVER FOOD");
-
-    // MOVE HALF OF THE STEPPER REVOLUTIONS
-    myStepper.step(stepsPerRevolution/2);
-    
-
-    // RESET COUNTING PRESSES FOR VR04
-    counting_presses = 0;
-
-    // RESET THE VR04
-    variable_ratio = random(1, 5);
-    Serial.print("NEXT VR04: "); Serial.println(variable_ratio);
-    
-    // RE-INITIATE VI30
-    access = false;
-    previous_time = millis();
-    variable_interval = random(1, 31) * 1000L;
-    Serial.print("VI30 (ms): "); Serial.println(variable_interval);
-  } }
-  
-  // LOG LEVER PRESSES DURING VI30
-  else {
-    
-            // DETECT LEVER STATE
-            lever_state = digitalRead(lever_press);
+            session_current_time = millis();
+          } else {
+            session_status == 0;
+            // STOP SESSION
+            Serial.println("COOLDOWN (MIN): 3");
+            delay(60*3*1000L);
+            Serial.println("SESSION: END");
+            while(1){} // infinite loop until the  program is stopped by user
+          }
             
-            // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
-            if ((lever_state == HIGH) && (press_lapse == 0)) {
-              press_lapse = 1;
-              Serial.println("LEVER -> ON");
-              LP ++;
-              LP_MIN ++;
-              delay(20);
+           /*#################################################*/
           
-            } else if ((lever_state == HIGH) && (press_lapse == 1)){
-              // DO NOTHING
-            } else if ((lever_state == LOW) && (press_lapse == 1)) {
-              press_lapse = 0;
-            } else {}
-    
-  }
+        
+          // CALCULATE LEVER PRESSES PER MINUTE
+          unsigned long CURRENT = millis();
+          if (CURRENT - START >= INTERVAL) {
+        
+            // ADD ONE MINUTE TO COUNTER
+            LP_MINS ++;
+        
+            // RE-ASSIGN START MILLIS
+            START = millis();
+        
+            // CALCULATE AVERAGE LP PER MIN GLOBALY
+            LP_AVG = LP / LP_MINS;
+            Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
+            Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
+            LP_MIN = 0;
+          }
+        
+        
+          // GET CURRENT TIME
+          unsigned long current_time = millis();
+          
+          // CHECK IF VI30 IS OVER
+          if (current_time - previous_time <= variable_interval) {
+            // IF NO THEN
+            access = false; // ACCESS TO VR
+          } else {
+            access = true; // ALLOW THE LEVER PRESSES TO COUNT TOWARDS VR
+          }
+        
+          // ACCESS == TRUE > INITIATE VR
+          if (access == true) {
+        
+          // COUNT LEVER PRESSES NECESSARY FOR THE APPROPRIATE VR
+          if (counting_presses < variable_ratio){
+        
+                  // DETECT LEVER STATE
+                  lever_state = digitalRead(lever_press); 
+                  
+                  // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
+                  if ((lever_state == HIGH) && (press_lapse == 0)) {
+                    press_lapse = 1;
+                    Serial.println("LEVER -> ON");
+                    LP ++;
+                    LP_MIN ++;
+                    delay(20);
+                    
+                    // KEEP TRACK OF THE NUMBER OF LEVER PRESSES
+                    counting_presses ++;
+                    
+                  } else if ((lever_state == HIGH) && (press_lapse == 1)){
+                    // DO NOTHING
+                  } else if ((lever_state == LOW) && (press_lapse == 1)) {
+                    press_lapse = 0;
+                  } else {}
+        
+          } else {
+            Serial.println("DELIVER FOOD");
+        
+            // MOVE HALF OF THE STEPPER REVOLUTIONS
+            myStepper.step(stepsPerRevolution/2);
+            
+            // RESET COUNTING PRESSES FOR VR
+            counting_presses = 0;
+        
+            // RESET THE VR
+            variable_ratio = random(1, 5);
+            Serial.print("NEXT VR04: "); Serial.println(variable_ratio);
+            
+            // RE-INITIATE VI30
+            access = false;
+            previous_time = millis();
+            variable_interval = random(1, 31) * 1000L;
+            Serial.print("VI30 (ms): "); Serial.println(variable_interval);
+          } 
+          
+          } else { // LOG LEVER PRESSES DURING VI30
+        
+                    // DETECT LEVER STATE
+                    lever_state = digitalRead(lever_press);
+                    
+                    // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
+                    if ((lever_state == HIGH) && (press_lapse == 0)) {
+                      press_lapse = 1;
+                      Serial.println("LEVER -> ON");
+                      LP ++;
+                      LP_MIN ++;
+                      delay(20);
+                  
+                    } else if ((lever_state == HIGH) && (press_lapse == 1)){
+                    // DO NOTHING
+                    } else if ((lever_state == LOW) && (press_lapse == 1)) {
+                      press_lapse = 0;
+                    } else {}
+            
+          }
 
+  }} else {
+    // do nothing
+      }
 }
