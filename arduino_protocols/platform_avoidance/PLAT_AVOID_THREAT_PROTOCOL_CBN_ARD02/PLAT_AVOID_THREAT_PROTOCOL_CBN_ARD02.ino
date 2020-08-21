@@ -27,12 +27,12 @@ const int acclimation_seconds = 3 * 60L; // IN SECONDS
 const int cooldown_seconds = 3 * 60L;    // IN SECONDS
 
 
-// OTHERS
+// OTHER
 
-int switchstate = 0; // Button starts the experiment
-int switchstate_test_led = 0; // Test the led
-int detect_cs = 0; // detect if the cs was delivered.
-int detect_us = 0; // detect if the us was delivered
+int switchstate = 0;              // Button starts the experiment
+int switchstate_test_led = 0;     // Test the led
+int detect_cs = 0;                // detect if the cs was delivered.
+int detect_us = 0;                // detect if the us was delivered
 
 
 void setup() {
@@ -67,8 +67,7 @@ void setup() {
   pinMode(2, INPUT);               // PUSH BUTTON TO START
   pinMode(3, INPUT);               // TEST LEDS
 
-  // 
-  random.seed(0)
+
 }
 
 void loop() {
@@ -102,7 +101,6 @@ void loop() {
   
   int current_cs = 1; // KEEP TRACK OF THE CURRENT CS
 
-
   // START NEW EXPERIMENT
   switchstate = digitalRead(2);
   if (switchstate == HIGH) { 
@@ -113,7 +111,7 @@ void loop() {
     Serial.println("SESSION: START");
 
     // SIGNAL ARDUINO 01 TO START OWN CODE
-    Serial.println("START LEVER PRESS PROTOCOL ON ARDUINO 01");
+    Serial.println("TRIGGER ARDUINO 01");
     digitalWrite(13, HIGH);
     delay(500);
     digitalWrite(13, LOW);
@@ -170,15 +168,13 @@ void loop() {
       int delay_iti = itintervals[random(0, 5)];
       
       //PRINT INTER-TRIAL-INTERVAL 
-      Serial.print("INTER-TRIAL-INTERVAL (sec): ");
-      Serial.println(delay_iti);
-      
+      Serial.print("INTER-TRIAL-INTERVAL (SEC): "); Serial.println(delay_iti);
       delay(delay_iti*1000L);
       
     }
 
   // COOLDOWN AFTER EXPERIMENT CYCLE
-  Serial.print("COOLDOWN (sec): ");
+  Serial.print("COOLDOWN (SEC): ");
   Serial.println(cooldown_seconds);
   delay(cooldown_seconds*1000L);
 
