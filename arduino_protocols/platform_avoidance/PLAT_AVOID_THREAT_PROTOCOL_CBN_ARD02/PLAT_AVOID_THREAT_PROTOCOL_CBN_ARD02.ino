@@ -66,29 +66,39 @@ void setup() {
   // DIGITAL INPUT
   pinMode(2, INPUT);               // PUSH BUTTON TO START
   pinMode(3, INPUT);               // TEST LEDS
-  
+
+  // 
+  random.seed(0)
 }
 
 void loop() {
 
 
-  // TEST CHAMBER LED
+  /*#######################################################*/
+  // TEST CHAMBER LED      
   switchstate_test_led = digitalRead(3);
 
   if (switchstate_test_led == HIGH) {
+    
     Serial.println("CHAMBER LED: ON");
     digitalWrite(9, HIGH);
     digitalWrite(13, HIGH);
-    
-    delay(5000);
+
+    // DELAY USING MILLIS
+    unsigned long delay_duration = 5 * 1000L;
+    unsigned long test_start = millis();
+    unsigned long test_current = millis();
+    while (test_current - test_start < delay_duration) {
+      test_current = millis();
+    }
     
     digitalWrite(9, LOW);
     digitalWrite(13, LOW);
     Serial.println("CHAMBER LED: OFF");
   }
   
-  
-  //int total_cs_number = 5; // How many CS is going to be delivered.
+  /*#######################################################*/
+
   
   int current_cs = 1; // KEEP TRACK OF THE CURRENT CS
 
@@ -110,6 +120,7 @@ void loop() {
 
     // ACCLIMATION
     Serial.print("ACCLIMATION (SEC): "); Serial.println(acclimation_seconds);
+    
     // WAIT UNTIL THE END OF THE ACCLIMATION
     delay(acclimation_seconds*1000L);
 
@@ -123,11 +134,11 @@ void loop() {
       
       // CS --> ON
       digitalWrite(7, HIGH);
-      digitalWrite(9, HIGH); // CHAMBER LED: ON
+      digitalWrite(9, HIGH);  // CHAMBER LED: ON
       digitalWrite(11, HIGH); // ARDUINO LED: ON 
       
       // CS-US interval
-      delay( (cs_len - us_len) * 1000);
+      delay( (cs_len - us_len) * 1000L);
       
       // US --> ON
       digitalWrite(8, HIGH);
@@ -146,8 +157,8 @@ void loop() {
       }
       digitalWrite(9, LOW);
     
-      // WAIT ONE SECOND
-      delay(1000);
+      // 
+      delay(100);
 
       // CALCULATE REMAINING CS
       total_cs_number = total_cs_number - 1;
@@ -155,13 +166,14 @@ void loop() {
       // CURRENT CS NUMBER
       current_cs = current_cs + 1;
 
-      // PRINT INTER-TRIAL-INTERVAL 
+      // RESET THE NEXT DELAY FOR ITI
       int delay_iti = itintervals[random(0, 5)];
       
+      //PRINT INTER-TRIAL-INTERVAL 
       Serial.print("INTER-TRIAL-INTERVAL (sec): ");
       Serial.println(delay_iti);
       
-      delay(delay_iti*1000L); // Transform the delay into seconds
+      delay(delay_iti*1000L);
       
     }
 
@@ -171,6 +183,6 @@ void loop() {
   delay(cooldown_seconds*1000L);
 
  
-  Serial.println("NEW EXPERIMENT: END");
+  Serial.println("SESSION: END");
   }
 }
