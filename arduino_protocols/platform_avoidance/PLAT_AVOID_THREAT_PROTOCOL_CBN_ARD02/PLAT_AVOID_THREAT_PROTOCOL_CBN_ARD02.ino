@@ -24,7 +24,7 @@ int itintervals[] = {60, 90, 120, 160, 180}; // list of the inter-trial-interval
 
 // ACCLIMATION AND COOLDOWN
 
-const int acclimation_seconds = 0 * 60L; // IN SECONDS
+const int acclimation_seconds = 3 * 60L; // IN SECONDS
 const int cooldown_seconds = 3 * 60L;    // IN SECONDS
 
 
