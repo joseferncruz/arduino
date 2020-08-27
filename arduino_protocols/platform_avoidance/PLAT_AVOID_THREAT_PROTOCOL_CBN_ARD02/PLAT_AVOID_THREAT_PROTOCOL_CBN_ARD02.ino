@@ -18,12 +18,13 @@
 const int cs_len = 30;             // DURATION CS
 const int us_len = 2;              // DURATION US
 int total_cs_number = 5;           // NUMBER OF CS 
+int cs_type = 1;                   // 1==continous, 2==1Hz for 30s
 
 int itintervals[] = {60, 90, 120, 160, 180}; // list of the inter-trial-intervals: ITI
 
 // ACCLIMATION AND COOLDOWN
 
-const int acclimation_seconds = 3 * 60L; // IN SECONDS
+const int acclimation_seconds = 0 * 60L; // IN SECONDS
 const int cooldown_seconds = 3 * 60L;    // IN SECONDS
 
 
@@ -50,6 +51,7 @@ void setup() {
   Serial.print("NUMBER OF CS-US PAIRS: "); Serial.println(total_cs_number);
   Serial.print("ACCLIMATION (SEC): "); Serial.print(acclimation_seconds); 
   Serial.print(" | COOLDOWN (SEC): "); Serial.println(cooldown_seconds);
+  Serial.print("CS TYPE: "); Serial.println(cs_type);
   Serial.println("----------------------------------");
   Serial.println("PRESS BLUE BUTTON TO START");
   Serial.println("----------------------------------");
@@ -113,7 +115,7 @@ void loop() {
     // SIGNAL ARDUINO 01 TO START OWN CODE
     Serial.println("TRIGGER ARDUINO 01");
     digitalWrite(13, HIGH);
-    delay(1001); // PRESS BUTTON FOR ONE SECOND IN ORDER TO TRICKER ARD02
+    delay(1001); // SIMULATE PRESS BUTTON FOR ONE SECOND IN ORDER TO TRICKER ARD02
     digitalWrite(13, LOW);
 
     // ACCLIMATION
@@ -127,36 +129,128 @@ void loop() {
     
     while (total_cs_number > 0) {
 
-      Serial.print("CS: 0");
-      Serial.println(current_cs);
-      
-      // CS --> ON
-      digitalWrite(7, HIGH);
-      digitalWrite(9, HIGH);  // CHAMBER LED: ON
-      digitalWrite(11, HIGH); // ARDUINO LED: ON 
-      
-      // CS-US interval
-      delay( (cs_len - us_len) * 1000L);
-      
-      // US --> ON
-      digitalWrite(8, HIGH);
-      digitalWrite(12, HIGH); // ARDUINO LED: ON 
-      Serial.println("US: ON");
+      if (cs_type==1) {
 
-      // US/US --> Paired
-      delay(us_len * 1000); // IN SECONDS
+          /*----------------------------------------*/
+          // Continous CS
+          Serial.print("CS: 0");
+          Serial.println(current_cs);
+          
+          // CS --> ON
+          digitalWrite(7, HIGH);
+          digitalWrite(9, HIGH);  // CHAMBER LED: ON
+          digitalWrite(11, HIGH); // ARDUINO LED: ON 
+          
+          // CS-US interval
+          delay( (cs_len - us_len) * 1000L);
+          
+          // US --> ON
+          digitalWrite(8, HIGH);
+          digitalWrite(12, HIGH); // ARDUINO LED: ON 
+          Serial.println("US: ON");
     
-      // US/CS --> OFF
-      for (int i = 7; i < 9; i = i + 1) {
-        digitalWrite(i, LOW);
-      }
-      for (int i = 11; i < 13; i = i + 1) {
-        digitalWrite(i, LOW);
-      }
-      digitalWrite(9, LOW);
-    
-      // 
-      delay(100);
+          // US/US --> Paired
+          delay(us_len * 1000); // IN SECONDS
+        
+          // US/CS --> OFF
+          for (int i = 7; i < 9; i = i + 1) {
+            digitalWrite(i, LOW);
+          }
+          for (int i = 11; i < 13; i = i + 1) {
+            digitalWrite(i, LOW);
+          }
+          digitalWrite(9, LOW);
+        
+          // 
+          delay(100);
+          /*----------------------------------------*/
+          } else if (cs_type==2) {
+
+          /*----------------------------------------*/
+          // 1 Hz for len CS
+          Serial.print("CS: 0");
+          Serial.println(current_cs);
+
+          unsigned long cs_len_start = millis();
+          unsigned long cs_len_current = millis();
+          while ((cs_len_current - cs_len_start < (cs_len - us_len) * 1000L)) {
+          
+          // CS --> ON
+          digitalWrite(7, HIGH);
+          digitalWrite(9, HIGH);  // CHAMBER LED: ON
+          digitalWrite(11, HIGH); // ARDUINO LED: ON 
+
+          // Wait 100 ms
+          unsigned long ttl_delay_start = millis();
+          unsigned long ttl_delay_current = millis();
+          while (ttl_delay_current - ttl_delay_start < 100) {
+            ttl_delay_current = millis();
+          }
+          digitalWrite(7, LOW);
+          digitalWrite(9, LOW);
+          digitalWrite(11, LOW);
+          
+          // Wait 900 ms
+         ttl_delay_start = millis();
+         ttl_delay_current = millis();
+         while (ttl_delay_current - ttl_delay_start < 900) {
+            ttl_delay_current = millis();
+          }
+          cs_len_current = millis();
+            
+          }
+          
+          // US --> ON
+          digitalWrite(8, HIGH);
+          digitalWrite(12, HIGH); // ARDUINO LED: ON 
+          Serial.println("US: ON");
+
+          cs_len_start = millis();
+          cs_len_current = millis();
+          while ((cs_len_current - cs_len_start < us_len * 1000L)) {
+          
+          // CS --> ON
+          digitalWrite(7, HIGH);
+          digitalWrite(9, HIGH);  // CHAMBER LED: ON
+          digitalWrite(11, HIGH); // ARDUINO LED: ON 
+
+          // Wait 100 ms
+          unsigned long ttl_delay_start = millis();
+          unsigned long ttl_delay_current = millis();
+          while (ttl_delay_current - ttl_delay_start < 100) {
+            ttl_delay_current = millis();
+          }
+          digitalWrite(7, LOW);
+          digitalWrite(9, LOW);
+          digitalWrite(11, LOW);
+          
+          // Wait 900 ms
+         ttl_delay_start = millis();
+         ttl_delay_current = millis();
+         while (ttl_delay_current - ttl_delay_start < 900) {
+            ttl_delay_current = millis();
+          }
+          cs_len_current = millis();
+            
+          }
+
+          // US/US --> Paired
+          delay(us_len * 1000); // IN SECONDS
+        
+          // US/CS --> OFF
+          for (int i = 7; i < 9; i = i + 1) {
+            digitalWrite(i, LOW);
+          }
+          for (int i = 11; i < 13; i = i + 1) {
+            digitalWrite(i, LOW);
+          }
+          digitalWrite(9, LOW);
+        
+          // 
+          delay(10);
+          /*----------------------------------------*/
+          }
+          
 
       // CALCULATE REMAINING CS
       total_cs_number = total_cs_number - 1;
