@@ -113,7 +113,7 @@ void loop() {
     // SIGNAL ARDUINO 01 TO START OWN CODE
     Serial.println("TRIGGER ARDUINO 01");
     digitalWrite(13, HIGH);
-    delay(500);
+    delay(1001); // PRESS BUTTON FOR ONE SECOND IN ORDER TO TRICKER ARD02
     digitalWrite(13, LOW);
 
     // ACCLIMATION

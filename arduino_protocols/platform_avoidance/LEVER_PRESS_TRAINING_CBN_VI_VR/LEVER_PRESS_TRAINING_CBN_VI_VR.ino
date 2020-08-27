@@ -104,7 +104,23 @@ void loop() {
 
   // START TRIAL
   int button_state = 0;
+
+  
+  /* PRESS BUTTON FOR ONE SECOND OR GET INPUT FROM ARDUINO 02 FOR ONE SECOND
+   */
   button_state = digitalRead(push_button);
+  if (button_state == HIGH) {
+    
+    unsigned long press_button_start = millis();
+    unsigned long press_button_current = millis();
+    
+    while (press_button_current - press_button_start < 1000L) {
+      press_button_current = millis();
+      button_state = digitalRead(push_button);
+    }
+  }
+    
+
   unsigned long session_start_time = millis();
   unsigned long session_current_time = millis();
 
