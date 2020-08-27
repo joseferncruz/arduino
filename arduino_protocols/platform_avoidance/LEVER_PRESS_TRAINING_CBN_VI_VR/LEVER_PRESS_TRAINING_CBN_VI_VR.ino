@@ -15,16 +15,16 @@ Log lever presses and deliver food pellets when due.
 #include <Stepper.h>
 
 // VI AND VR
-unsigned long session_length = 15 * 60 * 1000L; // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 4;                                 // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+unsigned long session_length = 15 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
+int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
 int max_vi = 30;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 // VI30 AND VR04
-unsigned long variable_interval = 1 * 1000L;    // STARTING VALUE FOR VI
-int variable_ratio = 4;                         // STARTING VALUE FOR VR
+unsigned long variable_interval = 1 * 1000L;     // STARTING VALUE FOR VI
+int variable_ratio = 4;                          // STARTING VALUE FOR VR
 
-unsigned long acclimation_length = 0; // DURATION IN MIN
-unsigned long cooldown_length = 0;    // DURATION IN MIN
+unsigned long acclimation_length = 0;            // DURATION IN MIN
+unsigned long cooldown_length = 0;               // DURATION IN MIN
 
 
 // CONTROL TRANSITION BETWEEN VI30 AND VR
@@ -113,10 +113,11 @@ void loop() {
     
     unsigned long press_button_start = millis();
     unsigned long press_button_current = millis();
-    
+
+    // LOOP FOR ONE SECOND 
     while (press_button_current - press_button_start < 1000L) {
       press_button_current = millis();
-      button_state = digitalRead(push_button);
+      button_state = digitalRead(push_button); // IF STATE IS STILL HIGH AFTER ONE SECOND, INITIATE THE FOLLOWING LOOP 
     }
   }
     
