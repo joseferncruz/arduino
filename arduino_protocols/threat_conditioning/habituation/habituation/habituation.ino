@@ -32,6 +32,7 @@ void setup() {
   Serial.begin(9600); // serial will be read by bonsai
   delay(5 * 1000);
   Serial.println("LEDOUX LAB");
+  Serial.println("PRESS GREEN SWITCH TO START NEW EXP");
   
   // Digital Output pins
   pinMode(7, OUTPUT); // Delivering the CS
