@@ -120,13 +120,16 @@ void loop() {
     delay(acclimation_seconds * 1000L);
 
 
-  // Delay over the HABITUATION PERIOD
-  delay(habituation_seconds);
+    // Delay over the HABITUATION PERIOD
+    Serial.println("HABITUATION PERIOD: START");
+    delay(habituation_seconds*1000L);
+    Serial.println("HABITUATION PERIOD: START");
 
-  // COOLDOWN AFTER EXPERIMENT CYCLE
-  Serial.print("COOLDOWN (sec): ");
-  Serial.println(cooldown_seconds);
-  delay(cooldown_seconds * 1000L);
+  
+    // COOLDOWN AFTER EXPERIMENT CYCLE
+    Serial.print("COOLDOWN (sec): ");
+    Serial.println(cooldown_seconds);
+    delay(cooldown_seconds * 1000L);
 
  
   Serial.println("NEW EXPERIMENT: END");
