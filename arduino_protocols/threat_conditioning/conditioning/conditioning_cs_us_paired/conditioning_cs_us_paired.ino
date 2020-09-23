@@ -190,6 +190,10 @@ void loop() {
 
   // COOLDOWN AFTER EXPERIMENT CYCLE
   Serial.print("COOLDOWN (sec): ");
+  
+  // RESET CURRENT CS FOR THE NEXT EXPERIMENT
+  current_cs = 1;  
+  
   Serial.println(cooldown_seconds);
   delay(cooldown_seconds*1000L);
 
