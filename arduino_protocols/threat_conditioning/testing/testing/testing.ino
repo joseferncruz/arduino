@@ -142,6 +142,7 @@ void loop() {
       
       // CS --> OFF
       digitalWrite(7, LOW);
+      Serial.println("CS: OFF");
       digitalWrite(9, LOW); // CHAMBER LED: OFF
       digitalWrite(11, LOW); // ARDUINO LED: OFF
       

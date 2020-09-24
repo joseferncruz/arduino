@@ -164,6 +164,9 @@ void loop() {
       for (int i = 7; i < 9; i = i + 1) {
         digitalWrite(i, LOW);
       }
+      Serial.println("US: OFF");
+      Serial.println("CS: OFF");
+      
       for (int i = 11; i < 13; i = i + 1) {
         digitalWrite(i, LOW);
       }
