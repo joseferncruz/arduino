@@ -1,4 +1,4 @@
-# Bonsai and Arduino
+# Arduino and Bonsai
 
 The repository holds several arduino scripts and bonsai layouts that I use to control the hardware and data aquisition pipelines used in my behavioral tasks.
 
@@ -16,5 +16,5 @@ The repository holds several arduino scripts and bonsai layouts that I use to co
 ## Contents
 
 - `arduino_procotols/`: contains ready to use scripts and also wiring schematics of the hardware.  
-- `bonsai_layouts/`: contain bonsai workflows for data acquisition and storage.  
+- `bonsai_layouts/`: containa bonsai workflows for data acquisition and storage.  
 - `test-sketch/`: contains small scripts to control electronic components.
