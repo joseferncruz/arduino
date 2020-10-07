@@ -50,17 +50,38 @@ void setup() {
 
 void loop() {
 
-  // TURN CHAMBER LED ON
+    // TURN CHAMBER LED ON
   switchstate_test_led = digitalRead(3);
 
   if (switchstate_test_led == HIGH) {
+
+    /*TEST CHAMBER LED, US TTL AND CS TTL*/
+    Serial.println("TEST CHAMBER LED, CS & US");
+    
+    // TEST CHAMBER LED
     Serial.println("CHAMBER LED: ON");
     digitalWrite(9, HIGH);
-    
     delay(5000);
-    
     digitalWrite(9, LOW);
     Serial.println("CHAMBER LED: OFF");
+    
+    delay(1000);
+
+    // TEST CS TTL
+    Serial.println("CS: ON");
+    digitalWrite(7, HIGH);
+    delay(5000);
+    digitalWrite(7, LOW);
+    Serial.println("CS: OFF");
+
+    delay(1000);
+
+    // TEST US TTL
+    Serial.println("US: ON");
+    digitalWrite(8, HIGH);
+    delay(2000);
+    digitalWrite(8, LOW);
+    Serial.println("US: OFF");
   }
   
   //int total_cs_number = 5; // How many CS is going to be delivered.
@@ -143,6 +164,9 @@ void loop() {
       for (int i = 7; i < 9; i = i + 1) {
         digitalWrite(i, LOW);
       }
+      Serial.println("US: OFF");
+      Serial.println("CS: OFF");
+      
       for (int i = 11; i < 13; i = i + 1) {
         digitalWrite(i, LOW);
       }
@@ -169,6 +193,10 @@ void loop() {
 
   // COOLDOWN AFTER EXPERIMENT CYCLE
   Serial.print("COOLDOWN (sec): ");
+  
+  // RESET CURRENT CS FOR THE NEXT EXPERIMENT
+  current_cs = 1;  
+  
   Serial.println(cooldown_seconds);
   delay(cooldown_seconds*1000L);
 

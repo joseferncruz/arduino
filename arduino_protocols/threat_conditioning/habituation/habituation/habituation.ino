@@ -14,8 +14,6 @@ const int acclimation_seconds = 5 * 60L; // IN SECONDS
 const int cooldown_seconds = 5 * 60L;    // IN SECONDS
 const int habituation_seconds = 20 * 60L; // IN SECONDS
 
-
-
 // Variables
 
 int switchstate = 0; // Button starts the experiment
@@ -32,6 +30,7 @@ void setup() {
   Serial.begin(9600); // serial will be read by bonsai
   delay(5 * 1000);
   Serial.println("LEDOUX LAB");
+  Serial.println("PRESS GREEN SWITCH TO START NEW EXP");
   
   // Digital Output pins
   pinMode(7, OUTPUT); // Delivering the CS
@@ -52,13 +51,34 @@ void loop() {
   switchstate_test_led = digitalRead(3);
 
   if (switchstate_test_led == HIGH) {
+
+    /*TEST CHAMBER LED, US TTL AND CS TTL*/
+    Serial.println("TEST CHAMBER LED, CS & US");
+    
+    // TEST CHAMBER LED
     Serial.println("CHAMBER LED: ON");
     digitalWrite(9, HIGH);
-    
     delay(5000);
-    
     digitalWrite(9, LOW);
     Serial.println("CHAMBER LED: OFF");
+    
+    delay(1000);
+
+    // TEST CS TTL
+    Serial.println("CS: ON");
+    digitalWrite(7, HIGH);
+    delay(5000);
+    digitalWrite(7, LOW);
+    Serial.println("CS: OFF");
+
+    delay(1000);
+
+    // TEST US TTL
+    Serial.println("US: ON");
+    digitalWrite(8, HIGH);
+    delay(2000);
+    digitalWrite(8, LOW);
+    Serial.println("US: OFF");
   }
   
   // variable to keep track of the number of CS at a give time
@@ -100,13 +120,16 @@ void loop() {
     delay(acclimation_seconds * 1000L);
 
 
-  // Delay over the HABITUATION PERIOD
-  delay(habituation_seconds);
+    // Delay over the HABITUATION PERIOD
+    Serial.println("HABITUATION PERIOD: START");
+    delay(habituation_seconds*1000L);
+    Serial.println("HABITUATION PERIOD: START");
 
-  // COOLDOWN AFTER EXPERIMENT CYCLE
-  Serial.print("COOLDOWN (sec): ");
-  Serial.println(cooldown_seconds);
-  delay(cooldown_seconds * 1000L);
+  
+    // COOLDOWN AFTER EXPERIMENT CYCLE
+    Serial.print("COOLDOWN (sec): ");
+    Serial.println(cooldown_seconds);
+    delay(cooldown_seconds * 1000L);
 
  
   Serial.println("NEW EXPERIMENT: END");

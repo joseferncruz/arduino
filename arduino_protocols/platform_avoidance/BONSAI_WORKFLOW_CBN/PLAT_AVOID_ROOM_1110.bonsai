@@ -27,6 +27,7 @@
               </Combinator>
             </Expression>
             <Expression xsi:type="Combinator">
+<<<<<<< HEAD
               <Combinator xsi:type="cv:Crop">
                 <cv:RegionOfInterest>
                   <cv:X>109</cv:X>
@@ -39,6 +40,10 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="cv:VideoWriter">
                 <cv:FileName>C:\Users\jfo2\Desktop\bonsai_output_test\1117_chamber_01_video_output_.avi</cv:FileName>
+=======
+              <Combinator xsi:type="cv:VideoWriter">
+                <cv:FileName>C:\Users\jfo2\Desktop\BONSAI_PLAT_AVOID_TESTS\1110_chamber_01_video_output_.avi</cv:FileName>
+>>>>>>> 9fea7806100e534de1b2b0c9d969bddb8ce35723
                 <cv:Suffix>FileCount</cv:Suffix>
                 <cv:Buffered>true</cv:Buffered>
                 <cv:Overwrite>false</cv:Overwrite>
@@ -58,7 +63,49 @@
               <Selector>Timestamp</Selector>
             </Expression>
             <Expression xsi:type="io:CsvWriter">
+<<<<<<< HEAD
               <io:FileName>C:\Users\jfo2\Desktop\bonsai_output_test\1117_chamber_01_video_timestamps_.csv</io:FileName>
+=======
+              <io:FileName>C:\Users\jfo2\Desktop\BONSAI_PLAT_AVOID_TESTS\1110_chamber_01_video_timestamps_.csv</io:FileName>
+              <io:Append>false</io:Append>
+              <io:Overwrite>false</io:Overwrite>
+              <io:Suffix>FileCount</io:Suffix>
+              <io:IncludeHeader>false</io:IncludeHeader>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="io:SerialStringRead">
+                <io:PortName>COM9</io:PortName>
+                <io:NewLine>\r\n</io:NewLine>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Parse">
+              <Pattern>%s</Pattern>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Timestamp" />
+            </Expression>
+            <Expression xsi:type="io:CsvWriter">
+              <io:FileName>C:\Users\jfo2\Desktop\BONSAI_PLAT_AVOID_TESTS\lever_press.csv</io:FileName>
+              <io:Append>false</io:Append>
+              <io:Overwrite>false</io:Overwrite>
+              <io:Suffix>FileCount</io:Suffix>
+              <io:IncludeHeader>false</io:IncludeHeader>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="io:SerialStringRead">
+                <io:PortName>COM10</io:PortName>
+                <io:NewLine>\r\n</io:NewLine>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Parse">
+              <Pattern>%s</Pattern>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Timestamp" />
+            </Expression>
+            <Expression xsi:type="io:CsvWriter">
+              <io:FileName>C:\Users\jfo2\Desktop\BONSAI_PLAT_AVOID_TESTS\threat_protocols.csv</io:FileName>
+>>>>>>> 9fea7806100e534de1b2b0c9d969bddb8ce35723
               <io:Append>false</io:Append>
               <io:Overwrite>false</io:Overwrite>
               <io:Suffix>FileCount</io:Suffix>
@@ -70,7 +117,16 @@
             <Edge From="1" To="2" Label="Source1" />
             <Edge From="1" To="3" Label="Source1" />
             <Edge From="3" To="4" Label="Source1" />
+<<<<<<< HEAD
             <Edge From="4" To="5" Label="Source1" />
+=======
+            <Edge From="5" To="6" Label="Source1" />
+            <Edge From="6" To="7" Label="Source1" />
+            <Edge From="7" To="8" Label="Source1" />
+            <Edge From="9" To="10" Label="Source1" />
+            <Edge From="10" To="11" Label="Source1" />
+            <Edge From="11" To="12" Label="Source1" />
+>>>>>>> 9fea7806100e534de1b2b0c9d969bddb8ce35723
           </Edges>
         </Workflow>
       </Expression>
