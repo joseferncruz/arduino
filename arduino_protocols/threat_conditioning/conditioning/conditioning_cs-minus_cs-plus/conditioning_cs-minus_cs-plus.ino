@@ -23,7 +23,11 @@ const int us_len = 2;                    // DURATION US
 
 int total_cs_plus_number = 5;            // NUMBER OF CS-PLUS
 int total_cs_minus_number = 5;           // NUMBER OF CS-MINUS
+
+/* IMPORTANT: IF CS-PLUS > 0 AND CURRENT_TURN != 1, THE LOOP WILL NOT WORK
+              OR IF CS-minus > 0 AND CURRENT_TURN != 0, THE LOOP WILL ALSO NOT WORK*/
 int current_turn = 1;                    // STARTING CS: 0 == CS-MINUS | 1 == CS-PLUS
+
 
 
 int switchstate = 0;                     // Button starts the experiment
@@ -124,19 +128,18 @@ void loop() {
   
   if (switchstate == HIGH) { 
     
-    // TEST CHAMBER LEDs
-    Serial.println("TEST CHAMBER LED");
-    Serial.println("LED: ON");
-    digitalWrite(9, HIGH);
-    delay(10*1000); // 10 seconds
-    digitalWrite(9, LOW);
-    Serial.println("LED: OFF");
-    delay(5 * 1000);
-
-    // PRINT INFORMATION ABOUT EXPERIMENT
-    
+    // SIGNAL START OF EXPERIMENT WITH BLINKING LED 
     Serial.println("NEW EXPERIMENT: CLASSICAL THREAT CONDITIONING");
     delay(1000);
+    for (int i = 0; i < 6; i++) {
+      digitalWrite(9, HIGH);
+      delay(500); 
+      digitalWrite(9, LOW);
+      delay(500);
+      
+    }
+
+    // PRINT INFORMATION ABOUT EXPERIMENT
     Serial.println("SESSION: CONDITIONING");
     delay(1000);
     
@@ -184,7 +187,7 @@ void loop() {
 
 
     // LOOP UNTIL THERE ARE NO MORE CS-MINUS AND CS-PLUS AVAILABLE. ALTERNATE BETWEEN THEM
-    while (total_cs_plus_number > 0 && total_cs_minus_number > 0) {
+    while (total_cs_plus_number > 0 || total_cs_minus_number > 0) {
 
       // DEFINE STARTING CS
       /*###############################################################################*/
@@ -192,12 +195,10 @@ void loop() {
         // RUN CS-PLUS
 
         // DISPLAY CURRRENT CS NUMBER
-        Serial.print("CS-PLUS: 0"); Serial.println(current_cs_plus);
+        Serial.print("CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.println(" > ON");
         
         // CS-PLUS --> ON
         digitalWrite(7, HIGH);
-        Serial.print("CS-PLUS: ON");
-        
         digitalWrite(9, HIGH);                     // CHAMBER LED: ON
         digitalWrite(11, HIGH);                    // ARDUINO LED: ON 
         
@@ -217,7 +218,7 @@ void loop() {
           digitalWrite(i, LOW);
         }
         Serial.println("US: OFF");
-        Serial.println("CS-PLUS: OFF");
+        Serial.print("CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.println(" > OFF");
         
         for (int i = 11; i < 13; i = i + 1) {
           digitalWrite(i, LOW);
@@ -254,12 +255,10 @@ void loop() {
         // RUN CS-MINUS
 
         // DISPLAY CURRRENT CS NUMBER
-        Serial.print("CS-MINUS: 0"); Serial.println(current_cs_minus);
+        Serial.print("CS-MINUS: 0"); Serial.print(current_cs_minus); Serial.println(" > ON");
         
         // CS-MINUS --> ON
         digitalWrite(6, HIGH);
-        Serial.print("CS-MINUS: ON");
-        
         digitalWrite(9, HIGH);                     // CHAMBER LED: ON
         digitalWrite(11, HIGH);                    // ARDUINO LED: ON 
         
@@ -269,7 +268,7 @@ void loop() {
 
         // CS-MINUS OFF 
         digitalWrite(6, LOW);                     // TURN CS-MINUS OFF
-        Serial.println("CS-MINUS: OFF");
+        Serial.print("CS-MINUS: 0"); Serial.print(current_cs_minus); Serial.println(" > OFF");
         
         digitalWrite(9, LOW);                     // CHAMBER LED: ON
         digitalWrite(11, LOW);                    // ARDUINO LED: ON         
@@ -308,8 +307,7 @@ void loop() {
     
 
   // INITIATE COOLDDOWN AT THE END OF EXPERIMENT
-  Serial.print("COOLDOWN (SEC): ");
-  Serial.println(cooldown_seconds);
+  Serial.print("COOLDOWN (SEC): "); Serial.println(cooldown_seconds);
   delay(cooldown_seconds*1000L);
 
   Serial.println("NEW EXPERIMENT: END");
