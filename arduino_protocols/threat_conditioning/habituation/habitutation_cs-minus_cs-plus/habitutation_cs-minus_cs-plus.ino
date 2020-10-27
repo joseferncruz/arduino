@@ -24,6 +24,9 @@ void setup() {
   delay(5 * 1000);
   Serial.println("LEDOUX LAB");
 
+  //OUTPUT
+  pinMode(9, OUTPUT);                     // CHAMBER LED
+
   // INPUTS TO START EXPERIMENT
   pinMode(2, INPUT);                      // INPUT SWITCH TO START EXPERIMENT
   pinMode(3, INPUT);                      // INPUT SWITCH TO TEST CHAMBER LED, CS-MINUS, CS-PLUS, US
