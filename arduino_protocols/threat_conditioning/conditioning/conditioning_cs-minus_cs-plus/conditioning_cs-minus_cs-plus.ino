@@ -15,7 +15,7 @@ const int acclimation_seconds = 5 * 60L; // ACCLIMATION TIME IN SECONDS
 const int cooldown_seconds = 5 * 60L;    // COOLDOWN TIME IN SECONDS
 const int cs_plus_len = 30;              // DURATION CS-PLUS
 const int cs_minus_len = 30;             // DURATION CS-MINUS
-const int us_len = 2;                    // DURATION US
+const int us_len = 1;                    // DURATION US
 
 
 // VARIABLES
@@ -26,7 +26,7 @@ int total_cs_minus_number = 5;           // NUMBER OF CS-MINUS
 
 /* IMPORTANT: IF CS-PLUS > 0 AND CURRENT_TURN != 1, THE LOOP WILL NOT WORK
               OR IF CS-minus > 0 AND CURRENT_TURN != 0, THE LOOP WILL ALSO NOT WORK*/
-int current_turn = 1;                    // STARTING CS: 0 == CS-MINUS | 1 == CS-PLUS
+int current_turn = 0;                    // STARTING CS: 0 == CS-MINUS | 1 == CS-PLUS
 
 
 
