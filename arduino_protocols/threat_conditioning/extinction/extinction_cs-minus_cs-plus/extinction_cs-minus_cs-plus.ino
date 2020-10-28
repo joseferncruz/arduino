@@ -20,7 +20,7 @@ const int cs_minus_len = 30;             // DURATION CS-MINUS
 // VARIABLES
 /*###############################################################################*/
 
-int total_cs_plus_number = 10;           // NUMBER OF CS-PLUS
+int total_cs_plus_number = 15;           // NUMBER OF CS-PLUS
 int total_cs_minus_number = 5;           // NUMBER OF CS-MINUS
 
 /* IMPORTANT: IF CS-PLUS > 0 AND current_cs_type != 1, THE LOOP WILL NOT WORK
