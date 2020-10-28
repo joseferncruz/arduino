@@ -24,9 +24,9 @@ const int us_len = 1;                    // DURATION US
 int total_cs_plus_number = 5;            // NUMBER OF CS-PLUS
 int total_cs_minus_number = 5;           // NUMBER OF CS-MINUS
 
-/* IMPORTANT: IF CS-PLUS > 0 AND CURRENT_TURN != 1, THE LOOP WILL NOT WORK
-              OR IF CS-minus > 0 AND CURRENT_TURN != 0, THE LOOP WILL ALSO NOT WORK*/
-int current_turn = 0;                    // STARTING CS: 0 == CS-MINUS | 1 == CS-PLUS
+/* IMPORTANT: IF CS-PLUS > 0 AND current_cs_type != 1, THE LOOP WILL NOT WORK
+              OR IF CS-minus > 0 AND current_cs_type != 0, THE LOOP WILL ALSO NOT WORK*/
+int current_cs_type = 0;                    // STARTING CS: 0 == CS-MINUS | 1 == CS-PLUS
 
 
 
@@ -191,7 +191,7 @@ void loop() {
 
       // DEFINE STARTING CS
       /*###############################################################################*/
-      if (current_turn == 1 & total_cs_plus_number > 0) {
+      if (current_cs_type == 1 & total_cs_plus_number > 0) {
         // RUN CS-PLUS
 
         // DISPLAY CURRRENT CS NUMBER
@@ -242,16 +242,16 @@ void loop() {
         delay(delay_iti*1000L); 
 
         // SWITCH TO CS-MINUS IF THERE ARE CS-MINUS AVAILABLE
-        if (current_turn == 1 & total_cs_minus_number > 0) {
+        if (current_cs_type == 1 & total_cs_minus_number > 0) {
           
-          current_turn = 0;
+          current_cs_type = 0;
           
           }
 
         
       }
       /*###############################################################################*/
-      else if (current_turn == 0 && total_cs_minus_number > 0) {
+      else if (current_cs_type == 0 && total_cs_minus_number > 0) {
         // RUN CS-MINUS
 
         // DISPLAY CURRRENT CS NUMBER
@@ -290,9 +290,9 @@ void loop() {
         delay(delay_iti*1000L); 
 
         // SWITCH TO CS-MINUS IF THERE ARE CS-MINUS AVAILABLE
-        if (current_turn == 0 && total_cs_plus_number > 0) {
+        if (current_cs_type == 0 && total_cs_plus_number > 0) {
           
-          current_turn = 1;
+          current_cs_type = 1;
           
           }
 
