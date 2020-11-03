@@ -12,22 +12,31 @@ Deliver one food pellet per minute.
 
  */
 
-// Library used to control the stepper associated with the food magazine.
+// LIBRARY TO CONTROL STEPPER
 #include <Stepper.h>
 
 
-const int stepsPerRevolution = 200;     // steps per revolution
-const int food_tray_led = 8;            // LED in the chamber food tray 
-const int push_button = 2;              // push button to start the protocol
-const int acclimation_len = 3*60;       // Len in seconds. Same as cooldown
-const int magazine_trials = 10;         // Number of times the magazine will be activated 
+// CONSTANTS
+/*####################################################################################*/
+const int stepsPerRevolution = 200;         // STEPS PER REVOLUTION - COULBOURN STEPPER
+const int food_tray_led = 8;                // FOOD TRAY LED
+const int push_button = 2;                  // START SWITCH -  EXPERIMENT
+const int acclimation_len = 3 * 60L;        // ACCLIMATION LENGTH IN SECONDS
+const int cooldown_len = 3 * 60L;           // COOLDOWN LENGTH IN SECONDS
+const int magazine_trials = 10;             // NUMBER OF TIMES THE STEPPER ROTATES.
 
 
-// initialize the stepper library
+// INSTANTIATE STEPPER OBJECT
+/*####################################################################################*/
 Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
 
+
+
+
 void setup() {
-  myStepper.setSpeed(70); // Speed of the stepper.
+  myStepper.setSpeed(70);                   // SPEED OF THE STEPPER
+  
+  
   // initialize the serial port:
   Serial.begin(9600);
   pinMode(food_tray_led, OUTPUT);
@@ -39,37 +48,81 @@ void setup() {
 }
 
 void loop() {
-  
+
+  // TEST CHAMBER LED
+
+
+
+
+  // TEST MAGAZINE
+
+
+
+  // START NEW EXPERIMENTAL SESSION
+  /*####################################################################################*/
+
   int button_state = 0;
+  // READ START SWITCH
   button_state = digitalRead(push_button);
-  
+
+  // IF SIGNAL IS DETECTED THEN...
+  /*####################################################################################*/
   if (button_state == HIGH) {
-    
-    Serial.println("SESSION: START");
+
+    // PRINT SESSION INFORMATION
+    /*##################################################################################*/
+    Serial.println("SESSION: MAGAZINE TRAINING");
     delay(1000);
-    
-    // ACCLIMATION
-    Serial.print("ACCLIMATION (SEC): ");
+
+    Serial.print("NUMBER OF PELLETS/MINUTE: 01"); 
+    delay(500);
+
+    Serial.print("NUMBER OF TRIALS: "); Serial.println(magazine_trials); 
+    delay(500);
+
+    Serial.print("ACCLIMATION TIME (SEC): ");
     Serial.println(acclimation_len);
+    delay(500);    
+
+    Serial.print("COOLDOWN TIME (SEC): ");
+    Serial.println(cooldown_len);
+    delay(500);
+
+    // SIGNAL START OF THE NEW EXPERIMENT
+    /*##################################################################################*/
+    Serial.println("NEW EXPERIMENT: START");
+    delay(1000);        
+    
+  
+    // ACCLIMATION
+    /*##################################################################################*/
+    Serial.print("ACCLIMATION (SEC): "); Serial.println(acclimation_len);
     delay(acclimation_len * 1000L);
+
+    
   
     // DELIVER ONE FOOD PELLET EACH ONE MINUTE FOR N MINUTES
+    /*##################################################################################*/
     for (int x = 1; x < magazine_trials; x++) {
-    Serial.println("MAGAZINE: ON");
-    myStepper.step(stepsPerRevolution/2);            // EQUIVALENT TO 1/2 PELLETS
-    digitalWrite(food_tray_led, HIGH);
-    Serial.print("REMAINING MINUTES: ");
-    Serial.println(magazine_trials - x);
-    delay(3*1000L);
-    digitalWrite(food_tray_led, LOW);
-    delay(57*1000L);
+      
+        Serial.println("MAGAZINE: ON");
+        myStepper.step(stepsPerRevolution/2);            // EQUIVALENT TO 1/2 PELLETS
+        digitalWrite(food_tray_led, HIGH);               // FOOD LED ON
+
+        Serial.print("REMAINING TRIALS: "); Serial.println(magazine_trials - x);
+        delay(3*1000L);
+        digitalWrite(food_tray_led, LOW);                // FOOD LED OFF
+        delay(57*1000L);
+    
     }
-  
+
     // COOLDOWN
-    Serial.print("COOLDOWN (SEC): ");
-    Serial.println(acclimation_len);
-    delay(acclimation_len * 1000L);
-    Serial.println("SESSION: END");
+    /*##################################################################################*/
+    Serial.print("COOLDOWN (SEC): "); Serial.println(cooldown_len);
+    
+    delay(cooldown_len * 1000L);
+    
+    Serial.println("NEW EXPERIMENT: END");
     
   }
 }
