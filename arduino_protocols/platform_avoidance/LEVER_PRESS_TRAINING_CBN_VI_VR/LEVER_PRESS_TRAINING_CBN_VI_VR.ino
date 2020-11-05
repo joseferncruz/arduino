@@ -63,6 +63,27 @@ const int stepsPerRevolution = 200;  // steps per revolution
 const int food_tray_led = 8;         // LED in the chamber food tray
 const int lever_press = 9;           // LEVER_PRESS DECTECTOR
 
+
+// SETTINGS FOR LEVER STEPPER 
+/*##################################################################################*/
+const int lp_stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
+Stepper lp_myStepper(lp_stepsPerRevolution, 22, 24, 26, 28);
+
+// 
+bool lp_access = true;
+
+// PINS TO READ
+const int lp_inside_pin = 53;
+const int lp_outside_pin = 52;
+
+// VARIABLES TO READ
+
+int lp_inside = 0;
+int lp_outside = 0;
+int lp_state_switch = 0;
+
+
+
 // VARIABLES FOR LEVER PRESSING
 /*##################################################################################*/
 int lever_state = 0;
@@ -83,6 +104,9 @@ void setup() {
   // SET STEPPER SPEED
   myStepper.setSpeed(80); // STEPPER SPEED
 
+  // LEVER STEPPER
+  lp_myStepper.setSpeed(60);
+  
   // INITIALIZE SERIAL
   Serial.begin(9600);
 
@@ -97,6 +121,10 @@ void setup() {
   pinMode(food_tray_led, OUTPUT);
   pinMode(lever_press, INPUT);
   pinMode(push_button, INPUT);
+  // LP STEPPER PINS
+  pinMode(lp_inside_pin, INPUT);
+  pinMode(lp_outside_pin, INPUT);
+  pinMode(lp_state_switch_pin, INPUT);
 
   // ENSURE REPRODUCIBILITY
   unsigned long seed = 31;
@@ -157,12 +185,24 @@ void loop() {
           /*##################################################################################*/
           if (TRIAL_START == true) {
 
+            // ENSURE THAT LEVER IS RETRACTED
+            lp_inside = digitalRead(lp_inside_pin);
+            lp_outside = digitalRead(lp_outside_pin);
+
+            if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+                  while (lp_inside != 1) {
+                    lp_myStepper.step(-1);
+                    //delay(20);
+                    lp_inside = digitalRead(lp_inside_pin);
+                    lp_outside = digitalRead(lp_outside_pin);
+                  }
+            }
+
             Serial.print("ACCLIMATION (MIN): "); Serial.println(acclimation_length);
             
             unsigned long interval_acclimation = acclimation_length*60*1000L;
             unsigned long start_acclimation = millis();
             unsigned long current_acclimation = millis();
-
             // KEEP ARDUINO IN A LOOP TO SIMULATE THE DELAY
             while (current_acclimation - start_acclimation < interval_acclimation) {
               current_acclimation = millis();
@@ -181,6 +221,19 @@ void loop() {
             session_current_time = millis();
           } else {
             session_status == 0;
+
+            // ENSURE THAT LEVER IS RETRACTED
+            lp_inside = digitalRead(lp_inside_pin);
+            lp_outside = digitalRead(lp_outside_pin);
+
+            if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+                  while (lp_inside != 1) {
+                    lp_myStepper.step(-1);
+                    //delay(20);
+                    lp_inside = digitalRead(lp_inside_pin);
+                    lp_outside = digitalRead(lp_outside_pin);
+                  }
+            }
             
             // ENTER COOLDOWN
             Serial.print("COOLDOWN (MIN): "); Serial.println(cooldown_length);
@@ -190,7 +243,20 @@ void loop() {
             Serial.println("SESSION: END");
             while(1){}                                   // ENTER INFINITE LOOP TO ALLOW USER TO RESET BOARD
           }
+          
+          // ALLOW ACCESS TO THE LEVER
+          /*##################################################################################*/
+          lp_inside = digitalRead(lp_inside_pin);
+          lp_outside = digitalRead(lp_outside_pin);
 
+          if (lp_inside == 1) {
+            while (lp_outside != 1) {
+              lp_myStepper.step(1);
+              ///delay(20);
+              lp_outside = digitalRead(lp_outside_pin);
+              lp_inside = digitalRead(lp_inside_pin);
+            }
+          }
 
           // CALCULATE LEVER PRESSES PER MINUTE
           /*##################################################################################*/
