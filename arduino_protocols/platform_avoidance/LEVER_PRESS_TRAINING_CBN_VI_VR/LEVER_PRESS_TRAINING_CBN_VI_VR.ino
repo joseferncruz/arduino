@@ -5,12 +5,11 @@ LeDoux Lab | 2020
 Jose Oliveira da Cruz, jose.cruz@nyu.edu
 
 LEVER_PRESS_TRAINING_CBN
-----------------------
+------------------------
 Log lever presses and deliver food pellets when due.
 
 
 */
-
 
 
 // STEPPER LIBRARY FOR STEPPER CONTROL
@@ -18,7 +17,7 @@ Log lever presses and deliver food pellets when due.
 
 // VI AND VR
 /*##################################################################################*/
-unsigned long session_length = 15 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
+unsigned long session_length = 2 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
 int max_vr = 1;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
 int max_vi = 1;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
@@ -103,9 +102,7 @@ void setup() {
   unsigned long seed = 31;
   randomSeed(seed);
 
-
 }
-
 
 void loop() {
 
@@ -128,7 +125,6 @@ void loop() {
     }
   }
     
-
   unsigned long session_start_time = millis();
   unsigned long session_current_time = millis();
 
@@ -140,7 +136,7 @@ void loop() {
     /*##################################################################################*/
     Serial.println("SESSION: LEVER PRESS TRAINING");
     
-    Serial.print("SESSION LENGHT (MIN): "); Serial.println(session_length / (60*1000L));
+    Serial.print("SESSION LENGHT (SEC): "); Serial.println(session_length / (1000L));
 
     Serial.print("STARTING VI (SEC): "); Serial.print(variable_interval / 1000); Serial.print(" | STARTING VR: "); Serial.println(variable_ratio);
     
@@ -212,6 +208,7 @@ void loop() {
             Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
             Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
             Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
+            Serial.print("REMAINING TIME (SEC): "); Serial.println((session_current_time - session_start_time)/(1000L));
             LP_MIN = 0;
           }
 
@@ -269,7 +266,7 @@ void loop() {
           } else {
             
             // MOVE HALF OF THE STEPPER REVOLUTIONS
-            myStepper.step(stepsPerRevolution/2);
+            myStepper.step(stepsPerRevolution/3);
             Serial.println("MAGAZINE > ON");
 
             digitalWrite(food_tray_led, HIGH);
