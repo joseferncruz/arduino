@@ -17,7 +17,7 @@ Log lever presses and deliver food pellets when due.
 
 // VI AND VR
 /*##################################################################################*/
-unsigned long session_length = 2 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
+unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
 int max_vr = 1;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
 int max_vi = 1;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
@@ -27,8 +27,8 @@ int max_vi = 1;                                 // MAX VARIABLE INTERVAL FOR RAN
 unsigned long variable_interval = 1 * 1000L;                 // STARTING VALUE FOR VI
 int variable_ratio = 1;                                      // STARTING VALUE FOR VR
 
-unsigned long acclimation_length = 0;                        // DURATION IN MIN
-unsigned long cooldown_length = 0;                           // DURATION IN MIN
+unsigned long acclimation_length = 3;                        // DURATION IN MIN
+unsigned long cooldown_length = 3;                           // DURATION IN MIN
 
 
 // CONTROL TRANSITION BETWEEN VI AND VR
@@ -114,6 +114,19 @@ void setup() {
 
   Serial.println("LEDOUX LAB");
   Serial.print("LEVER_PRESS_TRAINING"); Serial.print(" | VI"); Serial.print(max_vi); Serial.print(" | VR0"); Serial.println(max_vr);
+
+  // ENSURE THAT LEVER IS RETRACTED
+  lp_inside = digitalRead(lp_inside_pin);
+  lp_outside = digitalRead(lp_outside_pin);
+
+  if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+        while (lp_inside != 1) {
+          lp_myStepper.step(-1);
+          //delay(20);
+          lp_inside = digitalRead(lp_inside_pin);
+          lp_outside = digitalRead(lp_outside_pin);
+        }
+  }
   
   Serial.println("PRESS GREEN BUTTON TO START");
 
@@ -124,7 +137,6 @@ void setup() {
   // LP STEPPER PINS
   pinMode(lp_inside_pin, INPUT);
   pinMode(lp_outside_pin, INPUT);
-  pinMode(lp_state_switch_pin, INPUT);
 
   // ENSURE REPRODUCIBILITY
   unsigned long seed = 31;
@@ -159,7 +171,6 @@ void loop() {
   int session_status = 1;              // WHEN ZERO THEN SESSION IS OVER
 
   if (button_state == HIGH) {
-
     // DISPLAY SESSION INFORMATION
     /*##################################################################################*/
     Serial.println("SESSION: LEVER PRESS TRAINING");
@@ -198,7 +209,7 @@ void loop() {
                   }
             }
 
-            Serial.print("ACCLIMATION (MIN): "); Serial.println(acclimation_length);
+            Serial.print("ACCLIMATION (SEC): "); Serial.println(acclimation_length*60);
             
             unsigned long interval_acclimation = acclimation_length*60*1000L;
             unsigned long start_acclimation = millis();
@@ -236,11 +247,14 @@ void loop() {
             }
             
             // ENTER COOLDOWN
-            Serial.print("COOLDOWN (MIN): "); Serial.println(cooldown_length);
+            
+            Serial.print("COOLDOWN (SEC): "); Serial.println(cooldown_length*60);
             delay(cooldown_length*60*1000L);
             
             // STOP SESSION
             Serial.println("SESSION: END");
+            Serial.print("GLOBAL LP/MIN: "); Serial.println(cumsum_presses/(session_length/60000L));
+            Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
             while(1){}                                   // ENTER INFINITE LOOP TO ALLOW USER TO RESET BOARD
           }
           
@@ -274,7 +288,7 @@ void loop() {
             Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
             Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
             Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
-            Serial.print("REMAINING TIME (SEC): "); Serial.println((session_current_time - session_start_time)/(1000L));
+            Serial.print("REMAINING TIME (SEC): "); Serial.println((session_length - session_current_time)/(1000L));
             LP_MIN = 0;
           }
 
