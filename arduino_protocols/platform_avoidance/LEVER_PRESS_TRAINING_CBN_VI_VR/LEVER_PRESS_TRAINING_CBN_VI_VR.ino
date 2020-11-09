@@ -18,7 +18,7 @@ Log lever presses and deliver food pellets when due.
 // VI AND VR
 /*##################################################################################*/
 unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 1;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
 int max_vi = 1;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 
@@ -181,9 +181,9 @@ void loop() {
     
     Serial.print("SESSION VI (SEC): "); Serial.print(max_vi); Serial.print(" | SESSION VR: "); Serial.println(max_vr);
       
-    Serial.print("ACCLIMATION TIME (SEC): "); Serial.println(acclimation_length);
+    Serial.print("ACCLIMATION TIME (SEC): "); Serial.println(acclimation_length*60);
 
-    Serial.print("COOLDOWN TIME (SEC): "); Serial.println(cooldown_length);
+    Serial.print("COOLDOWN TIME (SEC): "); Serial.println(cooldown_length*60);
     
     Serial.println("SESSION: START");
 
@@ -288,7 +288,7 @@ void loop() {
             Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
             Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
             Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
-            Serial.print("REMAINING TIME (SEC): "); Serial.println((session_length - session_current_time)/(1000L));
+            Serial.print("ELAPSED TIME (SEC): "); Serial.println((session_current_time - session_start_time)/(1000L));
             LP_MIN = 0;
           }
 
