@@ -16,14 +16,22 @@ Deliver one food pellet per minute.
 #include <Stepper.h>
 
 
+
+// CONSTANTS TO SET BY USER (DEFAULT BELOW)
+/*####################################################################################*/
+const int acclimation_len = 3 * 60L;        // ACCLIMATION LENGTH IN SECONDS
+const int cooldown_len = 3 * 60L;           // COOLDOWN LENGTH IN SECONDS
+const int magazine_trials = 15;             // NUMBER OF TIMES THE STEPPER ROTATES.
+
+
+
+
+
 // CONSTANTS
 /*####################################################################################*/
 const int stepsPerRevolution = 200;         // STEPS PER REVOLUTION - COULBOURN STEPPER
 const int food_tray_led = 8;                // FOOD TRAY LED
-const int push_button = 2;                  // START SWITCH -  EXPERIMENT
-const int acclimation_len = 3 * 60L;        // ACCLIMATION LENGTH IN SECONDS
-const int cooldown_len = 3 * 60L;           // COOLDOWN LENGTH IN SECONDS
-const int magazine_trials = 10;             // NUMBER OF TIMES THE STEPPER ROTATES.
+const int push_button = 2;                  // START  SWITCH -  EXPERIMENT
 
 
 // INSTANTIATE STEPPER OBJECT
@@ -42,7 +50,7 @@ void setup() {
   pinMode(food_tray_led, OUTPUT);
   pinMode(push_button, INPUT);
   Serial.println("LEDOUX LAB");
-  Serial.println("MAGAZINE_TRAINING: ONE PELLET/MIN FOR TEN MINUTES");
+  Serial.print("MAGAZINE TRAINING");
   Serial.println("PRESS GREEN BUTTON TO START");
   
 }
@@ -74,7 +82,7 @@ void loop() {
     Serial.println("SESSION: MAGAZINE TRAINING");
     delay(1000);
 
-    Serial.print("NUMBER OF PELLETS/MINUTE: 01"); 
+    Serial.println("NUMBER OF PELLETS/MINUTE: 01"); 
     delay(500);
 
     Serial.print("NUMBER OF TRIALS: "); Serial.println(magazine_trials); 
@@ -105,7 +113,7 @@ void loop() {
     /*##################################################################################*/
     for (int x = 1; x < magazine_trials; x++) {
       
-        Serial.println("MAGAZINE: ON");
+        Serial.println("MAGAZINE > ON");
         myStepper.step(stepsPerRevolution/2);            // EQUIVALENT TO 1/2 PELLETS
         digitalWrite(food_tray_led, HIGH);               // FOOD LED ON
 
