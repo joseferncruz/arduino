@@ -19,7 +19,7 @@ Log lever presses and deliver food pellets when due.
 /*##################################################################################*/
 unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
 int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 1;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+int max_vi = 15;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
@@ -49,6 +49,7 @@ int LP_MIN = 0;
 int LP = 0;
 int LP_MINS = 0;
 int LP_AVG= 0;
+int N_PELLETS = 0;
 
 
 // TRIAL INFORMATION
@@ -255,6 +256,7 @@ void loop() {
             Serial.println("SESSION: END");
             Serial.print("GLOBAL LP/MIN: "); Serial.println(cumsum_presses/(session_length/60000L));
             Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
+            Serial.print("CUMULATIVE N PELLETS: "); Serial.println(N_PELLETS);
             while(1){}                                   // ENTER INFINITE LOOP TO ALLOW USER TO RESET BOARD
           }
           
@@ -288,6 +290,7 @@ void loop() {
             Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
             Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
             Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
+            Serial.print("CUMULATIVE N PELLETS: "); Serial.println(N_PELLETS);
             Serial.print("ELAPSED TIME (SEC): "); Serial.println((session_current_time - session_start_time)/(1000L));
             LP_MIN = 0;
           }
@@ -346,9 +349,10 @@ void loop() {
           } else {
             
             // MOVE HALF OF THE STEPPER REVOLUTIONS
-            myStepper.step(stepsPerRevolution/3);
+            myStepper.step(stepsPerRevolution/4);
             Serial.println("MAGAZINE > ON");
-
+            N_PELLETS ++;
+            
             digitalWrite(food_tray_led, HIGH);
             unsigned long led_start = millis();
             unsigned long led_current = millis();
