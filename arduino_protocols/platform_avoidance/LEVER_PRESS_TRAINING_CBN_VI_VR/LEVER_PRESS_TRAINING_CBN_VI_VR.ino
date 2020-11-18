@@ -18,8 +18,8 @@ Log lever presses and deliver food pellets when due.
 // VI AND VR
 /*##################################################################################*/
 unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 15;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+int max_vr = 1;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+int max_vi = 1;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
@@ -27,8 +27,8 @@ int max_vi = 15;                                 // MAX VARIABLE INTERVAL FOR RA
 unsigned long variable_interval = 1 * 1000L;                 // STARTING VALUE FOR VI
 int variable_ratio = 1;                                      // STARTING VALUE FOR VR
 
-unsigned long acclimation_length = 3;                        // DURATION IN MIN
-unsigned long cooldown_length = 3;                           // DURATION IN MIN
+unsigned long acclimation_length = 0;                        // DURATION IN MIN
+unsigned long cooldown_length = 0;                           // DURATION IN MIN
 
 
 // CONTROL TRANSITION BETWEEN VI AND VR
@@ -96,6 +96,9 @@ int cumsum_presses = 0;
 /*##################################################################################*/
 const int push_button = 2;
 
+// PUSH BUTTON TO TEST FEEDER
+/*##################################################################################*/
+const int push_button_test_feeder = 3;
 
 // INITIALIZE STEPPER:
 Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
@@ -135,6 +138,7 @@ void setup() {
   pinMode(food_tray_led, OUTPUT);
   pinMode(lever_press, INPUT);
   pinMode(push_button, INPUT);
+  pinMode(push_button_test_feeder, INPUT);
   // LP STEPPER PINS
   pinMode(lp_inside_pin, INPUT);
   pinMode(lp_outside_pin, INPUT);
@@ -150,6 +154,21 @@ void loop() {
   // START TRIAL
   int button_state = 0;
 
+  // TEST FEEDER
+  /*##################################################################################*/ 
+  int push_button_test_feeder_state = digitalRead(push_button_test_feeder);
+  
+  if (push_button_test_feeder_state > 0) {
+    myStepper.step(stepsPerRevolution/4);
+    
+    // ADD SMALL DELAY
+    unsigned long start_ = millis();
+    unsigned long delay_ = millis();
+    while (delay_ - start_ < 1000) {
+      // DO NOTHING
+      delay_ = millis(); 
+  }
+  }
   
   // PRESS BUTTON FOR ONE SECOND OR GET INPUT FROM ARDUINO 02 FOR ONE SECOND
   /*##################################################################################*/
@@ -192,6 +211,23 @@ void loop() {
     // LOOP UNTIL THE SESSION IS OVER (TIME LIMIT)
     /*##################################################################################*/
     while (session_status == 1) {
+
+          // TEST FEEDER
+          /*##################################################################################*/ 
+          int push_button_test_feeder_state = digitalRead(push_button_test_feeder);
+          
+          if (push_button_test_feeder_state > 0) {
+            myStepper.step(stepsPerRevolution/4);
+            Serial.println("FEEDER > ON");
+            // ADD SMALL DELAY
+            unsigned long start_ = millis();
+            unsigned long delay_ = millis();
+            while (delay_ - start_ < 1000) {
+              // DO NOTHING
+              delay_ = millis(); 
+          }
+            
+          }
 
           // ACCLIMATION PERIOD
           /*##################################################################################*/
@@ -350,7 +386,7 @@ void loop() {
             
             // MOVE HALF OF THE STEPPER REVOLUTIONS
             myStepper.step(stepsPerRevolution/4);
-            Serial.println("MAGAZINE > ON");
+            Serial.println("FEEDER > ON");
             N_PELLETS ++;
             
             digitalWrite(food_tray_led, HIGH);
