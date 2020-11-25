@@ -13,18 +13,18 @@ Log lever presses and deliver food pellets when due.
 
 // CS VARIABLES
 /*##################################################################################*/
-int cs_total = 5;                                // NUMBER OF CS
-int cs_duration = 30;                            // SECONDs
-int iti_delay_length;                            // SECONDS
+const int cs_total = 5;                                // NUMBER OF CS
+int cs_duration = 10;                            // SECONDs
+unsigned long iti_delay_length;                       // SECONDS
 
 // STEPPER LIBRARY FOR STEPPER CONTROL
 #include <Stepper.h>
 
 // VI AND VR
 /*##################################################################################*/
-unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 1;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 1;                                  // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+unsigned long session_length = 20 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
+int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+int max_vi = 30;                                  // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
 /*##################################################################################*/
@@ -54,6 +54,9 @@ int LP_MINS = 0;
 int LP_AVG= 0;
 int N_PELLETS = 0;
 
+int net_cs_lp;
+int start_lp;
+
 
 // TRIAL INFORMATION
 /*##################################################################################*/
@@ -66,8 +69,8 @@ int current_cs_plus = 1;
 int itintervals[] = {60, 90, 120, 160, 180};
 bool cs_ready = true;
 bool iti_delay = false;
-unsigned long cs_start_time = millis();
-unsigned long iti_delay_start_time = millis();
+unsigned long cs_start_time;
+unsigned long iti_delay_start_time;
 
 
 // SETTINGS FOR BOARD AND STEPPER - DO NOT MODIFY
@@ -101,6 +104,11 @@ int lever_state = 0;
 int press_lapse = 0;
 int counting_presses = 0;
 int cumsum_presses = 0;
+
+int pre_cs_lp_start;
+int lp_pre_cs_list[cs_total];
+int lp_peri_cs_list[cs_total];
+byte list_end = 0 ; // the end pointer
 
 // PUSH BUTTON TO START EXPERIMENT
 /*##################################################################################*/
@@ -208,9 +216,13 @@ void loop() {
   if (button_state == HIGH) {
     // DISPLAY SESSION INFORMATION
     /*##################################################################################*/
-    Serial.println("SESSION: LEVER PRESS TRAINING");
+    Serial.println("SESSION: TESTING WITH LEVER PRESS LOG");
     
     Serial.print("SESSION LENGHT (SEC): "); Serial.println(session_length / (1000L));
+
+    Serial.print("NUMBER OF CS-PLUS: "); Serial.println(cs_total);
+
+    Serial.print("CS-PLUS DURATION: "); Serial.println(cs_duration);
 
     Serial.print("STARTING VI (SEC): "); Serial.print(variable_interval / 1000); Serial.print(" | STARTING VR: "); Serial.println(variable_ratio);
     
@@ -308,6 +320,9 @@ void loop() {
             Serial.print("GLOBAL LP/MIN: "); Serial.println(cumsum_presses/(session_length/60000L));
             Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
             Serial.print("CUMULATIVE N PELLETS: "); Serial.println(N_PELLETS);
+            Serial.print("LP BEFORE CS: "); for(int i = 0; i < cs_total; i++) { Serial.print(lp_pre_cs_list[i]); Serial.print(" | "); }; Serial.println("");
+            Serial.print("LP DURING CS: "); for(int i = 0; i < cs_total; i++) { Serial.print(lp_peri_cs_list[i]); Serial.print(" | "); }; Serial.println("");
+            
             while(1){}                                   // ENTER INFINITE LOOP TO ALLOW USER TO RESET BOARD
           }
           
@@ -347,15 +362,13 @@ void loop() {
           }
 
 
-          
-
           // CODE TO DELIVER CS
           /*##################################################################################*/   
-          unsigned long cs_ongoing_time = millis();
+          unsigned long cs_current_time = millis();
           unsigned long iti_delay_ongoing_time = millis();
                
-          // AFTER TWO MINUTES POST HABITUTATION
-          if (session_current_time - session_start_time > 120000) { 
+          // AFTER TWO MINUTES POST-HABITUTATION
+          if (session_current_time - session_start_time > 10000) { 
 
             // IF THERE ARE MISSING CS
             if (current_cs_plus <= cs_total) {
@@ -363,32 +376,55 @@ void loop() {
               // DELIVER CS
               //###################################################################################        
               if ((cs_ready == true) && (iti_delay == false)) {
+
+                Serial.print("LP BEFORE CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.print(" > "); Serial.println(cumsum_presses - pre_cs_lp_start); 
+                lp_pre_cs_list[list_end] = cumsum_presses - pre_cs_lp_start;
+                
                 Serial.print("CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.println(" > ON");
                 digitalWrite(4, HIGH);
                 digitalWrite(5, HIGH);
-                unsigned long cs_start_time = millis();
+                cs_start_time = millis();
                 cs_ready = false;
+
+                // KEEP TRACK OF THE LP DURING CS
+                start_lp = cumsum_presses;
                  
               } else if ((cs_ready == false)
-                         && ((cs_ongoing_time - cs_start_time) > (cs_duration * 60 * 1000L))
+                         && ((cs_current_time - cs_start_time) > (cs_duration * 1000L))
                          && (iti_delay == false)){
 
                 Serial.print("CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.println(" > OFF");
                 digitalWrite(4, LOW);
                 digitalWrite(5, LOW);
+
+
+                // KEEP TRACK OF THE LP DURING CS
+                net_cs_lp = cumsum_presses - start_lp;
+                Serial.print("LP DURING CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.print(" > "); Serial.println(net_cs_lp);
+                lp_peri_cs_list[list_end++] = net_cs_lp;
+                
+                Serial.print("LP BEFORE CS: "); for(int i = 0; i < cs_total; i++) { Serial.print(lp_pre_cs_list[i]); Serial.print(" | "); }; Serial.println("");
+                Serial.print("LP DURING CS: "); for(int i = 0; i < cs_total; i++) { Serial.print(lp_peri_cs_list[i]); Serial.print(" | "); }; Serial.println("");
+                
+                // REMOVE CURRENT CS FROM TOTAL
+                current_cs_plus++;
+                
                 cs_ready = true;
 
                 // PRINT INTER-TRIAL-INTERVAL 
                 int delay_iti = itintervals[random(0, 5)];
                 Serial.print("INTER-TRIAL-INTERVAL (SEC): "); Serial.println(delay_iti);
-                unsigned long iti_delay_length = delay_iti * 1000L;
+                iti_delay_length = delay_iti * 1000L;
                 iti_delay_start_time = millis();
                 iti_delay = true;
+
                 
               } else if ((cs_ready == true) && (iti_delay == true)){
                 
-                if ((iti_delay_start_time - iti_delay_ongoing_time) > (iti_delay_length*60*1000)) {
+                if ((iti_delay_ongoing_time - iti_delay_start_time) > iti_delay_length) {
                   iti_delay = false;
+                } else if ((iti_delay_ongoing_time - iti_delay_start_time) == round((iti_delay_length/1000) - 30)) {
+                  pre_cs_lp_start = cumsum_presses;
                 }
                 
               }
