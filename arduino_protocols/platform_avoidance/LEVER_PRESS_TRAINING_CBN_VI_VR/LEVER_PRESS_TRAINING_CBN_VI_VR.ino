@@ -17,9 +17,9 @@ Log lever presses and deliver food pellets when due.
 
 // VI AND VR
 /*##################################################################################*/
-unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 1;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 1;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+unsigned long session_length = 15 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
+int max_vr = 10;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+int max_vi = 100;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
@@ -218,7 +218,7 @@ void loop() {
           
           if (push_button_test_feeder_state > 0) {
             myStepper.step(stepsPerRevolution/4);
-            Serial.println("FEEDER > ON");
+            Serial.println("MANUAL-FEEDER > ON");
             // ADD SMALL DELAY
             unsigned long start_ = millis();
             unsigned long delay_ = millis();
@@ -370,8 +370,13 @@ void loop() {
                     cumsum_presses ++;
                     LP_MIN ++;
 
-                    // ADD SMALL DELAY
-                    delay(20);
+                    // ADD SMALL DELAY 0.2s TO AVOID LP ARTIFACTS
+                    unsigned long start_ = millis();
+                    unsigned long ongoing_ = millis();
+                    while (ongoing_ - start_ < 200) {
+                      // DO NOTHING
+                      ongoing_ = millis();
+                    }
 
                     // KEEP TRACK OF THE NUMBER OF LEVER PRESSES
                     counting_presses ++;
@@ -429,7 +434,14 @@ void loop() {
                       LP ++;
                       cumsum_presses ++;
                       LP_MIN ++;
-                      delay(20);
+                      
+                      // ADD SMALL DELAY 0.2s TO AVOID LP ARTIFACTS
+                      unsigned long start_ = millis();
+                      unsigned long ongoing_ = millis();
+                      while (ongoing_ - start_ < 200) {
+                        // DO NOTHING
+                        ongoing_ = millis();
+                      }
 
                     } else if ((lever_state == HIGH) && (press_lapse == 1)){
                     // DO NOTHING
