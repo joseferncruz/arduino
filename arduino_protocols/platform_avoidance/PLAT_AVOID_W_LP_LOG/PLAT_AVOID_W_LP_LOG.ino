@@ -170,7 +170,7 @@ void setup() {
   pinMode(6, OUTPUT);  // DElIVER US
 
   // ENSURE REPRODUCIBILITY
-  unsigned long seed = 31;
+  int seed = 31;
   randomSeed(seed);
 
 }
