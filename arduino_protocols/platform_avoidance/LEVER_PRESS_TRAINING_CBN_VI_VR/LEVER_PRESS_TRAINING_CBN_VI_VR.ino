@@ -8,7 +8,6 @@ LEVER_PRESS_TRAINING_CBN
 ------------------------
 Log lever presses and deliver food pellets when due.
 
-
 */
 
 
@@ -17,19 +16,20 @@ Log lever presses and deliver food pellets when due.
 
 // VI AND VR
 /*##################################################################################*/
-unsigned long session_length = 15 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 10;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 100;                                 // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
+int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+int max_vi = 30;                                   // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+
+int feeder_type = 1;                              // 1 > MEDASSOCIATE 2 > COULDBOURN
+
+unsigned long acclimation_length = 3;                        // DURATION IN MIN
+unsigned long cooldown_length = 3;                           // DURATION IN MIN
 
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
 /*##################################################################################*/
 unsigned long variable_interval = 1 * 1000L;                 // STARTING VALUE FOR VI
 int variable_ratio = 1;                                      // STARTING VALUE FOR VR
-
-unsigned long acclimation_length = 0;                        // DURATION IN MIN
-unsigned long cooldown_length = 0;                           // DURATION IN MIN
-
 
 // CONTROL TRANSITION BETWEEN VI AND VR
 /*##################################################################################*/
@@ -63,7 +63,8 @@ bool TRIAL_START = true; // acts as boolean
 const int stepsPerRevolution = 200;  // steps per revolution
 const int food_tray_led = 8;         // LED in the chamber food tray
 const int lever_press = 9;           // LEVER_PRESS DECTECTOR
-
+bool alternate_spin;
+int factor;
 
 // SETTINGS FOR LEVER STEPPER 
 /*##################################################################################*/
@@ -100,13 +101,14 @@ const int push_button = 2;
 /*##################################################################################*/
 const int push_button_test_feeder = 3;
 
-// INITIALIZE STEPPER:
+// INITIALIZE STEPPER (REVOLUTIONS ACCORDING TO FEEDER):
 Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
+
 
 void setup() {
 
   // SET STEPPER SPEED
-  myStepper.setSpeed(80); // STEPPER SPEED
+  myStepper.setSpeed(100); // STEPPER SPEED
 
   // LEVER STEPPER
   lp_myStepper.setSpeed(60);
@@ -147,6 +149,14 @@ void setup() {
   unsigned long seed = 31;
   randomSeed(seed);
 
+
+// SPECIFY FEEDER TYPE
+if (feeder_type == 1) {                         // MED ASSOCIATE FEEDER
+  Stepper myStepper(48, 10, 11, 12, 13);
+  } else if (feeder_type == 2) {                // COULBOURN FEEDER
+    Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
+  }
+
 }
 
 void loop() {
@@ -159,7 +169,28 @@ void loop() {
   int push_button_test_feeder_state = digitalRead(push_button_test_feeder);
   
   if (push_button_test_feeder_state > 0) {
-    myStepper.step(stepsPerRevolution/4);
+
+
+    // DELIVER FOOD (N REVOLUTIONS IS SPECIFIC TO THE FEEDER)
+    if (feeder_type == 1) {             // 1 REPRESENTS MEDASSOCIATES
+    for (int i = 0; i <4; i++) {
+      myStepper.step(1);
+      // ADD SMALL DELAY
+      unsigned long start_ = millis();
+      unsigned long current_ = millis();
+      while ((current_ - start_) < 30) {
+        
+        // DO NOTHING
+        current_ = millis();
+      }
+
+    }
+    } else if (feeder_type == 2) {      // 2 REPRESENTS COULBOURN
+      
+      myStepper.step(stepsPerRevolution/4);
+    }
+    
+    Serial.println("MANUAL FEEDER");
     
     // ADD SMALL DELAY
     unsigned long start_ = millis();
@@ -217,11 +248,30 @@ void loop() {
           int push_button_test_feeder_state = digitalRead(push_button_test_feeder);
           
           if (push_button_test_feeder_state > 0) {
-            myStepper.step(stepsPerRevolution/4);
+                
+                // DELIVER FOOD (N REVOLUTIONS IS SPECIFIC TO THE FEEDER)
+                if (feeder_type == 1) {             // 1 REPRESENTS MEDASSOCIATES
+                for (int i = 0; i <4; i++) {
+                  myStepper.step(1);
+                  // ADD SMALL DELAY
+                  unsigned long start_ = millis();
+                  unsigned long current_ = millis();
+                  while ((current_ - start_) < 30) {
+                    
+                    // DO NOTHING
+                    current_ = millis();
+                  }
+            
+                }
+                } else if (feeder_type == 2) {      // 2 REPRESENTS COULBOURN
+                  myStepper.step(stepsPerRevolution/4);
+                }
             Serial.println("MANUAL-FEEDER > ON");
+            
             // ADD SMALL DELAY
             unsigned long start_ = millis();
             unsigned long delay_ = millis();
+            
             while (delay_ - start_ < 1000) {
               // DO NOTHING
               delay_ = millis(); 
@@ -251,6 +301,7 @@ void loop() {
             unsigned long interval_acclimation = acclimation_length*60*1000L;
             unsigned long start_acclimation = millis();
             unsigned long current_acclimation = millis();
+            
             // KEEP ARDUINO IN A LOOP TO SIMULATE THE DELAY
             while (current_acclimation - start_acclimation < interval_acclimation) {
               current_acclimation = millis();
@@ -311,7 +362,8 @@ void loop() {
           }
 
           // CALCULATE LEVER PRESSES PER MINUTE
-          /*##################################################################################*/
+          /*########################################
+          ##########################################*/
           unsigned long CURRENT = millis();
           if (CURRENT - START >= INTERVAL) {
 
@@ -336,7 +388,7 @@ void loop() {
           unsigned long current_time = millis();
 
 
-          // CODE TO CONTROL MAGAZINE AND LEVER PRESS
+          // CODE TO CONTROL FEEDER AND LEVER PRESS
           /*##################################################################################*/
 
           // CHECK IF VI IS OVER
@@ -389,21 +441,30 @@ void loop() {
 
           } else {
             
-            // MOVE HALF OF THE STEPPER REVOLUTIONS
-            myStepper.step(stepsPerRevolution/4);
+            // DELIVER FOOD (N REVOLUTIONS IS SPECIFIC TO THE FEEDER)
+            if (feeder_type == 1) {             // 1 REPRESENTS MEDASSOCIATES
+            
+            for (int i = 0; i <4; i++) {
+
+              myStepper.step(1);
+              // ADD SMALL DELAY
+              unsigned long start_ = millis();
+              unsigned long current_ = millis();
+              while ((current_ - start_) < 30) {
+                
+                // DO NOTHING
+                current_ = millis();
+              }
+        
+            }
+            } else if (feeder_type == 2) {      // 2 REPRESENTS COULBOURN
+              myStepper.step(stepsPerRevolution/4);
+            }
+               
             Serial.println("FEEDER > ON");
             N_PELLETS ++;
             
-            digitalWrite(food_tray_led, HIGH);
-            unsigned long led_start = millis();
-            unsigned long led_current = millis();
-            while (led_current - led_start < 1000) {
-              // WAIT
-              led_current = millis();
-            }
-            digitalWrite(food_tray_led, LOW);
-
-            // RESET COUNTING PRESSES FOR VR
+         // RESET COUNTING PRESSES FOR VR
             counting_presses = 0;
 
             // RESET THE VR FOR NEXT TRIAL

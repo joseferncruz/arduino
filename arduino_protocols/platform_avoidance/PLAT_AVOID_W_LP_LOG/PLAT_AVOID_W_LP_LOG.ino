@@ -16,19 +16,20 @@ Log lever presses and deliver food pellets when due.
 
 // SESSION AND TRIAL INFO
 /*##################################################################################*/
+unsigned long trial_length = 12 * 60 * 1000L;                // DURATION OF THE SESSION >> "MIN * SEC * MS"
 int N_TRIALS = 3;
-unsigned long acclimation_length = 0;                        // DURATION IN MIN
-unsigned long cooldown_length = 0;                           // DURATION IN MIN
+unsigned long acclimation_length = 1;                        // DURATION IN MIN
+unsigned long cooldown_length = 4;                           // DURATION IN MIN
+unsigned long post_habituation_delay = 180000;               // NO CS, JUST LEVER PRESS
 
 // CS VARIABLES
 /*##################################################################################*/
-const int cs_total = 1;                                // NUMBER OF CS
+const int cs_total = 3;                                // NUMBER OF CS
 int cs_duration = 30;                                  // SECONDs
-int us_start = 2;                                      // == START N SECONDS AFTER CS START
+int us_start = 2;                                      // 
 
 // VI AND VR
 /*##################################################################################*/
-unsigned long trial_length = 3 * 60 * 1000L;      // DURATION OF THE SESSION >> "MIN * SEC * MS"
 int max_vr = 4;                                   // MAX VARIABLE RATIO FOR RANDOM GENERATOR
 int max_vi = 30;                                  // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
@@ -45,7 +46,7 @@ bool access = false;                             // CONTROL THE TRANSITION TO VR
 
 // TO KEEP TRACK OF LP/MIN
 /*##################################################################################*/
-unsigned long START = millis();
+unsigned long START;
 unsigned long INTERVAL = 60*1000L;
 
 
@@ -169,7 +170,7 @@ void setup() {
   pinMode(6, OUTPUT);  // DElIVER US
 
   // ENSURE REPRODUCIBILITY
-  unsigned long seed = 31;
+  int seed = 31;
   randomSeed(seed);
 
 }
@@ -228,7 +229,7 @@ void loop() {
     Serial.print("TRIAL LENGHT (SEC): "); Serial.println(trial_length / (1000L));
     Serial.print("NUMBER OF TRIALS: "); Serial.println(N_TRIALS); 
     Serial.print("NUMBER OF CS-PLUS: "); Serial.println(cs_total);
-    Serial.print("CS-PLUS DURATION: "); Serial.println(cs_duration);
+    Serial.print("CS-PLUS DURATION (SEC): "); Serial.println(cs_duration);
     Serial.print("NUMBER OF US: "); Serial.println(cs_total);
     Serial.print("STARTING VI (SEC): "); Serial.print(variable_interval / 1000); Serial.print(" | STARTING VR: "); Serial.println(variable_ratio);  
     Serial.print("SESSION VI (SEC): "); Serial.print(max_vi); Serial.print(" | SESSION VR: "); Serial.println(max_vr);  
@@ -236,13 +237,16 @@ void loop() {
     Serial.print("COOLDOWN TIME (SEC): "); Serial.println(cooldown_length*60);
     Serial.println("SESSION: START");
 
+
+    // INITIATE TRIALS
+    /*##################################################################################*/
     for (int i = 1; i < (N_TRIALS + 1); i++) {
 
       Serial.print("TRIAL N: 0"); Serial.println(i);
       Serial.println("TRIAL: START");
       session_status = 1;
-      unsigned long session_start_time = millis();
-      unsigned long session_current_time = millis();
+      unsigned long trial_start_time;
+      unsigned long trial_current_time;
       TRIAL_START = true;
       int current_cs_plus = 1;
 
@@ -297,22 +301,30 @@ void loop() {
               unsigned long start_acclimation = millis();
               unsigned long current_acclimation = millis();
               
-              // KEEP ARDUINO IN A LOOP TO SIMULATE THE DELAY
+              // KEEP ARDUINO IN A LOOP TO SIMULATE THE DELAY 
               while (current_acclimation - start_acclimation < interval_acclimation) {
                 current_acclimation = millis();
               }
+
+              // SET THE INITIAL VARIABLE INTERVAL AND VARIABLE RATIO TO 1
+              variable_interval = 1;
+              variable_ratio = 1;
+
+              // SET INITIAL SESSION START
+              trial_start_time = millis();
+              trial_current_time = millis();
   
               TRIAL_START = false;
-              START = millis();                        // VARIABLE USED TO CALCULATE LP/MIN
+              START = millis();                        // VARIABLE USED TO CALCULATE LP/MIN DURING TRIAL
               Serial.println("ACCLIMATION: OFF");
             }
   
   
             // ENTER COOLDOWNSTOP AND STOP TRIAL AFTER TIME LIMIT
             /*##################################################################################*/
-            if (session_current_time - session_start_time < trial_length) {
+            if (trial_current_time - trial_start_time < trial_length) {
               // DO NOTHING
-              session_current_time = millis();
+              trial_current_time = millis();
             } else {
               session_status == 0;
   
@@ -329,12 +341,12 @@ void loop() {
               }
               
               // ENTER COOLDOWN
-              
               Serial.print("COOLDOWN (SEC): "); Serial.println(cooldown_length*60);
               delay(cooldown_length*60*1000L);
               
-              // STOP SESSION
+              // STOP TRIAL
               Serial.println("TRIAL: END");
+              Serial.print("TRIAL N: 0"); Serial.print(i); Serial.println(" STATS");
               Serial.print("GLOBAL TRIAL LP/MIN: "); Serial.println(cumsum_presses/(trial_length/60000L));
               Serial.print("CUMULATIVE TRIAL LP: "); Serial.println(cumsum_presses);
               Serial.print("CUMULATIVE TRIAL N PELLETS: "); Serial.println(N_PELLETS);
@@ -342,7 +354,7 @@ void loop() {
               Serial.print("LP DURING CS: "); for(int i = 0; i < cs_total; i++) { Serial.print(lp_peri_cs_list[i]); Serial.print(" | "); }; Serial.println("");
 
 
-              // SAVE MEASUREMENTS IN GLOBAL VARIABLES
+              // SAVE TRIAL MEASUREMENTS IN GLOBAL SESSION VARIABLES
               TOTAL_SESSION_LP = TOTAL_SESSION_LP + cumsum_presses;
               TOTAL_SESSION_PELLETS = TOTAL_SESSION_PELLETS + N_PELLETS;
 
@@ -389,7 +401,7 @@ void loop() {
               Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
               Serial.print("CUMULATIVE TRIAL LP: "); Serial.println(cumsum_presses);
               Serial.print("CUMULATIVE TRIAL N PELLETS: "); Serial.println(N_PELLETS);
-              Serial.print("ELAPSED TRIAL TIME (SEC): "); Serial.println((session_current_time - session_start_time)/(1000L));
+              Serial.print("ELAPSED TRIAL TIME (SEC): "); Serial.println((trial_current_time - trial_start_time)/(1000L));
               LP_MIN = 0;
             }
   
@@ -400,7 +412,8 @@ void loop() {
             unsigned long iti_delay_ongoing_time = millis();
                  
             // AFTER TWO MINUTES POST-HABITUTATION
-            if (session_current_time - session_start_time > ((acclimation_length*60*1000L) + 120000)) { 
+            
+            if (trial_current_time - trial_start_time > post_habituation_delay) { 
   
               // IF THERE ARE MISSING CS
               if (current_cs_plus <= cs_total) {
@@ -450,10 +463,8 @@ void loop() {
                   Serial.print("LP DURING CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.print(" > "); Serial.println(net_cs_lp);
                   lp_peri_cs_list[list_end++] = net_cs_lp;
                   
-                  Serial.print("LP BEFORE CS: "); for(int i = 0; i < cs_total; i++) { Serial.print(lp_pre_cs_list[i]); Serial.print(" | "); }; Serial.println("");
-                  Serial.print("LP DURING CS: "); for(int i = 0; i < cs_total; i++) { Serial.print(lp_peri_cs_list[i]); Serial.print(" | "); }; Serial.println("");
                   
-                  // REMOVE CURRENT CS FROM TOTAL
+                  // MOVE TO THE NEXT CS
                   current_cs_plus++;
                   
                   cs_ready = true;
@@ -481,7 +492,7 @@ void loop() {
             } else {
               
               // KEEP IN TRACK HOW MANY LP ARE GIVEN IN THE INITIAL 30 SECONDS BEFORE 1ST CS
-              if ((session_current_time - session_start_time < ((acclimation_length*60*1000L) + 90000))) {
+              if ((trial_current_time - trial_start_time < ((acclimation_length*60*1000L) + 90000))) {
                 pre_cs_lp_start = cumsum_presses;
               }
               
