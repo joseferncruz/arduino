@@ -88,22 +88,55 @@ void setup() {
 
 void loop() {
 
+  bool SESSION_START = false;
+  bool TEST_START = false;
+
+  // TRIGGER START OF TRIAL VIA BONSAI-RX
+  int x = Serial.parseInt();
+  if (x == 1) {
+    SESSION_START = true;
+  } else if (x == 2) {
+    TEST_START = true;
+  } else {
+    // NOTHING
+  }
+  
 
   // TEST CHAMBER
-  if (digitalRead(test_switch_pin) == HIGH) {
+  if ((digitalRead(test_switch_pin) == HIGH) || TEST_START) {
     
-    // TEST LEDS LEFT AND THEN RIGHT
+    // TEST LEDs
+    Serial.println("TEST CHAMBER LEDs");
+    digitalWrite(speaker_led_r, HIGH);
+    digitalWrite(speaker_led_l, HIGH);
+    delay(3000);
+    digitalWrite(speaker_led_r, LOW);
+    digitalWrite(speaker_led_l, LOW);
 
-    // TEST TONE GENERATION LEFT, THEN RIGHT
+    // TEST TONE GENERATION
+    Serial.println("TEST TONE GENERATION");
+    digitalWrite(speaker_pin, HIGH);
+    delay(3000);
+    digitalWrite(speaker_pin, LOW);  
     
     // TEST SHOCK GENERATION LEFT, THEN RIGHT
-
+    Serial.println("TEST SHOCKER");
+    Serial.println("RIGHT SIDE");
+    digitalWrite(shocker_r_pin, HIGH);
+    delay(3000);
+    digitalWrite(shocker_r_pin, LOW);    
+    Serial.println("LEFT SIDE");
+    digitalWrite(shocker_l_pin, HIGH);
+    delay(3000);
+    digitalWrite(shocker_l_pin, LOW);
+    
     // TEST PIR SENSOR LEFT, THEN RIGHT
+    
   }
 
 
   // START SESSION
-  if (digitalRead(start_switch_pin) == HIGH) {
+  if ((digitalRead(start_switch_pin) == HIGH) || SESSION_START) {
 
     // PRINT BASIC SESSION INFORMATION
     // ###############################
