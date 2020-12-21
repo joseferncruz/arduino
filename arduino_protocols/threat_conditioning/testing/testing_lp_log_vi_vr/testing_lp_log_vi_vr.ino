@@ -11,19 +11,18 @@ Log lever presses and deliver food pellets when due.
 
 */
 
-// CS VARIABLES
-/*##################################################################################*/
-const int cs_total = 5;                                // NUMBER OF CS
-int cs_duration = 10;                            // SECONDs
-unsigned long iti_delay_length;                       // SECONDS
-
 // STEPPER LIBRARY FOR STEPPER CONTROL
 #include <Stepper.h>
 
+// CS VARIABLES
+/*##################################################################################*/
+const int cs_total = 5;                                // NUMBER OF CS
+int cs_duration = 30;                                 // SECONDs
+
 // VI AND VR
 /*##################################################################################*/
-unsigned long session_length = 20 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+unsigned long session_length = 20 * 60 * 1000L;   // DURATION OF THE SESSION >> "MIN * SEC * MS"
+int max_vr = 4;                                   // MAX VARIABLE RATIO FOR RANDOM GENERATOR
 int max_vi = 30;                                  // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
@@ -31,8 +30,8 @@ int max_vi = 30;                                  // MAX VARIABLE INTERVAL FOR R
 unsigned long variable_interval = 1 * 1000L;                 // STARTING VALUE FOR VI
 int variable_ratio = 1;                                      // STARTING VALUE FOR VR
 
-unsigned long acclimation_length = 0;                        // DURATION IN MIN
-unsigned long cooldown_length = 0;                           // DURATION IN MIN
+unsigned long acclimation_length = 1;                        // DURATION IN MIN
+unsigned long cooldown_length = 1;                           // DURATION IN MIN
 
 // CONTROL TRANSITION BETWEEN VI AND VR
 /*##################################################################################*/
@@ -71,7 +70,7 @@ bool cs_ready = true;
 bool iti_delay = false;
 unsigned long cs_start_time;
 unsigned long iti_delay_start_time;
-
+unsigned long iti_delay_length;                       // SECONDS
 
 // SETTINGS FOR BOARD AND STEPPER - DO NOT MODIFY
 /*##################################################################################*/
@@ -368,7 +367,7 @@ void loop() {
           unsigned long iti_delay_ongoing_time = millis();
                
           // AFTER TWO MINUTES POST-HABITUTATION
-          if (session_current_time - session_start_time > 10000) { 
+          if (session_current_time - session_start_time > ((acclimation_length*60*1000L) + 120000)) { 
 
             // IF THERE ARE MISSING CS
             if (current_cs_plus <= cs_total) {
@@ -423,12 +422,18 @@ void loop() {
                 
                 if ((iti_delay_ongoing_time - iti_delay_start_time) > iti_delay_length) {
                   iti_delay = false;
-                } else if ((iti_delay_ongoing_time - iti_delay_start_time) == round((iti_delay_length/1000) - 30)) {
+                } else if ((iti_delay_ongoing_time - iti_delay_start_time) <= (iti_delay_length - 30000)) {
                   pre_cs_lp_start = cumsum_presses;
                 }
                 
               }
               
+            }
+            
+          } else {
+
+            if ((session_current_time - session_start_time < ((acclimation_length*60*1000L) + 90000))) {
+              pre_cs_lp_start = cumsum_presses;
             }
             
           }
