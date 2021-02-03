@@ -29,9 +29,18 @@ const int speaker_pin = 3;
 
 const int shocker_r_pin = 4;
 const int shocker_l_pin = 5;
+//
+//const int pir_r_pin = 6;
+//const int pir_l_pin = 7;
 
-const int pir_r_pin = 6;
-const int pir_l_pin = 7;
+
+#include <SharpIR.h>
+#define ir_right A0
+#define ir_left A1
+#define model 1080
+SharpIR IR_SENSOR_R = SharpIR(ir_right, model);
+SharpIR IR_SENSOR_L = SharpIR(ir_left, model);
+int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
@@ -58,23 +67,12 @@ void setup() {
 
   // INITIATE SERIAL
   Serial.begin(9600);
-
-  // ALLOW PIR SENSOR TO STABILIZE
-  Serial.println("INITIATING PIR SENSOR. PLEASE WAIT 30 SECONDS.");
-  for (int i = 0; i < 30; i++) {
-    Serial.print(".");
-    delay(1000);
-  }
-  Serial.println("PIR SENSOR INITIATED.");
   
   // ASSIGN PINS 
   pinMode(speaker_pin, OUTPUT);
   pinMode(shocker_r_pin, OUTPUT);
   pinMode(shocker_l_pin, OUTPUT);
   
-  pinMode(pir_r_pin, INPUT);
-  pinMode(pir_l_pin, INPUT);
-
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
   
@@ -103,7 +101,7 @@ void loop() {
   
 
   // TEST CHAMBER
-  if ((digitalRead(test_switch_pin) == HIGH) || TEST_START) {
+  if (TEST_START) {
     
     // TEST LEDs
     Serial.println("TEST CHAMBER LEDs");
@@ -136,7 +134,7 @@ void loop() {
 
 
   // START SESSION
-  if ((digitalRead(start_switch_pin) == HIGH) || SESSION_START) {
+  if (SESSION_START) {
 
     // PRINT BASIC SESSION INFORMATION
     // ###############################
@@ -160,12 +158,14 @@ void loop() {
       // DETECT POSITION, DELIVER CS AND US        
       while (true) {
 
-        // DELAY FOR PIR SENSOR TO STABILIZE
-        delay(500);
-        
-        RIGHT_ACTIVE = digitalRead(pir_r_pin);
-        LEFT_ACTIVE = digitalRead(pir_l_pin);
-
+        if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+          RIGHT_ACTIVE = HIGH;
+        } else if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+          LEFT_ACTIVE = HIGH;
+        } else {
+          RIGHT_ACTIVE = LOW;
+          LEFT_ACTIVE = LOW;
+        }
 
         // RESET VARIABLES FOR SHUTTLING
         ESCAPE_LATENCY_START = 0;
@@ -191,7 +191,10 @@ void loop() {
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
-            LEFT_ACTIVE = digitalRead(pir_l_pin);
+            if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+              LEFT_ACTIVE = HIGH;
+            }
+            
             CURRENT_TONE_DELAY = millis();
             
             if (LEFT_ACTIVE == HIGH) {
@@ -271,7 +274,10 @@ void loop() {
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
-            RIGHT_ACTIVE = digitalRead(pir_r_pin);
+    
+            if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+              RIGHT_ACTIVE = HIGH;
+            }
             
             if (RIGHT_ACTIVE == HIGH) {
 
