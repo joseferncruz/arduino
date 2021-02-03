@@ -355,10 +355,10 @@ void loop() {
 
       // PRINT EXIT INFORMATION ABOUT TRIAL
       // ###########################################################################
-      Serial.print("TRIAL NUMBER "); Serial.print(x+1); Serial.println(" > END");
-      Serial.print("ESCAPE LATENCY: "); Serial.println((ESCAPE_LATENCY_END - ESCAPE_LATENCY_START)/1000);
-      Serial.print("TOTAL SHUTTLINGS: "); Serial.println(TOTAL_AVOIDANCE_SUCCESS); 
-      Serial.print("TOTAL FAILURES: "); Serial.println(TOTAL_AVOIDANCE_FAILURE);
+      Serial.print("TRIAL "); Serial.print(x+1); Serial.println(" > END");
+      Serial.print("TRIAL "); Serial.print(x+1); Serial.print(" ESCAPE LATENCY: "); Serial.println((ESCAPE_LATENCY_END - ESCAPE_LATENCY_START)/1000.0);
+      Serial.print("CUMULATIVE TOTAL SHUTTLINGS: "); Serial.println(TOTAL_AVOIDANCE_SUCCESS); 
+      Serial.print("CUMULATIVE TOTAL FAILURES: "); Serial.println(TOTAL_AVOIDANCE_FAILURE);
       
     }
 
@@ -366,6 +366,8 @@ void loop() {
     // ###########################################################################
     Serial.println("SESSION > END");
     Serial.println("SESSION STATISTICS");
+    Serial.print("SESSION TOTAL SHUTTLINGS: "); Serial.println(TOTAL_AVOIDANCE_SUCCESS);
+    Serial.print("SESSION TOTAL FAILURES: "); Serial.println(TOTAL_AVOIDANCE_FAILURE);
     Serial.print("INDIVIDUAL SHUTTLING LATENCY: "); 
     for (int x = 0; x < N_TRIALS; x++) {
       Serial.print(ESCAPE_LATENCY_INDIVIDUAL[x]);
