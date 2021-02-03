@@ -4,14 +4,13 @@
  * 
  */
 
-
 // VARIABLES
 //#########################################################
-const int N_TRIALS = 5;
-unsigned long ACCLIMATION_DURATION = 5;                  // SECONDS
-unsigned long TONE_DURATION = 15;                        // SECONDS 
-unsigned long SHOCK_DURATION = 2;                        // SECONDS
-int ITI_INTERVALS[] = {5, 5, 5, 5, 5};                  // list of the inter-trial-intervals: ITI
+const int N_TRIALS = 10;
+unsigned long ACCLIMATION_DURATION = 10;                  // SECONDS
+unsigned long TONE_DURATION = 15;                         // SECONDS 
+unsigned long SHOCK_DURATION = 2;                         // SECONDS
+int ITI_INTERVALS[] = {20, 20, 20, 20, 20};                  // list of the inter-trial-intervals: ITI
 
 // LOCATION VARIABLES.
 // ########################################################
@@ -22,6 +21,7 @@ int RIGHT_ACTIVE;
 // ######################################
 unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
+unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
 
 // DIGITAL PINS
 // ########################################################
@@ -29,10 +29,6 @@ const int speaker_pin = 3;
 
 const int shocker_r_pin = 4;
 const int shocker_l_pin = 5;
-//
-//const int pir_r_pin = 6;
-//const int pir_l_pin = 7;
-
 
 #include <SharpIR.h>
 #define ir_right A0
@@ -40,7 +36,7 @@ const int shocker_l_pin = 5;
 #define model 1080
 SharpIR IR_SENSOR_R = SharpIR(ir_right, model);
 SharpIR IR_SENSOR_L = SharpIR(ir_left, model);
-int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
+int IF_THRESHOLD = 22;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
@@ -56,11 +52,10 @@ unsigned long ESCAPE_LATENCY_END;
 unsigned long ESCAPE_LATENCY_DELTA;
 float ESCAPE_LATENCY_CUMULATIVE;
 
-
 // SESSION
 int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
 int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
-int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
+//int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
 
 
 void setup() {
@@ -103,6 +98,9 @@ void loop() {
   // TEST CHAMBER
   if (TEST_START) {
     
+    // RESET SERIAL INPUT FROM BONSAI-RX
+    x = 0;
+    
     // TEST LEDs
     Serial.println("TEST CHAMBER LEDs");
     digitalWrite(speaker_led_r, HIGH);
@@ -136,17 +134,33 @@ void loop() {
   // START SESSION
   if (SESSION_START) {
 
+    // RESET SERIAL INPUT FROM BONSAI-RX
+    x = 0;
+
     // PRINT BASIC SESSION INFORMATION
     // ###############################
-    Serial.println("SESSION > START");
+    Serial.println("ACTIVE AVOIDANCE");
     Serial.print("NUMBER OF TRIALS: "); Serial.println(N_TRIALS); 
-    Serial.print("TONE DURATION: "); Serial.println(TONE_DURATION);
-    Serial.print("SHOCK DURATION: "); Serial.println(SHOCK_DURATION);
+    Serial.print("TONE DURATION (SEC): "); Serial.println(TONE_DURATION);
+    Serial.print("SHOCK DURATION (SEC): "); Serial.println(SHOCK_DURATION);
+    Serial.print("TONE PAIRED WITH SHOCK AT (SEC): "); Serial.println(TONE_DURATION - SHOCK_DURATION);
 
+    // SIGNAL START OF THE SESSION
+    for (int x = 0; x < 5; x ++) {
+      
+      // TURN LED ON IN BOTH SIDES
+      digitalWrite(speaker_led_r, HIGH); digitalWrite(speaker_led_l, HIGH);
+      delay(500);
+      
+      // TURN LED OFF IN BOTH SIDES
+      digitalWrite(speaker_led_r, LOW); digitalWrite(speaker_led_l, LOW);
+      delay(500);
+    }
+    Serial.println("SESSION > START");
 
     // ACCLIMATION PERIOD
     // ##################
-    Serial.print("ACCLIMATION(SEC): "); Serial.println(ACCLIMATION_DURATION);
+    Serial.print("ACCLIMATION (SEC): "); Serial.println(ACCLIMATION_DURATION);
     delay(ACCLIMATION_DURATION*1000);
 
     // START TRIALS
@@ -154,14 +168,90 @@ void loop() {
 
       // PRINT INFORMATION ABOUT TRIAL
       Serial.print("TRIAL NUMBER "); Serial.print(x+1); Serial.println(" > START");
+
+
+      // TRIAL ONE UNAVOID
+      if (x == 0) {
+
+          // TURN THE SPEAKER ON
+          digitalWrite(speaker_pin, HIGH);
+          Serial.println("CS > ON");
+
+          // TURN LED ON IN BOTH SIDES
+          digitalWrite(speaker_led_r, HIGH); digitalWrite(speaker_led_l, HIGH);
+
+          // RECORD START OF THE TONE
+          START_TONE = millis();
+        
+        while (true) {
+          
+          CURRENT_TONE_DELAY = millis();
+
+          if ((CURRENT_TONE_DELAY - START_TONE) > (DELTA_TONE_SHOCK * 1000)) {
+
+            // TRIGGER US
+            digitalWrite(shocker_l_pin, HIGH);
+            Serial.println("US_L > ON");
+            digitalWrite(shocker_r_pin, HIGH);
+            Serial.println("US_R > ON");
+
+            // KEEP US FOR SPECIFIC TIME DELAY
+            for (int i = 0; i < SHOCK_DURATION; i++) {
+              delay(1000);
+            }
+
+            // TERMINATE SHOCKER
+            digitalWrite(shocker_l_pin, LOW);
+            Serial.println("US_L > OFF");
+            digitalWrite(shocker_r_pin, LOW);
+            Serial.println("US_R > OFF");
+            
+            // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
+            digitalWrite(speaker_pin, LOW);
+            Serial.println("CS > OFF");
+
+            // RECORD LATENCY_END WHEN NO SHUTTLING
+            ESCAPE_LATENCY_END = 0;
+
+            // COUNT ONE TOWARDS AVOIDANCE FAILURE
+            TOTAL_AVOIDANCE_FAILURE ++;
+
+            // TURN LED OFF IN BOTH SIDES
+            digitalWrite(speaker_led_r, LOW); digitalWrite(speaker_led_l, LOW);
+            
+            break;
+          }
+
+        }
+
+        // SELECT RANDOM ITI FROM LIST
+        int ITI_DURATION = ITI_INTERVALS[random(0, 5)];
+        Serial.print("INTER-TRIAL-INTERVAL (SEC): "); Serial.println(ITI_DURATION);
+        
+        // INITIATE INTER-TRIAL-INTERVAL 
+        delay(ITI_DURATION*1000);
+  
+        // PRINT EXIT INFORMATION ABOUT TRIAL
+        // ###########################################################################
+        Serial.print("TRIAL "); Serial.print(x+1); Serial.println(" > END");
+        Serial.print("TRIAL "); Serial.print(x+1); Serial.println(" ESCAPE LATENCY (SEC): 0");  // FIRST IS UNAVOID
+        Serial.print("CUMULATIVE TOTAL SHUTTLINGS: "); Serial.println(TOTAL_AVOIDANCE_SUCCESS); 
+        Serial.print("CUMULATIVE TOTAL FAILURES: "); Serial.println(TOTAL_AVOIDANCE_FAILURE);
+
+        // CONTINUE TO THE NEXT TRIAL
+        continue;
+        
+      }
       
       // DETECT POSITION, DELIVER CS AND US        
       while (true) {
 
         if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
           RIGHT_ACTIVE = HIGH;
+          LEFT_ACTIVE = LOW;
         } else if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
           LEFT_ACTIVE = HIGH;
+          RIGHT_ACTIVE = LOW;
         } else {
           RIGHT_ACTIVE = LOW;
           LEFT_ACTIVE = LOW;
@@ -206,7 +296,6 @@ void loop() {
 
               // RECORD LATENCY_END WHEN SHUTTLING
               ESCAPE_LATENCY_END = millis();
-              ESCAPE_LATENCY_INDIVIDUAL[x] = (((float)ESCAPE_LATENCY_END - (float)ESCAPE_LATENCY_START)/1000.0);
 
               // CUMULATIVE COUNT OF THE LATENCY TO CALCULATE THE MEAN AT THE END OF THE SESSION
               ESCAPE_LATENCY_CUMULATIVE = ESCAPE_LATENCY_CUMULATIVE + ((ESCAPE_LATENCY_END - ESCAPE_LATENCY_START)/1000);
@@ -221,7 +310,7 @@ void loop() {
             }
 
             // AFTER SPECIFIC DELAY, TRIGGER US
-            if ((CURRENT_TONE_DELAY - START_TONE) > (TONE_DURATION * 1000)) {
+            if ((CURRENT_TONE_DELAY - START_TONE) > (DELTA_TONE_SHOCK * 1000)) {
 
               // TRIGGER US
               digitalWrite(shocker_r_pin, HIGH);
@@ -242,7 +331,6 @@ void loop() {
 
               // RECORD LATENCY_END WHEN NO SHUTTLING
               ESCAPE_LATENCY_END = ESCAPE_LATENCY_START;
-              ESCAPE_LATENCY_INDIVIDUAL[x] = (((float)ESCAPE_LATENCY_END - (float)ESCAPE_LATENCY_START)/1000.0);
 
               // COUNT ONE TOWARDS AVOIDANCE FAILURE
               TOTAL_AVOIDANCE_FAILURE ++;
@@ -288,7 +376,6 @@ void loop() {
 
               // RECORD LATENCY_END WHEN SHUTTLING
               ESCAPE_LATENCY_END = millis();
-              ESCAPE_LATENCY_INDIVIDUAL[x] = (((float)ESCAPE_LATENCY_END - (float)ESCAPE_LATENCY_START)/1000.0);
 
               // CUMULATIVE COUNT OF THE LATENCY TO CALCULATE THE MEAN AT THE END OF THE SESSION
               ESCAPE_LATENCY_CUMULATIVE = ESCAPE_LATENCY_CUMULATIVE + ((ESCAPE_LATENCY_END - ESCAPE_LATENCY_START)/1000);
@@ -303,7 +390,7 @@ void loop() {
             }
 
             // AFTER SPECIFIC DELAY, TRIGGER US
-            if ((CURRENT_TONE_DELAY - START_TONE) > (TONE_DURATION * 1000)) {
+            if ((CURRENT_TONE_DELAY - START_TONE) > (DELTA_TONE_SHOCK * 1000)) {
 
               // TRIGGER US
               digitalWrite(shocker_l_pin, HIGH);
@@ -324,7 +411,6 @@ void loop() {
 
               // RECORD LATENCY_END WHEN NO SHUTTLING
               ESCAPE_LATENCY_END = ESCAPE_LATENCY_START;
-              ESCAPE_LATENCY_INDIVIDUAL[x] = (((float)ESCAPE_LATENCY_END - (float)ESCAPE_LATENCY_START)/1000.0);
 
               // COUNT ONE TOWARDS AVOIDANCE FAILURE
               TOTAL_AVOIDANCE_FAILURE ++;
@@ -356,7 +442,7 @@ void loop() {
       // PRINT EXIT INFORMATION ABOUT TRIAL
       // ###########################################################################
       Serial.print("TRIAL "); Serial.print(x+1); Serial.println(" > END");
-      Serial.print("TRIAL "); Serial.print(x+1); Serial.print(" ESCAPE LATENCY: "); Serial.println((ESCAPE_LATENCY_END - ESCAPE_LATENCY_START)/1000.0);
+      Serial.print("TRIAL "); Serial.print(x+1); Serial.print(" ESCAPE LATENCY (SEC): "); Serial.println((ESCAPE_LATENCY_END - ESCAPE_LATENCY_START)/1000.0);
       Serial.print("CUMULATIVE TOTAL SHUTTLINGS: "); Serial.println(TOTAL_AVOIDANCE_SUCCESS); 
       Serial.print("CUMULATIVE TOTAL FAILURES: "); Serial.println(TOTAL_AVOIDANCE_FAILURE);
       
@@ -368,12 +454,12 @@ void loop() {
     Serial.println("SESSION STATISTICS");
     Serial.print("SESSION TOTAL SHUTTLINGS: "); Serial.println(TOTAL_AVOIDANCE_SUCCESS);
     Serial.print("SESSION TOTAL FAILURES: "); Serial.println(TOTAL_AVOIDANCE_FAILURE);
-    Serial.print("INDIVIDUAL SHUTTLING LATENCY: "); 
-    for (int x = 0; x < N_TRIALS; x++) {
-      Serial.print(ESCAPE_LATENCY_INDIVIDUAL[x]);
-      Serial.print(", ");
-      }; Serial.println("");
-    Serial.print("MEAN SHUTTLING LATENCY: "); Serial.println((float)ESCAPE_LATENCY_CUMULATIVE / (float)TOTAL_AVOIDANCE_SUCCESS);
+    if (TOTAL_AVOIDANCE_SUCCESS == 0) {
+      Serial.print("MEAN SHUTTLING LATENCY (SEC): 0");
+    } else {
+      Serial.print("SESSION MEAN SHUTTLING LATENCY (SEC): "); Serial.println((float)ESCAPE_LATENCY_CUMULATIVE / (float)TOTAL_AVOIDANCE_SUCCESS);
+    }
+    
 
    
   }
