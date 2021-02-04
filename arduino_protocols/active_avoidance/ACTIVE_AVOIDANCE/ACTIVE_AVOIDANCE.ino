@@ -6,11 +6,11 @@
 
 // VARIABLES
 //#########################################################
-const int N_TRIALS = 10;
-unsigned long ACCLIMATION_DURATION = 10;                  // SECONDS
-unsigned long TONE_DURATION = 15;                         // SECONDS 
-unsigned long SHOCK_DURATION = 2;                         // SECONDS
-int ITI_INTERVALS[] = {20, 20, 20, 20, 20};                  // list of the inter-trial-intervals: ITI
+const int N_TRIALS = 20;
+unsigned long ACCLIMATION_DURATION = 10;                       // SECONDS
+unsigned long TONE_DURATION = 15;                              // SECONDS 
+unsigned long SHOCK_DURATION = 1;                              // SECONDS
+int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
 
 // LOCATION VARIABLES.
 // ########################################################
@@ -22,6 +22,7 @@ int RIGHT_ACTIVE;
 unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
+unsigned long ITI_DURATION;
 
 // DIGITAL PINS
 // ########################################################
@@ -225,9 +226,9 @@ void loop() {
         }
 
         // SELECT RANDOM ITI FROM LIST
-        int ITI_DURATION = ITI_INTERVALS[random(0, 5)];
+        ITI_DURATION = ITI_INTERVALS[random(0, 5)];
         Serial.print("INTER-TRIAL-INTERVAL (SEC): "); Serial.println(ITI_DURATION);
-        
+
         // INITIATE INTER-TRIAL-INTERVAL 
         delay(ITI_DURATION*1000);
   
@@ -432,7 +433,7 @@ void loop() {
       }
 
       // SELECT RANDOM ITI FROM LIST
-      int ITI_DURATION = ITI_INTERVALS[random(0, 5)];
+      ITI_DURATION = ITI_INTERVALS[random(0, 5)];
       Serial.print("INTER-TRIAL-INTERVAL (SEC): "); Serial.println(ITI_DURATION);
       
       // INITIATE INTER-TRIAL-INTERVAL 
