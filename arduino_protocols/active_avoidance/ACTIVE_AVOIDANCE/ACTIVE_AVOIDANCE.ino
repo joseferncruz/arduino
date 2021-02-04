@@ -101,6 +101,7 @@ void loop() {
     
     // RESET SERIAL INPUT FROM BONSAI-RX
     x = 0;
+    TEST_START = false;
     
     // TEST LEDs
     Serial.println("TEST CHAMBER LEDs");
@@ -137,6 +138,7 @@ void loop() {
 
     // RESET SERIAL INPUT FROM BONSAI-RX
     x = 0;
+    TEST_START = false;
 
     // PRINT BASIC SESSION INFORMATION
     // ###############################
