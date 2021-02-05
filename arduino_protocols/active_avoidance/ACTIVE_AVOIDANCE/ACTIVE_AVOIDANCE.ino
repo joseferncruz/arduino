@@ -7,7 +7,7 @@
 // VARIABLES
 //#########################################################
 const int N_TRIALS = 20;
-unsigned long ACCLIMATION_DURATION = 10;                       // SECONDS
+unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
 unsigned long TONE_DURATION = 15;                              // SECONDS 
 unsigned long SHOCK_DURATION = 1;                              // SECONDS
 int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
@@ -132,6 +132,10 @@ void loop() {
     
   }
 
+  // RESET CUMMULATIVE VARIABLE VALUES
+  TOTAL_AVOIDANCE_FAILURE = 0;
+  TOTAL_AVOIDANCE_SUCCESS = 0;
+  ESCAPE_LATENCY_CUMULATIVE = 0;
 
   // START SESSION
   if (SESSION_START) {
@@ -139,6 +143,7 @@ void loop() {
     // RESET SERIAL INPUT FROM BONSAI-RX
     x = 0;
     TEST_START = false;
+    
 
     // PRINT BASIC SESSION INFORMATION
     // ###############################
