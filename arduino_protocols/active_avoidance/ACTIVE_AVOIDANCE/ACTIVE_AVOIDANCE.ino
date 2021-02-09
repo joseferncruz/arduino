@@ -78,6 +78,16 @@ void setup() {
   // PRINT ENTRY MESSAGE 
   Serial.println("PRESS GREEN SWITCH TO START...");
 
+
+  // UNCOMMENT TO TEST SENSORS
+//  while (true) {
+//    Serial.print("Left Sensor: ");
+//    Serial.println(IR_SENSOR_L.distance());
+//    Serial.print("Right Sensor: ");
+//    Serial.println(IR_SENSOR_R.distance());
+//    delay(1000);
+//  }
+
 }
 
 void loop() {
@@ -291,6 +301,8 @@ void loop() {
             // CHECK IF LEFT IS ACTIVE
             if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
               LEFT_ACTIVE = HIGH;
+            } else {
+              LEFT_ACTIVE = LOW;
             }
             
             CURRENT_TONE_DELAY = millis();
@@ -369,10 +381,11 @@ void loop() {
           // WHILE THE OPPOSITE COMPARTMENT IS NOT ACTIVE, CONTINUE FOR TONE_DURATION
           while (true) {
 
-            // CHECK IF LEFT IS ACTIVE
-    
+            // CHECK IF RIGHT IS ACTIVE
             if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
               RIGHT_ACTIVE = HIGH;
+            } else {
+              RIGHT_ACTIVE = LOW;
             }
             
             if (RIGHT_ACTIVE == HIGH) {
