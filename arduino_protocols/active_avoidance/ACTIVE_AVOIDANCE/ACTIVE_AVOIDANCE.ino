@@ -14,7 +14,7 @@ int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the in
 
 // LOCATION VARIABLES.
 // ########################################################
-int LEFT_ACTIVE;                                        // TRUE IF A COMPARTMENT IS ACTIVE, ELSE FALSE
+int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
 int RIGHT_ACTIVE;
 
 // TIME VARIABLES
@@ -37,7 +37,7 @@ const int shocker_l_pin = 5;
 #define model 1080
 SharpIR IR_SENSOR_R = SharpIR(ir_right, model);
 SharpIR IR_SENSOR_L = SharpIR(ir_left, model);
-int IF_THRESHOLD = 22;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
+int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
@@ -256,6 +256,10 @@ void loop() {
         Serial.print("CUMULATIVE TOTAL SHUTTLINGS: "); Serial.println(TOTAL_AVOIDANCE_SUCCESS); 
         Serial.print("CUMULATIVE TOTAL FAILURES: "); Serial.println(TOTAL_AVOIDANCE_FAILURE);
 
+        // RESET ACTIVE CHAMBER SIDE SENSOR VARIABLES
+        RIGHT_ACTIVE = LOW;
+        LEFT_ACTIVE = LOW;
+        
         // CONTINUE TO THE NEXT TRIAL
         continue;
         
@@ -295,14 +299,23 @@ void loop() {
           START_TONE = millis();
           CURRENT_TONE_DELAY = millis();
 
+          // ADD 0.5 SEC DELAY TO AVOID SENSOR DETECTION ARTIFACTS
+          unsigned long S_DELAY_START = millis();
+          unsigned long S_DELAY_CURRENT = millis();
+          while (S_DELAY_START - S_DELAY_CURRENT < 500) {
+            S_DELAY_CURRENT = millis();
+          }
+
           // WHILE THE OPPOSITE COMPARTMENT IS NOT ACTIVE, CONTINUE FOR TONE_DURATION
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
             if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
               LEFT_ACTIVE = HIGH;
+              RIGHT_ACTIVE = LOW;
             } else {
               LEFT_ACTIVE = LOW;
+              RIGHT_ACTIVE = LOW;
             }
             
             CURRENT_TONE_DELAY = millis();
@@ -325,8 +338,12 @@ void loop() {
 
               // TURN LED OFF IN BOTH SIDES
               digitalWrite(speaker_led_r, LOW); digitalWrite(speaker_led_l, LOW);
-              break;
+
+              // RESET LEFT SENSOR VALUE
+              LEFT_ACTIVE = LOW;
               
+              // CONTINUE TO THE NEXT TRIAL
+              break;
             }
 
             // AFTER SPECIFIC DELAY, TRIGGER US
@@ -378,14 +395,23 @@ void loop() {
           // TURN LED ON IN BOTH SIDES
           digitalWrite(speaker_led_r, HIGH); digitalWrite(speaker_led_l, HIGH);
 
+          // ADD 0.5 SEC DELAY TO AVOID SENSOR DETECTION ARTIFACTS
+          unsigned long S_DELAY_START = millis();
+          unsigned long S_DELAY_CURRENT = millis();
+          while (S_DELAY_START - S_DELAY_CURRENT < 500) {
+            S_DELAY_CURRENT = millis();
+          }
+
           // WHILE THE OPPOSITE COMPARTMENT IS NOT ACTIVE, CONTINUE FOR TONE_DURATION
           while (true) {
 
             // CHECK IF RIGHT IS ACTIVE
             if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
               RIGHT_ACTIVE = HIGH;
+              LEFT_ACTIVE = LOW;
             } else {
               RIGHT_ACTIVE = LOW;
+              LEFT_ACTIVE = LOW;
             }
             
             if (RIGHT_ACTIVE == HIGH) {
@@ -406,7 +432,11 @@ void loop() {
 
               // TURN LED OFF IN BOTH SIDES
               digitalWrite(speaker_led_r, LOW); digitalWrite(speaker_led_l, LOW);
-      
+
+              // RESET RIGHT SENSOR VALUE
+              RIGHT_ACTIVE == LOW;
+
+              // CONTINUE TO THE NEXT TRIAL
               break;
             }
 
