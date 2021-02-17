@@ -114,7 +114,7 @@ void loop() {
     for (int x = 1; x < magazine_trials; x++) {
       
         Serial.println("MAGAZINE > ON");
-        myStepper.step(stepsPerRevolution/2);            // EQUIVALENT TO 1/2 PELLETS
+        myStepper.step(stepsPerRevolution/4);            // EQUIVALENT TO 1/2 PELLETS
         digitalWrite(food_tray_led, HIGH);               // FOOD LED ON
 
         Serial.print("REMAINING TRIALS: "); Serial.println(magazine_trials - x);

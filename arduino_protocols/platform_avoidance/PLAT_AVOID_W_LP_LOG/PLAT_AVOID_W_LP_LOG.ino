@@ -4,7 +4,7 @@
 LeDoux Lab | 2020
 Jose Oliveira da Cruz, jose.cruz@nyu.edu
 
-LEVER_PRESS_TRAINING_CBN
+PLAT_AVOID_W_LP_LOG
 ------------------------
 Log lever presses and deliver food pellets when due.
 
@@ -17,16 +17,20 @@ Log lever presses and deliver food pellets when due.
 // SESSION AND TRIAL INFO
 /*##################################################################################*/
 unsigned long trial_length = 12 * 60 * 1000L;                // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int N_TRIALS = 3;
+int N_TRIALS = 1;
 unsigned long acclimation_length = 1;                        // DURATION IN MIN
-unsigned long cooldown_length = 4;                           // DURATION IN MIN
+unsigned long cooldown_length = 1;                           // DURATION IN MIN
 unsigned long post_habituation_delay = 180000;               // NO CS, JUST LEVER PRESS
 
 // CS VARIABLES
 /*##################################################################################*/
 const int cs_total = 3;                                // NUMBER OF CS
 int cs_duration = 30;                                  // SECONDs
-int us_start = 2;                                      // 
+
+// US VARIABLES
+/*##################################################################################*/
+bool us_on = false;                                     // IF FALSE THEN NO US
+int us_start = 2;                                       // 
 
 // VI AND VR
 /*##################################################################################*/
@@ -57,6 +61,7 @@ int LP = 0;
 int LP_MINS = 0;
 int LP_AVG= 0;
 int N_PELLETS = 0;
+bool ITI_PELLETS;
 
 int net_cs_lp;
 int start_lp;
@@ -71,7 +76,7 @@ int session_status = 1;              // WHEN ZERO THEN SESSION IS OVER
 // VARIABLES TO DELIVER CS
 /*##################################################################################*/
 bool cs_ongoing = false;
-int itintervals[] = {90, 120, 160};
+int itintervals[] = {120, 120, 120};
 bool cs_ready = true;
 bool iti_delay = false;
 unsigned long cs_start_time;
@@ -230,7 +235,9 @@ void loop() {
     Serial.print("NUMBER OF TRIALS: "); Serial.println(N_TRIALS); 
     Serial.print("NUMBER OF CS-PLUS: "); Serial.println(cs_total);
     Serial.print("CS-PLUS DURATION (SEC): "); Serial.println(cs_duration);
-    Serial.print("NUMBER OF US: "); Serial.println(cs_total);
+    if (us_on == true) {
+      Serial.print("NUMBER OF US: "); Serial.println(cs_total);
+    }
     Serial.print("STARTING VI (SEC): "); Serial.print(variable_interval / 1000); Serial.print(" | STARTING VR: "); Serial.println(variable_ratio);  
     Serial.print("SESSION VI (SEC): "); Serial.print(max_vi); Serial.print(" | SESSION VR: "); Serial.println(max_vr);  
     Serial.print("ACCLIMATION TIME (SEC): "); Serial.println(acclimation_length*60);
@@ -439,13 +446,13 @@ void loop() {
                            && ((cs_current_time - cs_start_time) > ((cs_duration - us_start) * 1000L)) 
                            && (iti_delay == false)
                            && (us_ready == true)){
-   
-                              Serial.print("US"); Serial.println(" > ON");
-                              digitalWrite(6, HIGH);
-                              us_ready = false;
-  
-  
-                               
+
+                 if (us_on == true) {                
+                  Serial.print("US"); Serial.println(" > ON");
+                  digitalWrite(6, HIGH);
+                 }
+                 us_ready = false;
+                   
                 } else if ((cs_ready == false)
                            && ((cs_current_time - cs_start_time) > (cs_duration * 1000L)) 
                            && (iti_delay == false)){
@@ -453,10 +460,11 @@ void loop() {
                   Serial.print("CS-PLUS: 0"); Serial.print(current_cs_plus); Serial.println(" > OFF");
                   digitalWrite(4, LOW);
                   digitalWrite(5, LOW);
-                  
-                  Serial.println("US > OFF");
-                  digitalWrite(6, LOW);
-  
+
+                  if (us_on == true) {
+                    Serial.println("US > OFF");
+                    digitalWrite(6, LOW);
+                  }
   
                   // KEEP TRACK OF THE LP DURING CS
                   net_cs_lp = cumsum_presses - start_lp;
@@ -468,6 +476,10 @@ void loop() {
                   current_cs_plus++;
                   
                   cs_ready = true;
+
+
+                  // ALLOW DELIVERY OF A PELLET 60 SECONDS AFTER ITI START
+                  ITI_PELLETS = true;
   
                   // PRINT INTER-TRIAL-INTERVAL 
                   int delay_iti = itintervals[random(0, 3)];
@@ -475,6 +487,19 @@ void loop() {
                   iti_delay_length = delay_iti * 1000L;
                   iti_delay_start_time = millis();
                   iti_delay = true;
+
+
+                  // ALLOW ACCESS TO THE LEVER
+                  lp_inside = digitalRead(lp_inside_pin);
+                  lp_outside = digitalRead(lp_outside_pin);
+        
+                  if (lp_inside == 1) {
+                    while (lp_outside != 1) {
+                      lp_myStepper.step(1);
+                      lp_outside = digitalRead(lp_outside_pin);
+                      lp_inside = digitalRead(lp_inside_pin);
+                    }
+                  }
   
                   
                 } else if ((cs_ready == true) && (iti_delay == true)){
@@ -483,6 +508,20 @@ void loop() {
                     iti_delay = false;
                   } else if ((iti_delay_ongoing_time - iti_delay_start_time) <= (iti_delay_length - 30000)) {
                     pre_cs_lp_start = cumsum_presses;
+                  }
+
+
+                  // ACTIVE FEEDER FOR A PELLET 60 AFTER ITI STARTS
+                  if (((iti_delay_ongoing_time - iti_delay_start_time) > 60000) && (ITI_PELLETS == true)) {
+
+                      // DROP A PELLET
+                      myStepper.step(stepsPerRevolution/4);
+                      Serial.println("FEEDER > ON");
+                      N_PELLETS ++;
+
+                      // PELLET off
+                      ITI_PELLETS = false;
+                     
                   }
                   
                 }
