@@ -16,14 +16,14 @@ Log lever presses and deliver food pellets when due.
 
 // VI AND VR
 /*##################################################################################*/
-unsigned long session_length = 25 * 60 * 1000L;  // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 4;                                  // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 30;                                   // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+unsigned long session_length = 25 * 60 * 1000L;   // DURATION OF THE SESSION >> "MIN * SEC * MS"
+int max_vr = 4;                                   // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+int max_vi = 15;                                   // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
 
 int feeder_type = 1;                              // 1 > MEDASSOCIATE 2 > COULDBOURN
 
-unsigned long acclimation_length = 3;                        // DURATION IN MIN
-unsigned long cooldown_length = 3;                           // DURATION IN MIN
+unsigned long acclimation_length = 1;                        // DURATION IN MIN
+unsigned long cooldown_length = 1;                           // DURATION IN MIN
 
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
@@ -310,6 +310,7 @@ void loop() {
             TRIAL_START = false;
             START = millis();                        // VARIABLE USED TO CALCULATE LP/MIN
             Serial.println("ACCLIMATION: OFF");
+            session_start_time = millis();
           }
 
 
