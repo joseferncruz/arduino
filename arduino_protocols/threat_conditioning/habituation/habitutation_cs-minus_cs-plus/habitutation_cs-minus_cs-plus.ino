@@ -11,11 +11,14 @@
 // CONSTANTS
 /*###############################################################################*/
 
-const int acclimation_seconds = 10 * 60L; // ACCLIMATION TIME IN SECONDS
-const int cooldown_seconds = 10 * 60L;    // COOLDOWN TIME IN SECONDS
+const int SESSION_DURATION_TIME_SEC = 1 * 60L;    // SESSION DURATION IN SECONDS
+
+const int ACCLIMATION_TIME_SEC = 1 * 60L; // ACCLIMATION_TIME_SEC TIME IN SECONDS
+const int COOLDOWN_TIME_SEC = 1 * 60L;    // COOLDOWN_TIME_SEC TIME IN SECONDS
 
 int switchstate = 0;                      // Button starts the experiment
 int switchstate_test_chamber = 0;         // TEST CHAMBER LED
+
 
 void setup() {
   
@@ -61,13 +64,13 @@ void loop() {
   /* START NEW EXPERIMENT
   /*###############################################################################*/ 
 
-  // READ TEST SWITCH
+  // READ SWITCH
   switchstate = digitalRead(2);
   
   if (switchstate == HIGH) { 
     
     // SIGNAL START OF EXPERIMENT WITH BLINKING LED 
-    Serial.println("NEW EXPERIMENT: CLASSICAL THREAT CONDITIONING");
+    Serial.println("CLASSICAL THREAT CONDITIONING");
     delay(1000);
     for (int i = 0; i < 5; i++) {
       digitalWrite(9, HIGH);
@@ -81,28 +84,31 @@ void loop() {
     Serial.println("SESSION: HABITUATION");
     delay(1000);
 
-    Serial.print("ACCLIMATION TIME (SEC): ");
-    Serial.println(acclimation_seconds);
+    Serial.print("ACCLIMATION_TIME_SEC TIME (SEC): ");
+    Serial.println(ACCLIMATION_TIME_SEC);
     delay(500);    
 
-    Serial.print("COOLDOWN TIME (SEC): ");
-    Serial.println(cooldown_seconds);
+    Serial.print("COOLDOWN_TIME_SEC TIME (SEC): ");
+    Serial.println(COOLDOWN_TIME_SEC);
     delay(500);
 
 
     /*###############################################################################*/
+    Serial.println("SESSION > START");
+    // INITIATE ACCLIMATION_TIME_SEC
+    Serial.println("ACCLIMATION > START");
+    delay(ACCLIMATION_TIME_SEC*1000L);
+    Serial.println("ACCLIMATION > END");
 
-    Serial.println("NEW EXPERIMENT: START");
-    delay(1000);
-
-    Serial.print("ACCLIMATION (SEC): "); Serial.println(acclimation_seconds);
-    
-    delay(acclimation_seconds*1000L);
+    // INITIATE HABITUTATION
+    delay(SESSION_DURATION_TIME_SEC*1000L);
 
     // INITIATE COOLDDOWN AT THE END OF EXPERIMENT
-    Serial.print("COOLDOWN (SEC): "); Serial.println(cooldown_seconds);
+    Serial.println("COOLDOWN > START");
+    delay(COOLDOWN_TIME_SEC*1000L);
+    Serial.println("COOLDOWN > END");
   
-    Serial.println("NEW EXPERIMENT: END");
-    Serial.println("PRESS ARDUINO RESET BUTTON TO RESTART A NEW EXPERIMENT");
+    Serial.println("SESSION > END");
+    Serial.print("TOTAL HABITUATION TIME (SEC): "); Serial.println(ACCLIMATION_TIME_SEC+COOLDOWN_TIME_SEC+SESSION_DURATION_TIME_SEC);
   }
 }
