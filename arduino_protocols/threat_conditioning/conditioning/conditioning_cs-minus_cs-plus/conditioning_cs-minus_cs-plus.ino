@@ -42,7 +42,11 @@ int detect_cs = 0;                       // detect if the cs was delivered.
 int detect_us = 0;                       // detect if the us was delivered
 
 int total_cs_plus_number = TOTAL_CS_PLUS;    
-int total_cs_minus_number = TOTAL_CS_MINUS;         
+int total_cs_minus_number = TOTAL_CS_MINUS;      
+
+
+unsigned long SESSION_START_TIME;
+unsigned long SESSION_END_TIME;
 /*###############################################################################*/
 
 
@@ -157,6 +161,8 @@ void loop() {
     Serial.println("ACCLIMATION > START");
     delay(ACCLIMATION_TIME_SEC*1000L);
     Serial.println("ACCLIMATION > END");
+    Serial.println("CONDITIONING > START");
+    SESSION_START_TIME = millis();
     
     // LOOP UNTIL THERE ARE NO MORE CS-MINUS AND CS-PLUS AVAILABLE. ALTERNATE BETWEEN THEM
     while (total_cs_plus_number > 0 || total_cs_minus_number > 0) {
@@ -279,11 +285,17 @@ void loop() {
     
 
   // INITIATE COOLDDOWN AT THE END OF EXPERIMENT
+  Serial.println("CONDITIONING > END");
+  SESSION_END_TIME = millis();
+  unsigned long SESSION_DURATION_DELTA = (SESSION_END_TIME - SESSION_START_TIME) / 1000L;
+  
   Serial.println("COOLDOWN > START");
   delay(COOLDOWN_TIME_SEC*1000L);
   Serial.println("COOLDOWN > END");
   
   Serial.println("SESSION > END");
+  Serial.print("SESSION DURATION (SEC): "); Serial.println(SESSION_DURATION_DELTA);
+  
   } else {
     // RESET VARIABLES
     total_cs_plus_number = TOTAL_CS_PLUS;    

@@ -11,10 +11,10 @@
 // CONSTANTS
 /*###############################################################################*/
 
-const int SESSION_DURATION_TIME_SEC = 1 * 60L;    // SESSION DURATION IN SECONDS
+const int SESSION_DURATION_TIME_SEC = 15 * 60L;    // SESSION DURATION IN SECONDS
 
-const int ACCLIMATION_TIME_SEC = 1 * 60L; // ACCLIMATION_TIME_SEC TIME IN SECONDS
-const int COOLDOWN_TIME_SEC = 1 * 60L;    // COOLDOWN_TIME_SEC TIME IN SECONDS
+const int ACCLIMATION_TIME_SEC = 0 * 60L; // ACCLIMATION_TIME_SEC TIME IN SECONDS
+const int COOLDOWN_TIME_SEC = 0 * 60L;    // COOLDOWN_TIME_SEC TIME IN SECONDS
 
 int switchstate = 0;                      // Button starts the experiment
 int switchstate_test_chamber = 0;         // TEST CHAMBER LED
@@ -88,6 +88,10 @@ void loop() {
     Serial.println(ACCLIMATION_TIME_SEC);
     delay(500);    
 
+    Serial.print("HABITUATION TIME (SEC): ");
+    Serial.println(SESSION_DURATION_TIME_SEC);
+    delay(500);    
+
     Serial.print("COOLDOWN_TIME_SEC TIME (SEC): ");
     Serial.println(COOLDOWN_TIME_SEC);
     delay(500);
@@ -101,7 +105,9 @@ void loop() {
     Serial.println("ACCLIMATION > END");
 
     // INITIATE HABITUTATION
+    Serial.println("HABITUATION > START");
     delay(SESSION_DURATION_TIME_SEC*1000L);
+    Serial.println("HABITUATION > END");
 
     // INITIATE COOLDDOWN AT THE END OF EXPERIMENT
     Serial.println("COOLDOWN > START");
