@@ -12,26 +12,26 @@
 // USER INPUT VARIABLES
 /*###############################################################################*/
 
-const int ACCLIMATION_TIME_SEC = 1 * 60L; // ACCLIMATION TIME IN SECONDS
-const int COOLDOWN_TIME_SEC = 1 * 60L;    // COOLDOWN TIME IN SECONDS
-const int cs_plus_len = 2;              // DURATION CS-PLUS
-const int cs_minus_len = 2;             // DURATION CS-MINUS
+const int ACCLIMATION_TIME_SEC = 5 * 60L; // ACCLIMATION TIME IN SECONDS
+const int COOLDOWN_TIME_SEC = 5 * 60L;    // COOLDOWN TIME IN SECONDS
+
+int TOTAL_CS_PLUS = 5;                    // NUMBER OF CS-PLUS
+const int cs_plus_len = 30;                // DURATION CS-PLUS
 const int us_len = 1;                    // DURATION US
 
 
-// CS VARIABLES 
-/*###############################################################################*/
+int TOTAL_CS_MINUS = 0;                   // NUMBER OF CS-MINUS  
+const int cs_minus_len = 0;             // DURATION CS-MINUS
 
-int TOTAL_CS_PLUS = 5;                    // NUMBER OF CS-PLUS
-int TOTAL_CS_MINUS = 5;                   // NUMBER OF CS-MINUS  
 
 /* IMPORTANT: IF CS-PLUS > 0 AND current_cs_type != 1, THE LOOP WILL NOT WORK
               OR IF CS-minus > 0 AND current_cs_type != 0, THE LOOP WILL ALSO NOT WORK*/
-int current_cs_type = 0;                    // STARTING CS: 0 == CS-MINUS | 1 == CS-PLUS
+int current_cs_type = 1;                    // STARTING CS: 0 == CS-MINUS | 1 == CS-PLUS
+
 
 // LIST OF INTER-TRIAL-INTERVALS (ITI) IN SECONDS
 /*###############################################################################*/
-int itintervals[] = {6, 9, 12, 16, 18};
+int itintervals[] = {60, 90, 120, 160, 180};
 
 
 // OTHER
@@ -202,9 +202,6 @@ void loop() {
           digitalWrite(i, LOW);
         }
         digitalWrite(9, LOW);
-      
-        // WAIT ONE SECOND
-        delay(1000);
 
         // CALCULATE REMAINING CS-PLUS
         total_cs_plus_number = total_cs_plus_number - 1;
@@ -294,7 +291,7 @@ void loop() {
   Serial.println("COOLDOWN > END");
   
   Serial.println("SESSION > END");
-  Serial.print("SESSION DURATION (SEC): "); Serial.println(SESSION_DURATION_DELTA);
+  Serial.print("SESSION DURATION (SEC): "); Serial.println(SESSION_DURATION_DELTA+ACCLIMATION_TIME_SEC+COOLDOWN_TIME_SEC);
   
   } else {
     // RESET VARIABLES
