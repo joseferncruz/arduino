@@ -29,10 +29,10 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="cv:Crop">
                 <cv:RegionOfInterest>
-                  <cv:X>133</cv:X>
-                  <cv:Y>27</cv:Y>
-                  <cv:Width>812</cv:Width>
-                  <cv:Height>694</cv:Height>
+                  <cv:X>101</cv:X>
+                  <cv:Y>5</cv:Y>
+                  <cv:Width>898</cv:Width>
+                  <cv:Height>762</cv:Height>
                 </cv:RegionOfInterest>
               </Combinator>
             </Expression>
@@ -110,9 +110,9 @@
               <Combinator xsi:type="cv:Crop">
                 <cv:RegionOfInterest>
                   <cv:X>133</cv:X>
-                  <cv:Y>27</cv:Y>
-                  <cv:Width>812</cv:Width>
-                  <cv:Height>694</cv:Height>
+                  <cv:Y>1</cv:Y>
+                  <cv:Width>890</cv:Width>
+                  <cv:Height>767</cv:Height>
                 </cv:RegionOfInterest>
               </Combinator>
             </Expression>
@@ -189,10 +189,10 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="cv:Crop">
                 <cv:RegionOfInterest>
-                  <cv:X>133</cv:X>
-                  <cv:Y>27</cv:Y>
-                  <cv:Width>812</cv:Width>
-                  <cv:Height>694</cv:Height>
+                  <cv:X>125</cv:X>
+                  <cv:Y>0</cv:Y>
+                  <cv:Width>852</cv:Width>
+                  <cv:Height>768</cv:Height>
                 </cv:RegionOfInterest>
               </Combinator>
             </Expression>
