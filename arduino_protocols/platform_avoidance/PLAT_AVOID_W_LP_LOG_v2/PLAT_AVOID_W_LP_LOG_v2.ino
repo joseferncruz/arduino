@@ -4,7 +4,7 @@
 LeDoux Lab | 2020
 Jose Oliveira da Cruz, jose.cruz@nyu.edu
 
-PLAT_AVOID_W_LP_LOG
+PLAT_AVOID_W_LP_LOG_v2
 ------------------------
 Log lever presses and deliver food pellets when due.
 
@@ -14,33 +14,40 @@ Log lever presses and deliver food pellets when due.
 // STEPPER LIBRARY FOR STEPPER CONTROL
 #include <Stepper.h>
 
-// SESSION AND TRIAL INFO
+// SESSION AND TRIAL INFO >> TO MODIFY
 /*##################################################################################*/
-unsigned long trial_length = 3 * 60 * 1000L;                // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int N_TRIALS = 2;
-unsigned long acclimation_length = 0;                        // DURATION IN MIN
-unsigned long cooldown_length = 0;                           // DURATION IN MIN
-unsigned long post_habituation_delay = 1 * 60 * 1000L;               // NO CS, JUST LEVER PRESS
+int N_TRIALS = 1;                                       // NUMBER OF TRIALS
+unsigned long TRIAL_LENGHT_MIN = 13;                    
+unsigned long ACCLIMATION_LENGHT_MIN = 0;                  
+unsigned long COOLDOWN_LENGHT_MIN = 2;                     
+unsigned long LENGH_WITH_LEVER_BEFORE_FIRST_CS = 0;     // LENGTH AFTER ACCLIMATION...
+              
+// CS AND US VARIABLES >> TO MODIFY
+/*##################################################################################*/
+const int TOTAL_CS_NUMBER = 3;    // NUMBER OF CS
+int CS_LENGHT_SEC = 30;           // SECONDs
+bool TRIAL_WITH_US = true;        // IF FALSE THEN NO US
+int US_PAIRED_LENGTH_SEC = 2;     // PAIRED WITH THE LAST N SECONDS OF CS_LENGTH_SEC 
 
-// CS VARIABLES
+// REINFORCEMENT SCHEDULE - VI AND VR >> TO MODIFY
 /*##################################################################################*/
-const int cs_total = 1;                                // NUMBER OF CS
-int cs_duration = 30;                                  // SECONDs
+int MAX_VR_LP = 4;                // MAX VARIABLE RATIO FOR RANDOM GENERATOR
+int MAX_VI_SEC = 30;              // MAX VARIABLE INTERVAL IN SEC FOR RANDOM GENERATOR
 
-// US VARIABLES
-/*##################################################################################*/
-bool us_on = true;                                     // IF FALSE THEN NO US
-int us_start = 2;                                       // 
 
-// VI AND VR
-/*##################################################################################*/
-int max_vr = 4;                                   // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 30;                                  // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
+
+
+// ###################################################################################
+// ###################################################################################
+// -------------- DO NOT MODIFY --------------------------------------------------- //
+// ###################################################################################
+// ###################################################################################
+
 
 // VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
 /*##################################################################################*/
-unsigned long variable_interval = 1 * 1000L;                 // STARTING VALUE FOR VI
 int variable_ratio = 1;                                      // STARTING VALUE FOR VR
+unsigned long variable_interval = 1 * 1000L;                 // STARTING VALUE FOR VI
 
 // CONTROL TRANSITION BETWEEN VI AND VR
 /*##################################################################################*/
@@ -139,9 +146,8 @@ void setup() {
   Serial.begin(9600);
 
   // PRINT INITIAL INFORMATION
-
   Serial.println("LEDOUX LAB");
-  Serial.print("LEVER PRESS LOG"); Serial.print(" | VI"); Serial.print(max_vi); Serial.print(" | VR0"); Serial.println(max_vr);
+  Serial.print("LEVER PRESS LOG"); Serial.print(" | VI"); Serial.print(MAX_VI_SEC); Serial.print(" | VR0"); Serial.println(MAX_VR_LP);
 
   // ENSURE THAT LEVER IS RETRACTED
   lp_inside = digitalRead(lp_inside_pin);
@@ -231,17 +237,17 @@ void loop() {
     // DISPLAY SESSION INFORMATION
     /*##################################################################################*/
     Serial.println("SESSION: PLATFORM AVOIDANCE WITH LEVER PRESS LOG");
-    Serial.print("TRIAL LENGHT (SEC): "); Serial.println(trial_length / (1000L));
+    Serial.print("TRIAL LENGHT (SEC): "); Serial.println((TRIAL_LENGHT_MIN * 60));
     Serial.print("NUMBER OF TRIALS: "); Serial.println(N_TRIALS); 
-    Serial.print("NUMBER OF CS+: "); Serial.println(cs_total);
-    Serial.print("CS+ DURATION (SEC): "); Serial.println(cs_duration);
-    if (us_on == true) {
-      Serial.print("NUMBER OF US: "); Serial.println(cs_total);
+    Serial.print("NUMBER OF CS+: "); Serial.println(TOTAL_CS_NUMBER);
+    Serial.print("CS+ DURATION (SEC): "); Serial.println(CS_LENGHT_SEC);
+    if (TRIAL_WITH_US == true) {
+      Serial.print("NUMBER OF US: "); Serial.println(TOTAL_CS_NUMBER);
     }
     Serial.print("STARTING VI (SEC): "); Serial.print(variable_interval / 1000); Serial.print(" | STARTING VR: "); Serial.println(variable_ratio);  
-    Serial.print("SESSION VI (SEC): "); Serial.print(max_vi); Serial.print(" | SESSION VR: "); Serial.println(max_vr);  
-    Serial.print("ACCLIMATION TIME (SEC): "); Serial.println(acclimation_length*60);
-    Serial.print("COOLDOWN TIME (SEC): "); Serial.println(cooldown_length*60);
+    Serial.print("SESSION VI (SEC): "); Serial.print(MAX_VI_SEC); Serial.print(" | SESSION VR: "); Serial.println(MAX_VR_LP);  
+    Serial.print("ACCLIMATION TIME (SEC): "); Serial.println(ACCLIMATION_LENGHT_MIN*60);
+    Serial.print("COOLDOWN TIME (SEC): "); Serial.println(COOLDOWN_LENGHT_MIN*60);
     Serial.println("SESSION > START");
 
 
@@ -267,8 +273,8 @@ void loop() {
       int pre_cs_lp_start = 0;
     
       // KEEP TRACK OF THE LP PRE-CS AND PERI-CS
-      int lp_pre_cs_list[cs_total];
-      int lp_peri_cs_list[cs_total];
+      int lp_pre_cs_list[TOTAL_CS_NUMBER];
+      int lp_peri_cs_list[TOTAL_CS_NUMBER];
       byte list_end = 0 ; // the end pointer
 
       
@@ -316,7 +322,7 @@ void loop() {
               Serial.println("ACCLIMATION > START ");
 
               // TIME VARIABLE FOR ACCLIMATION
-              unsigned long interval_acclimation = acclimation_length*60*1000L;
+              unsigned long interval_acclimation = ACCLIMATION_LENGHT_MIN*60*1000L;
               unsigned long start_acclimation = millis();
               unsigned long current_acclimation = millis();
               
@@ -341,7 +347,7 @@ void loop() {
   
             // ENTER COOLDOWNSTOP AND STOP TRIAL AFTER TRIAL LENGHT
             /*##################################################################################*/
-            if (trial_current_time - trial_start_time < trial_length) {
+            if (trial_current_time - trial_start_time < (TRIAL_LENGHT_MIN * 60 * 1000L)) {
               // DO NOTHING
               trial_current_time = millis();
             } else {
@@ -363,21 +369,21 @@ void loop() {
               
               // ENTER COOLDOWN
               Serial.println("COOLDOWN > START");
-              delay(cooldown_length*60*1000L);
+              delay(COOLDOWN_LENGHT_MIN*60*1000L);
               Serial.println("COOLDOWN > END");
               
               // STOP TRIAL AND PRINT TRIAL STATISTICS
               /*---------------------------------------------------------*/
               Serial.print("TRIAL N 0"); Serial.print(i); Serial.println(" > END");
               Serial.print("TRIAL N 0"); Serial.print(i); Serial.println(" STATISTICS");
-              Serial.print("TRIAL N 0"); Serial.print(i); Serial.print(" FINAL LP/MIN: "); Serial.println(cumsum_presses/(trial_length/60000L));
+              Serial.print("TRIAL N 0"); Serial.print(i); Serial.print(" FINAL LP/MIN: "); Serial.println(cumsum_presses/TRIAL_LENGHT_MIN);
               Serial.print("TRIAL N 0"); Serial.print(i); Serial.print(" FINAL TOTAL LP: "); Serial.println(cumsum_presses);
               Serial.print("TRIAL N 0"); Serial.print(i); Serial.print(" FINAL TOTAL N PELLETS: "); Serial.println(N_PELLETS);
               Serial.print("TRIAL N 0"); Serial.print(i); Serial.print(" FINAL LP BEFORE CS+: ");
-                for(int i = 0; i < cs_total; i++) { 
+                for(int i = 0; i < TOTAL_CS_NUMBER; i++) { 
                   Serial.print(lp_pre_cs_list[i]); Serial.print(","); }; Serial.println("");
               Serial.print("TRIAL N 0"); Serial.print(i); Serial.print(" FINAL LP DURING CS+: ");
-                for(int i = 0; i < cs_total; i++) {
+                for(int i = 0; i < TOTAL_CS_NUMBER; i++) {
                   Serial.print(lp_peri_cs_list[i]); Serial.print(","); }; Serial.println("");
 
 
@@ -441,10 +447,10 @@ void loop() {
                  
             // AFTER TWO MINUTES POST-HABITUTATION
             
-            if (trial_current_time - trial_start_time > post_habituation_delay) { 
+            if (trial_current_time - trial_start_time > (LENGH_WITH_LEVER_BEFORE_FIRST_CS * 60 * 1000L)) { 
   
               // IF THERE ARE MISSING CS
-              if (current_cs_plus <= cs_total) {
+              if (current_cs_plus <= TOTAL_CS_NUMBER) {
   
                 // DELIVER CS
                 //###################################################################################        
@@ -470,25 +476,25 @@ void loop() {
                   start_lp = cumsum_presses;
                   
                 } else if ((cs_ready == false)
-                           && ((cs_current_time - cs_start_time) > ((cs_duration - us_start) * 1000L)) 
+                           && ((cs_current_time - cs_start_time) > ((CS_LENGHT_SEC - US_PAIRED_LENGTH_SEC) * 1000L)) 
                            && (iti_delay == false)
                            && (us_ready == true)){
 
-                 if (us_on == true) {                
+                 if (TRIAL_WITH_US == true) {                
                   Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" US"); Serial.println(" > ON");
                   digitalWrite(6, HIGH);
                  }
                  us_ready = false;
                    
                 } else if ((cs_ready == false)
-                           && ((cs_current_time - cs_start_time) > (cs_duration * 1000L)) 
+                           && ((cs_current_time - cs_start_time) > (CS_LENGHT_SEC * 1000L)) 
                            && (iti_delay == false)){
   
                   Serial.print("TRIAL 0"); Serial.print(i);Serial.print(" CS+ 0"); Serial.print(current_cs_plus); Serial.println(" > OFF");
                   digitalWrite(4, LOW);
                   digitalWrite(5, LOW);
 
-                  if (us_on == true) {
+                  if (TRIAL_WITH_US == true) {
                     Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" US"); Serial.println(" > OFF");
                     digitalWrite(6, LOW);
                   }
@@ -562,9 +568,9 @@ void loop() {
               }
               
             } else {
-              // post_habituation_delay
+              // LENGH_WITH_LEVER_BEFORE_FIRST_CS
               // KEEP IN TRACK HOW MANY LP ARE GIVEN IN THE INITIAL 60 SECONDS BEFORE 1ST CS
-              if ((trial_current_time - trial_start_time < (post_habituation_delay - 60000))) {
+              if ((trial_current_time - trial_start_time < (LENGH_WITH_LEVER_BEFORE_FIRST_CS))) {
                 pre_cs_lp_start = cumsum_presses;
               }
               
@@ -635,13 +641,13 @@ void loop() {
               counting_presses = 0;
   
               // RESET THE VR FOR NEXT TRIAL
-              variable_ratio = random(1, max_vr+1);
+              variable_ratio = random(1, MAX_VR_LP+1);
               Serial.print("NEW VR (LP): "); Serial.println(variable_ratio);
   
               // RE-INITIATE VI
               access = false;                    // DETERMINES ACCESS TO FEEDER
               previous_time = millis();
-              variable_interval = random(1, max_vi+1) * 1000L;
+              variable_interval = random(1, MAX_VI_SEC+1) * 1000L;
               Serial.print("NEXT VI (SEC): "); Serial.println(variable_interval / 1000);
             }
   
@@ -684,7 +690,7 @@ void loop() {
     if (i == N_TRIALS) {
       
       Serial.println("SESSION > END");
-      Serial.print("SESSION FINAL LP/MIN: "); Serial.println(TOTAL_SESSION_LP/((N_TRIALS*trial_length)/60000L));
+      Serial.print("SESSION FINAL LP/MIN: "); Serial.println(TOTAL_SESSION_LP/((N_TRIALS*TRIAL_LENGHT_MIN)));
       Serial.print("SESSION TOTAL N LP: "); Serial.println(TOTAL_SESSION_LP);
       Serial.print("SESSION TOTAL N PELLETS: "); Serial.println(TOTAL_SESSION_PELLETS);
       
