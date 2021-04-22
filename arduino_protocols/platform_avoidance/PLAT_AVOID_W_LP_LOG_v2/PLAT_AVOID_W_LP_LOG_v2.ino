@@ -58,6 +58,7 @@ Stepper lp_myStepper(LEVER_STEPS_PER_REVOLUTION, 22, 24, 26, 28);
 const int LEVER_OUT_DETECTOR_PIN = 52;
 const int LEVER_IN_DETECTOR_PIN = 53;
 
+
 // TEST MESSAGES
 /*###################################################################################*/
 String TEST_CS_MESSAGE = "TESTING AUDIO (CS+) GENERATION";
@@ -68,7 +69,6 @@ String TEST_CHAMBER_LED_MESSAGE = "TESTING CHAMBER LED";
 /*##################################################################################*/
 int CURRENT_VR = 1;                                      // STARTING VALUE FOR VR
 unsigned long CURRENT_VI = 1 * 1000L;                 // STARTING VALUE FOR VI
-
 
 // CONTROL TRANSITION BETWEEN VI AND VR
 /*##################################################################################*/
@@ -120,7 +120,10 @@ int press_lapse = 0;
 int LP_TOWARDS_CURRENT_VR_THRESHOLD = 0;
 int CUMULATIVE_SUM_LP = 0;
 
-
+// OTHER VARIABLES
+/*##################################################################################*/
+int button_state; 
+int CS_NUMBER = 1
 
 //##########################################################################################
 void setup() {
@@ -164,11 +167,11 @@ void setup() {
   pinMode(LEVER_OUT_DETECTOR_PIN, INPUT);
 
   // TO DELIVER CS
-  pinMode(CS_PIN, OUTPUT);  // DELIVER CS
-  pinMode(CS_LED_PIN, OUTPUT);       // CONTROL LED
+  pinMode(CS_PIN, OUTPUT);
+  pinMode(CS_LED_PIN, OUTPUT);
 
   // TO DELIVER US
-  pinMode(US_PIN, OUTPUT);  // DElIVER US
+  pinMode(US_PIN, OUTPUT);
 
   // TEST CS and US
   pinMode(MANUAL_TEST_CS_US_LED_SWITCH_PIN_BLUE, OUTPUT);
@@ -182,7 +185,7 @@ void setup() {
 void loop() {
 
   // START TRIAL
-  int button_state = 0;
+  START_SWITCH_STATE = LOW;
 
   // TEST FEEDER
   /*##################################################################################*/ 
@@ -241,10 +244,10 @@ void loop() {
   
   // PRESS GREEN SWITCH FOR ONE SECOND IN ORDER TO START SESSION
   /*##################################################################################*/
-  button_state = digitalRead(START_SWITCH_PIN_GREEN);
+  START_SWITCH_STATE = digitalRead(START_SWITCH_PIN_GREEN);
 
   
-  if (button_state == HIGH) {
+  if (START_SWITCH_STATE == HIGH) {
     
     unsigned long press_button_start = millis();
     unsigned long press_button_current = millis();
@@ -252,12 +255,12 @@ void loop() {
     // LOOP FOR ONE SECOND 
     while (press_button_current - press_button_start < 1000L) {
       press_button_current = millis();
-      button_state = digitalRead(START_SWITCH_PIN_GREEN); // IF STATE IS STILL HIGH AFTER ONE SECOND, INITIATE THE FOLLOWING LOOP 
+      START_SWITCH_STATE = digitalRead(START_SWITCH_PIN_GREEN); // IF STATE IS STILL HIGH AFTER ONE SECOND, INITIATE THE FOLLOWING LOOP 
     }
   }
    
 
-  if (button_state == HIGH) {
+  if (START_SWITCH_STATE == HIGH) {
 
     // KEEP TRACK OF GLOBAL VARIABLES
     int TOTAL_SESSION_LP = 0;
@@ -306,7 +309,7 @@ void loop() {
 
       TRIAL_START = true;                            // FALSE==END  
       
-      int current_cs_plus = 1;
+      CS_NUMBER = 1;
 
       // TRACK LP PRE CS
       int pre_cs_lp_start = 0;
@@ -489,7 +492,7 @@ void loop() {
             if (trial_current_time - trial_start_time > (LENGHT_WITH_LEVER_BEFORE_FIRST_CS * 60 * 1000L)) { 
   
               // IF THERE ARE MISSING CS
-              if (current_cs_plus <= TOTAL_CS_NUMBER) {
+              if (CS_NUMBER <= TOTAL_CS_NUMBER) {
   
                 // DELIVER CS
                 //###################################################################################        
@@ -497,12 +500,12 @@ void loop() {
 
                   // PRINT NUMBER OF LEVER PRESS BEFORE CS
                   /*-----------------------------------------------------------------------------------------------------------------------------------------*/
-                  Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" LP BEFORE CS+ 0"); Serial.print(current_cs_plus);
+                  Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" LP BEFORE CS+ 0"); Serial.print(CS_NUMBER);
                     Serial.print(": "); Serial.println(CUMULATIVE_SUM_LP - pre_cs_lp_start); 
                   
                   lp_pre_cs_list[list_end] = CUMULATIVE_SUM_LP - pre_cs_lp_start;
                   
-                  Serial.print("TRIAL 0"); Serial.print(i);Serial.print(" CS+ 0"); Serial.print(current_cs_plus); Serial.println(" > ON");
+                  Serial.print("TRIAL 0"); Serial.print(i);Serial.print(" CS+ 0"); Serial.print(CS_NUMBER); Serial.println(" > ON");
                   digitalWrite(CS_PIN, HIGH);
                   digitalWrite(CS_LED_PIN, HIGH);
 
@@ -529,7 +532,7 @@ void loop() {
                            && ((CS_ONGOING_TIME - CS_START_TIME) > (CS_LENGHT_SEC * 1000L)) 
                            && (IS_INTER_CS_DELAY == false)){
   
-                  Serial.print("TRIAL 0"); Serial.print(i);Serial.print(" CS+ 0"); Serial.print(current_cs_plus); Serial.println(" > OFF");
+                  Serial.print("TRIAL 0"); Serial.print(i);Serial.print(" CS+ 0"); Serial.print(CS_NUMBER); Serial.println(" > OFF");
                   digitalWrite(CS_PIN, LOW);
                   digitalWrite(CS_LED_PIN, LOW);
 
@@ -540,17 +543,15 @@ void loop() {
   
                   // KEEP TRACK OF THE LP DURING CS
                   TOTAL_LP_DURING_CS = CUMULATIVE_SUM_LP - TOTAL_LP_BEFORE_CS;
-                  Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" LP DURING CS+ 0"); Serial.print(current_cs_plus);
+                  Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" LP DURING CS+ 0"); Serial.print(CS_NUMBER);
                     Serial.print(": "); Serial.println(TOTAL_LP_DURING_CS);
 
                   // STORE VALUE 
                   lp_peri_cs_list[list_end++] = TOTAL_LP_DURING_CS;
-                  
-                  
+                                   
                   // MOVE TO THE NEXT CS
-                  current_cs_plus++;                  
+                  CS_NUMBER++;                  
                   DELIVER_CS = true;
-
 
                   // ALLOW DELIVERY OF A PELLET 60 SECONDS AFTER ITI START
                   ITI_PELLETS = true;
@@ -574,7 +575,6 @@ void loop() {
                     }
                   }
   
-                  
                 } else if ((DELIVER_CS == true) && (IS_INTER_CS_DELAY == true)){      // ACTIVE DURING ITI
 
                   // CONDITION TO TERMINATE ITI
