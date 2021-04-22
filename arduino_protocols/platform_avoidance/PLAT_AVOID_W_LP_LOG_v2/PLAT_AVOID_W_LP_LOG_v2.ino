@@ -73,7 +73,7 @@ unsigned long CURRENT_VI = 1 * 1000L;                 // STARTING VALUE FOR VI
 // CONTROL TRANSITION BETWEEN VI AND VR
 /*##################################################################################*/
 unsigned long previous_time = millis();
-bool access = false;                             // CONTROL THE TRANSITION TO VR
+bool COUNT_TOWARDS_VR = false;                             // CONTROL THE TRANSITION TO VR
 
 
 // TO KEEP TRACK OF LP/MIN
@@ -102,32 +102,27 @@ int SESSION_CURRENT_STATUS = 1;              // WHEN ZERO THEN SESSION IS OVER
 
 // VARIABLES TO DELIVER CS
 /*##################################################################################*/
-bool cs_ongoing = false;
-bool cs_ready = true;
-bool iti_delay = false;
-unsigned long cs_start_time;
-unsigned long iti_delay_start_time;
-unsigned long iti_delay_length;                       // SECONDS
-bool us_ready;
+bool DELIVER_CS = true;
+bool IS_INTER_CS_DELAY = false;
+unsigned long CS_START_TIME;
+unsigned long CS_ONGOING_TIME;
+unsigned long INTER_CS_DELAY_START;
+unsigned long INTER_CS_DELAY_LENGTH;                       // SECONDS
+bool DELIVER_US;
 
 
 // LEVER VARIABLES
 /*##################################################################################*/
-bool lp_access = true;
-
-int lp_inside = 0;
-int lp_outside = 0;
-int lp_state_switch = 0;
-
-// VARIABLES FOR PRESSING
-/*##################################################################################*/
-int lever_state = 0;
+int IS_LEVER_INSIDE = 0;
+int IS_LEVER_OUTSIDE = 0;
+int LEVER_STATE = 0;
 int press_lapse = 0;
 int LP_TOWARDS_CURRENT_VR_THRESHOLD = 0;
 int CUMULATIVE_SUM_LP = 0;
 
 
 
+//##########################################################################################
 void setup() {
 
   // SET STEPPER SPEED
@@ -147,15 +142,15 @@ void setup() {
   Serial.println("PRESS BLUE BUTTON TO TEST CS, US AND CHAMBER LED");
   
   // ENSURE THAT LEVER IS RETRACTED
-  lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-  lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
+  IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+  IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
 
-  if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
-        while (lp_inside != 1) {
+  if (IS_LEVER_OUTSIDE == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+        while (IS_LEVER_INSIDE != 1) {
           lp_myStepper.step(-1);
           //delay(20);
-          lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-          lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
+          IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+          IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
         }
   }
 
@@ -350,15 +345,15 @@ void loop() {
   
               // ENSURE THAT LEVER IS RETRACTED DURING ACCLIMATION
               /*---------------------------------------------------------*/
-              lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-              lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
+              IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+              IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
   
-              if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
-                    while (lp_inside != 1) {
+              if (IS_LEVER_OUTSIDE == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+                    while (IS_LEVER_INSIDE != 1) {
                       lp_myStepper.step(-1);
                       //delay(20);
-                      lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-                      lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
+                      IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+                      IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
                     }
               }
 
@@ -400,14 +395,14 @@ void loop() {
   
               // ENSURE THAT LEVER IS RETRACTED DURING COOLDOWN
               /*---------------------------------------------------------*/
-              lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-              lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
-              if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
-                    while (lp_inside != 1) {
+              IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+              IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
+              if (IS_LEVER_OUTSIDE == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+                    while (IS_LEVER_INSIDE != 1) {
                       lp_myStepper.step(-1);
                       //delay(20);
-                      lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-                      lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
+                      IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+                      IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
                     }
               }
               
@@ -435,7 +430,7 @@ void loop() {
               TOTAL_SESSION_LP = TOTAL_SESSION_LP + CUMULATIVE_SUM_LP;
               TOTAL_SESSION_PELLETS = TOTAL_SESSION_PELLETS + N_PELLETS;
 
-              // RESET TRAIL LP STATISTICS VARIABLES
+              // RESET TRIAL LP STATISTICS VARIABLES
               CUMULATIVE_SUM_LP = 0;
               LP_MIN = 0;
               LP = 0;
@@ -449,14 +444,14 @@ void loop() {
             
             // ALLOW ACCESS TO THE LEVER DURING TRIAL
             /*##################################################################################*/
-            lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-            lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
+            IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+            IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
   
-            if (lp_inside == 1) {
-              while (lp_outside != 1) {
+            if (IS_LEVER_INSIDE == 1) {
+              while (IS_LEVER_OUTSIDE != 1) {
                 lp_myStepper.step(1);
-                lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
-                lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
+                IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
+                IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
               }
             }
             
@@ -486,7 +481,7 @@ void loop() {
   
             // CODE TO DELIVER CS-US
             /*##################################################################################*/   
-            unsigned long cs_current_time = millis();
+            CS_ONGOING_TIME = millis();
             unsigned long iti_delay_ongoing_time = millis();
                  
             // AFTER TWO MINUTES POST-HABITUTATION
@@ -498,7 +493,7 @@ void loop() {
   
                 // DELIVER CS
                 //###################################################################################        
-                if ((cs_ready == true) && (iti_delay == false)) {
+                if ((DELIVER_CS == true) && (IS_INTER_CS_DELAY == false)) {
 
                   // PRINT NUMBER OF LEVER PRESS BEFORE CS
                   /*-----------------------------------------------------------------------------------------------------------------------------------------*/
@@ -512,27 +507,27 @@ void loop() {
                   digitalWrite(CS_LED_PIN, HIGH);
 
                   // TRACK THE BEGUINNING OF THE CS
-                  cs_start_time = millis();
-                  cs_ready = false;
-                  us_ready = true;
+                  CS_START_TIME = millis();
+                  DELIVER_CS = false;
+                  DELIVER_US = true;
   
                   // KEEP TRACK OF THE LP DURING CS
                   TOTAL_LP_BEFORE_CS = CUMULATIVE_SUM_LP;
                   
-                } else if ((cs_ready == false)
-                           && ((cs_current_time - cs_start_time) > ((CS_LENGHT_SEC - US_PAIRED_LENGTH_SEC) * 1000L)) 
-                           && (iti_delay == false)
-                           && (us_ready == true)){
+                } else if ((DELIVER_CS == false)
+                           && ((CS_ONGOING_TIME - CS_START_TIME) > ((CS_LENGHT_SEC - US_PAIRED_LENGTH_SEC) * 1000L)) 
+                           && (IS_INTER_CS_DELAY == false)
+                           && (DELIVER_US == true)){
 
                  if (TRIAL_WITH_US == true) {                
                   Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" US"); Serial.println(" > ON");
                   digitalWrite(US_PIN, HIGH);
                  }
-                 us_ready = false;
+                 DELIVER_US = false;
                    
-                } else if ((cs_ready == false)
-                           && ((cs_current_time - cs_start_time) > (CS_LENGHT_SEC * 1000L)) 
-                           && (iti_delay == false)){
+                } else if ((DELIVER_CS == false)
+                           && ((CS_ONGOING_TIME - CS_START_TIME) > (CS_LENGHT_SEC * 1000L)) 
+                           && (IS_INTER_CS_DELAY == false)){
   
                   Serial.print("TRIAL 0"); Serial.print(i);Serial.print(" CS+ 0"); Serial.print(current_cs_plus); Serial.println(" > OFF");
                   digitalWrite(CS_PIN, LOW);
@@ -554,7 +549,7 @@ void loop() {
                   
                   // MOVE TO THE NEXT CS
                   current_cs_plus++;                  
-                  cs_ready = true;
+                  DELIVER_CS = true;
 
 
                   // ALLOW DELIVERY OF A PELLET 60 SECONDS AFTER ITI START
@@ -563,38 +558,38 @@ void loop() {
                   // PRINT INTER-CS-INTERVAL 
                   int delay_iti = INTER_TRIAL_INTERVAL_LIST[random(0, 3)];
                   Serial.print("TRIAL 0"); Serial.print(i); Serial.print(" INTER-CS-INTERVAL (SEC): "); Serial.println(delay_iti);
-                  iti_delay_length = delay_iti * 1000L;
-                  iti_delay_start_time = millis();
-                  iti_delay = true;
+                  INTER_CS_DELAY_LENGTH = delay_iti * 1000L;
+                  INTER_CS_DELAY_START = millis();
+                  IS_INTER_CS_DELAY = true;
 
                   // ALLOW ACCESS TO THE LEVER
-                  lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
-                  lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
+                  IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+                  IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
         
-                  if (lp_inside == 1) {
-                    while (lp_outside != 1) {
+                  if (IS_LEVER_INSIDE == 1) {
+                    while (IS_LEVER_OUTSIDE != 1) {
                       lp_myStepper.step(1);
-                      lp_outside = digitalRead(LEVER_OUT_DETECTOR_PIN);
-                      lp_inside = digitalRead(LEVER_IN_DETECTOR_PIN);
+                      IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
+                      IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
                     }
                   }
   
                   
-                } else if ((cs_ready == true) && (iti_delay == true)){      // ACTIVE DURING ITI
+                } else if ((DELIVER_CS == true) && (IS_INTER_CS_DELAY == true)){      // ACTIVE DURING ITI
 
                   // CONDITION TO TERMINATE ITI
-                  if ((iti_delay_ongoing_time - iti_delay_start_time) > iti_delay_length) {
-                    iti_delay = false;    
+                  if ((iti_delay_ongoing_time - INTER_CS_DELAY_START) > INTER_CS_DELAY_LENGTH) {
+                    IS_INTER_CS_DELAY = false;    
 
 
                   // KEEP TRACK OF THE LP IN THE 60 SECONDS BEFORE CS
-                  } else if ((iti_delay_ongoing_time - iti_delay_start_time) <= (iti_delay_length - 60*1000L)) {
+                  } else if ((iti_delay_ongoing_time - INTER_CS_DELAY_START) <= (INTER_CS_DELAY_LENGTH - 60*1000L)) {
                     pre_cs_lp_start = CUMULATIVE_SUM_LP;
                   }
 
 
                   // ACTIVE FEEDER FOR A PELLET 60 AFTER ITI STARTS
-                  if (((iti_delay_ongoing_time - iti_delay_start_time) > 60000) && (ITI_PELLETS == true)) {
+                  if (((iti_delay_ongoing_time - INTER_CS_DELAY_START) > 60000) && (ITI_PELLETS == true)) {
 
                       // DROP A PELLET
                       /*-----------------------------------*/
@@ -630,24 +625,24 @@ void loop() {
             if (current_time - previous_time <= CURRENT_VI) {
               
               // IF NO THEN
-              access = false;                                // ACCESS TO VR == NUMBER OF LP NECESSARY TO ACTIVATE THE MAGAZINE
+              COUNT_TOWARDS_VR = false;                                // ACCESS TO VR == NUMBER OF LP NECESSARY TO ACTIVATE THE MAGAZINE
   
             } else {
-              access = true;                                 // ALLOW THE LEVER PRESSES TO COUNT TOWARDS VR
+              COUNT_TOWARDS_VR = true;                                 // ALLOW THE LEVER PRESSES TO COUNT TOWARDS VR
             }
   
-            // ACCESS == TRUE > INITIATE VR
-            if (access == true) {
+            // COUNT_TOWARDS_VR == TRUE > INITIATE VR
+            if (COUNT_TOWARDS_VR == true) {
   
             // COUNT LEVER PRESSES NECESSARY FOR THE APPROPRIATE VR AND ACTIVATE MAGAZINE
             /*##################################################################################*/
             if (LP_TOWARDS_CURRENT_VR_THRESHOLD < CURRENT_VR){
   
                     // DETECT LEVER STATE
-                    lever_state = digitalRead(LEVER_PIN);
+                    LEVER_STATE = digitalRead(LEVER_PIN);
   
                     // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
-                    if ((lever_state == HIGH) && (press_lapse == 0)) {
+                    if ((LEVER_STATE == HIGH) && (press_lapse == 0)) {
                       
                       press_lapse = 1;
                       Serial.println("LEVER > ON");
@@ -668,9 +663,9 @@ void loop() {
                       // KEEP TRACK OF THE NUMBER OF LEVER PRESSES
                       LP_TOWARDS_CURRENT_VR_THRESHOLD ++;
   
-                    } else if ((lever_state == HIGH) && (press_lapse == 1)){
+                    } else if ((LEVER_STATE == HIGH) && (press_lapse == 1)){
                       // DO NOTHING
-                    } else if ((lever_state == LOW) && (press_lapse == 1)) {
+                    } else if ((LEVER_STATE == LOW) && (press_lapse == 1)) {
                       press_lapse = 0;
                     } else {}
   
@@ -689,7 +684,7 @@ void loop() {
               Serial.print("NEW VR (LP): "); Serial.println(CURRENT_VR);
   
               // RE-INITIATE VI
-              access = false;                    // DETERMINES ACCESS TO FEEDER
+              COUNT_TOWARDS_VR = false;                    // DETERMINES ACCESS TO FEEDER
               previous_time = millis();
               CURRENT_VI = random(1, MAX_VI_SEC+1) * 1000L;
               Serial.print("NEXT VI (SEC): "); Serial.println(CURRENT_VI / 1000);
@@ -701,10 +696,10 @@ void loop() {
   
                       // DETECT LEVER STATE AND COUNT THE PRESS
                       /*##################################################################################*/
-                      lever_state = digitalRead(LEVER_PIN);
+                      LEVER_STATE = digitalRead(LEVER_PIN);
   
                       // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
-                      if ((lever_state == HIGH) && (press_lapse == 0)) {
+                      if ((LEVER_STATE == HIGH) && (press_lapse == 0)) {
                         press_lapse = 1;
                         Serial.println("LEVER > ON");
   
@@ -721,9 +716,9 @@ void loop() {
                         ongoing_ = millis();
                       }
   
-                      } else if ((lever_state == HIGH) && (press_lapse == 1)){
+                      } else if ((LEVER_STATE == HIGH) && (press_lapse == 1)){
                       // DO NOTHING
-                      } else if ((lever_state == LOW) && (press_lapse == 1)) {
+                      } else if ((LEVER_STATE == LOW) && (press_lapse == 1)) {
                         press_lapse = 0;
                       } else {}
   
