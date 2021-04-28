@@ -1,160 +1,127 @@
 
 /*
+LeDoux Lab | 2021
+Jose Oliveira da Cruz, jose [dot] cruz [at] nyu [dot] edu
 
-LeDoux Lab | 2020
-Jose Oliveira da Cruz, jose.cruz@nyu.edu
-
-LEVER_PRESS_TRAINING_CBN
-------------------------
+LEVER_PRESS_TRAINING_CBN_VI_VR
+------------------------------
 Log lever presses and deliver food pellets when due.
 
 */
 
 
+
+// SESSION AND TRIAL INFO >> TO MODIFY
+/*##################################################################################*/
+
+unsigned long SESSION_LENGTH_MIN = 25;
+unsigned long ACCLIMATION_LENGHT_MIN = 1;      
+unsigned long COOLDOWN_LENGHT_MIN = 1;
+          int FEEDER_TYPE = 2;                    // 1 > MEDASSOCIATE 2 > COULDBOURN
+          int MAX_VR_LP = 4;         
+          int MAX_VI_SEC = 15;
+          
+// ###################################################################################
+// ###################################################################################
+// -------------- DO NOT MODIFY --------------------------------------------------- //
+// ###################################################################################
+// ###################################################################################
+
 // STEPPER LIBRARY FOR STEPPER CONTROL
 #include <Stepper.h>
 
-// VI AND VR
+// SETTINGS FOR PINS AND STEPPER MOTORS (FEEDER AND LEVER)
 /*##################################################################################*/
-unsigned long session_length = 25 * 60 * 1000L;   // DURATION OF THE SESSION >> "MIN * SEC * MS"
-int max_vr = 4;                                   // MAX VARIABLE RATIO FOR RANDOM GENERATOR
-int max_vi = 15;                                   // MAX VARIABLE INTERVAL FOR RANDOM GENERATOR
-
-int feeder_type = 1;                              // 1 > MEDASSOCIATE 2 > COULDBOURN
-
-unsigned long acclimation_length = 1;                        // DURATION IN MIN
-unsigned long cooldown_length = 1;                           // DURATION IN MIN
-
-
-// VI AND VR - STARTING VALUE (FOR FIRST TRIAL)
+const int START_SWITCH_PIN_GREEN = 2;
+const int MANUAL_FEEDER_SWITCH_PIN_YELLOW = 3;
+const int CS_LED_PIN = 5;
+const int LEVER_PIN = 9;
+const int FEEDER_STEPS_PER_REVOLUTION = 200;  // steps per revolution
+Stepper FEEDER_STEPPER(FEEDER_STEPS_PER_REVOLUTION, 10, 11, 12, 13);
+const int LEVER_STEPS_PER_REVOLUTION = 200;  // change this to fit the number of steps per revolution
+Stepper LEVER_STEPPER(LEVER_STEPS_PER_REVOLUTION, 22, 24, 26, 28);
+const int LEVER_OUT_DETECTOR_PIN = 52;
+const int LEVER_IN_DETECTOR_PIN = 53;
+  
+// REINFORCEMENT SCHEDULE - VI AND VR - STARTING VALUE
 /*##################################################################################*/
-unsigned long variable_interval = 1 * 1000L;                 // STARTING VALUE FOR VI
-int variable_ratio = 1;                                      // STARTING VALUE FOR VR
+unsigned long CURRENT_VI = 1 * 1000L;          
+int CURRENT_VR = 1;
+unsigned long previous_time = millis(); // CONTROL TRANSITION BETWEEN Vi
+bool COUNT_TOWARDS_VR = false;          // CONTROL THE TRANSITION TO VR
 
-// CONTROL TRANSITION BETWEEN VI AND VR
-/*##################################################################################*/
-unsigned long previous_time = millis();
-bool access = false;                             // CONTROL THE TRANSITION TO VR
-
-
-// TO KEEP TRACK OF LP/MIN
+// VARIABLES LEVER PRESS STATISTICS
 /*##################################################################################*/
 unsigned long START = millis();
 unsigned long INTERVAL = 60*1000L;
-
-
-// KEEP TRACK OF MEASUREMENTS AND ALLOW BASIC LP STATS
-/*##################################################################################*/
 int LP_MIN = 0;
 int LP = 0;
 int LP_MINS = 0;
 int LP_AVG= 0;
 int N_PELLETS = 0;
 
+// TRIAL CONTROL FLOW
+/*#################################S#################################################*/
+bool SESSION_START = true; // Control start of the session
+int START_SWITCH_STATE;
 
-// TRIAL INFORMATION
+// LEVER VARIABLES
 /*##################################################################################*/
-int TRIAL_N = 50;
-bool TRIAL_START = true; // acts as boolean
-
-
-// SETTINGS FOR BOARD AND STEPPER - DO NOT MODIFY
-/*##################################################################################*/
-const int stepsPerRevolution = 200;  // steps per revolution
-const int food_tray_led = 8;         // LED in the chamber food tray
-const int lever_press = 9;           // LEVER_PRESS DECTECTOR
-bool alternate_spin;
-int factor;
-
-// SETTINGS FOR LEVER STEPPER 
-/*##################################################################################*/
-const int lp_stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
-Stepper lp_myStepper(lp_stepsPerRevolution, 22, 24, 26, 28);
-
-// 
-bool lp_access = true;
-
-// PINS TO READ
-const int lp_inside_pin = 53;
-const int lp_outside_pin = 52;
-
-// VARIABLES TO READ
-
-int lp_inside = 0;
-int lp_outside = 0;
-int lp_state_switch = 0;
-
-
-
-// VARIABLES FOR LEVER PRESSING
-/*##################################################################################*/
-int lever_state = 0;
+int IS_LEVER_INSIDE = 0;
+int IS_LEVER_OUTSIDE = 0;
+int LEVER_STATE = 0;
 int press_lapse = 0;
-int counting_presses = 0;
-int cumsum_presses = 0;
-
-// PUSH BUTTON TO START EXPERIMENT
-/*##################################################################################*/
-const int push_button = 2;
-
-// PUSH BUTTON TO TEST FEEDER
-/*##################################################################################*/
-const int push_button_test_feeder = 3;
-
-// INITIALIZE STEPPER (REVOLUTIONS ACCORDING TO FEEDER):
-Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
+int LP_TOWARDS_CURRENT_VR_THRESHOLD = 0;
+int CUMULATIVE_SUM_LP = 0;
 
 
 void setup() {
 
   // SET STEPPER SPEED
-  myStepper.setSpeed(100); // STEPPER SPEED
-
-  // LEVER STEPPER
-  lp_myStepper.setSpeed(60);
+  FEEDER_STEPPER.setSpeed(100);
+  LEVER_STEPPER.setSpeed(60);
   
   // INITIALIZE SERIAL
   Serial.begin(9600);
 
   // PRINT INITIAL INFORMATION
-
   Serial.println("LEDOUX LAB");
-  Serial.print("LEVER_PRESS_TRAINING"); Serial.print(" | VI"); Serial.print(max_vi); Serial.print(" | VR0"); Serial.println(max_vr);
+    Serial.print("LEVER_PRESS_TRAINING");
+    Serial.print(" | VI"); Serial.print(MAX_VI_SEC);
+    Serial.print(" | VR0"); Serial.println(MAX_VR_LP);
 
   // ENSURE THAT LEVER IS RETRACTED
-  lp_inside = digitalRead(lp_inside_pin);
-  lp_outside = digitalRead(lp_outside_pin);
+  IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+  IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
 
-  if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
-        while (lp_inside != 1) {
-          lp_myStepper.step(-1);
+  if (IS_LEVER_OUTSIDE == 1) { // IF LEVER IS OUTSIDE MOVE IT INSIDE
+        while (IS_LEVER_INSIDE != 1) {
+          LEVER_STEPPER.step(-1);
           //delay(20);
-          lp_inside = digitalRead(lp_inside_pin);
-          lp_outside = digitalRead(lp_outside_pin);
+          IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+          IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
         }
   }
   
   Serial.println("PRESS GREEN BUTTON TO START");
 
   // SET UP PINS
-  pinMode(food_tray_led, OUTPUT);
-  pinMode(lever_press, INPUT);
-  pinMode(push_button, INPUT);
-  pinMode(push_button_test_feeder, INPUT);
-  // LP STEPPER PINS
-  pinMode(lp_inside_pin, INPUT);
-  pinMode(lp_outside_pin, INPUT);
-
+  pinMode(LEVER_PIN, INPUT);
+  pinMode(START_SWITCH_PIN_GREEN, INPUT);
+  pinMode(CS_LED_PIN, OUTPUT);
+  pinMode(MANUAL_FEEDER_SWITCH_PIN_YELLOW, INPUT);
+  pinMode(LEVER_IN_DETECTOR_PIN, INPUT);
+  pinMode(LEVER_OUT_DETECTOR_PIN, INPUT);
+  
   // ENSURE REPRODUCIBILITY
   unsigned long seed = 31;
   randomSeed(seed);
 
-
 // SPECIFY FEEDER TYPE
-if (feeder_type == 1) {                         // MED ASSOCIATE FEEDER
-  Stepper myStepper(48, 10, 11, 12, 13);
-  } else if (feeder_type == 2) {                // COULBOURN FEEDER
-    Stepper myStepper(stepsPerRevolution, 10, 11, 12, 13);
+if (FEEDER_TYPE == 1) {                         // MED ASSOCIATE FEEDER
+  Stepper FEEDER_STEPPER(48, 10, 11, 12, 13);
+  } else if (FEEDER_TYPE == 2) {                // COULBOURN FEEDER
+    Stepper FEEDER_STEPPER(FEEDER_STEPS_PER_REVOLUTION, 10, 11, 12, 13);
   }
 
 }
@@ -162,19 +129,19 @@ if (feeder_type == 1) {                         // MED ASSOCIATE FEEDER
 void loop() {
 
   // START TRIAL
-  int button_state = 0;
+  START_SWITCH_STATE = 0;
 
   // TEST FEEDER
   /*##################################################################################*/ 
-  int push_button_test_feeder_state = digitalRead(push_button_test_feeder);
+  int FEEDER_SWITCH_STATE = digitalRead(MANUAL_FEEDER_SWITCH_PIN_YELLOW);
   
-  if (push_button_test_feeder_state > 0) {
+  if (FEEDER_SWITCH_STATE == HIGH) {
 
 
     // DELIVER FOOD (N REVOLUTIONS IS SPECIFIC TO THE FEEDER)
-    if (feeder_type == 1) {             // 1 REPRESENTS MEDASSOCIATES
+    if (FEEDER_TYPE == 1) {             // 1 REPRESENTS MEDASSOCIATES
     for (int i = 0; i <4; i++) {
-      myStepper.step(1);
+      FEEDER_STEPPER.step(1);
       // ADD SMALL DELAY
       unsigned long start_ = millis();
       unsigned long current_ = millis();
@@ -185,9 +152,9 @@ void loop() {
       }
 
     }
-    } else if (feeder_type == 2) {      // 2 REPRESENTS COULBOURN
+    } else if (FEEDER_TYPE == 2) {      // 2 REPRESENTS COULBOURN
       
-      myStepper.step(stepsPerRevolution/4);
+      FEEDER_STEPPER.step(FEEDER_STEPS_PER_REVOLUTION/4);
     }
     
     Serial.println("MANUAL FEEDER");
@@ -203,8 +170,8 @@ void loop() {
   
   // PRESS BUTTON FOR ONE SECOND OR GET INPUT FROM ARDUINO 02 FOR ONE SECOND
   /*##################################################################################*/
-  button_state = digitalRead(push_button);
-  if (button_state == HIGH) {
+  START_SWITCH_STATE = digitalRead(START_SWITCH_PIN_GREEN);
+  if (START_SWITCH_STATE == HIGH) {
     
     unsigned long press_button_start = millis();
     unsigned long press_button_current = millis();
@@ -212,7 +179,7 @@ void loop() {
     // LOOP FOR ONE SECOND 
     while (press_button_current - press_button_start < 1000L) {
       press_button_current = millis();
-      button_state = digitalRead(push_button); // IF STATE IS STILL HIGH AFTER ONE SECOND, INITIATE THE FOLLOWING LOOP 
+      START_SWITCH_STATE = digitalRead(START_SWITCH_PIN_GREEN); // IF STATE IS STILL HIGH AFTER ONE SECOND, INITIATE THE FOLLOWING LOOP 
     }
   }
     
@@ -221,20 +188,28 @@ void loop() {
 
   int session_status = 1;              // WHEN ZERO THEN SESSION IS OVER
 
-  if (button_state == HIGH) {
+  if (START_SWITCH_STATE == HIGH) {
     // DISPLAY SESSION INFORMATION
     /*##################################################################################*/
     Serial.println("SESSION: LEVER PRESS TRAINING");
-    
-    Serial.print("SESSION LENGHT (SEC): "); Serial.println(session_length / (1000L));
 
-    Serial.print("STARTING VI (SEC): "); Serial.print(variable_interval / 1000); Serial.print(" | STARTING VR: "); Serial.println(variable_ratio);
+    // BLINK LED TO SIGNAL THE START OF THE SESSION
+    for (int i = 0; i < 5; i++) {
+      digitalWrite(CS_LED_PIN, HIGH);
+      delay(500);
+      digitalWrite(CS_LED_PIN, LOW);    
+      delay(500);  
+    }
     
-    Serial.print("SESSION VI (SEC): "); Serial.print(max_vi); Serial.print(" | SESSION VR: "); Serial.println(max_vr);
+    Serial.print("SESSION LENGHT (SEC): "); Serial.println(SESSION_LENGTH_MIN * 60);
+
+    Serial.print("STARTING VI (SEC): "); Serial.print(CURRENT_VI / 1000); Serial.print(" | STARTING VR: "); Serial.println(CURRENT_VR);
+    
+    Serial.print("SESSION VI (SEC): "); Serial.print(MAX_VI_SEC); Serial.print(" | SESSION VR: "); Serial.println(MAX_VR_LP);
       
-    Serial.print("ACCLIMATION TIME (SEC): "); Serial.println(acclimation_length*60);
+    Serial.print("ACCLIMATION TIME (SEC): "); Serial.println(ACCLIMATION_LENGHT_MIN*60);
 
-    Serial.print("COOLDOWN TIME (SEC): "); Serial.println(cooldown_length*60);
+    Serial.print("COOLDOWN TIME (SEC): "); Serial.println(COOLDOWN_LENGHT_MIN*60);
     
     Serial.println("SESSION: START");
 
@@ -245,14 +220,14 @@ void loop() {
 
           // TEST FEEDER
           /*##################################################################################*/ 
-          int push_button_test_feeder_state = digitalRead(push_button_test_feeder);
+          int FEEDER_SWITCH_STATE = digitalRead(MANUAL_FEEDER_SWITCH_PIN_YELLOW);
           
-          if (push_button_test_feeder_state > 0) {
+          if (FEEDER_SWITCH_STATE == HIGH) {
                 
                 // DELIVER FOOD (N REVOLUTIONS IS SPECIFIC TO THE FEEDER)
-                if (feeder_type == 1) {             // 1 REPRESENTS MEDASSOCIATES
+                if (FEEDER_TYPE == 1) {             // 1 REPRESENTS MEDASSOCIATES
                 for (int i = 0; i <4; i++) {
-                  myStepper.step(1);
+                  FEEDER_STEPPER.step(1);
                   // ADD SMALL DELAY
                   unsigned long start_ = millis();
                   unsigned long current_ = millis();
@@ -263,8 +238,8 @@ void loop() {
                   }
             
                 }
-                } else if (feeder_type == 2) {      // 2 REPRESENTS COULBOURN
-                  myStepper.step(stepsPerRevolution/4);
+                } else if (FEEDER_TYPE == 2) {      // 2 REPRESENTS COULBOURN
+                  FEEDER_STEPPER.step(FEEDER_STEPS_PER_REVOLUTION/4);
                 }
             Serial.println("MANUAL-FEEDER > ON");
             
@@ -281,24 +256,24 @@ void loop() {
 
           // ACCLIMATION PERIOD
           /*##################################################################################*/
-          if (TRIAL_START == true) {
+          if (SESSION_START == true) {
 
             // ENSURE THAT LEVER IS RETRACTED
-            lp_inside = digitalRead(lp_inside_pin);
-            lp_outside = digitalRead(lp_outside_pin);
+            IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+            IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
 
-            if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
-                  while (lp_inside != 1) {
-                    lp_myStepper.step(-1);
+            if (IS_LEVER_OUTSIDE == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+                  while (IS_LEVER_INSIDE != 1) {
+                    LEVER_STEPPER.step(-1);
                     //delay(20);
-                    lp_inside = digitalRead(lp_inside_pin);
-                    lp_outside = digitalRead(lp_outside_pin);
+                    IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+                    IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
                   }
             }
 
-            Serial.print("ACCLIMATION (SEC): "); Serial.println(acclimation_length*60);
+            Serial.print("ACCLIMATION (SEC): "); Serial.println(ACCLIMATION_LENGHT_MIN*60);
             
-            unsigned long interval_acclimation = acclimation_length*60*1000L;
+            unsigned long interval_acclimation = ACCLIMATION_LENGHT_MIN*60*1000L;
             unsigned long start_acclimation = millis();
             unsigned long current_acclimation = millis();
             
@@ -307,58 +282,59 @@ void loop() {
               current_acclimation = millis();
             }
 
-            TRIAL_START = false;
+            SESSION_START = false;
             START = millis();                        // VARIABLE USED TO CALCULATE LP/MIN
             Serial.println("ACCLIMATION: OFF");
             session_start_time = millis();
+            session_current_time = millis();
           }
 
 
           // ENTER COOLDOWNSTOP AND STOP SESSION AFTER TIME LIMIT
           /*##################################################################################*/
-          if (session_current_time - session_start_time < session_length) {
+          if (session_current_time - session_start_time < (SESSION_LENGTH_MIN*60*1000L)) {
             // DO NOTHING
             session_current_time = millis();
           } else {
             session_status == 0;
 
             // ENSURE THAT LEVER IS RETRACTED
-            lp_inside = digitalRead(lp_inside_pin);
-            lp_outside = digitalRead(lp_outside_pin);
+            IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+            IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
 
-            if (lp_outside == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
-                  while (lp_inside != 1) {
-                    lp_myStepper.step(-1);
+            if (IS_LEVER_OUTSIDE == 1) { // IF LEVER IS OUTSIDE move IT INSIDE
+                  while (IS_LEVER_INSIDE != 1) {
+                    LEVER_STEPPER.step(-1);
                     //delay(20);
-                    lp_inside = digitalRead(lp_inside_pin);
-                    lp_outside = digitalRead(lp_outside_pin);
+                    IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+                    IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
                   }
             }
             
             // ENTER COOLDOWN
             
-            Serial.print("COOLDOWN (SEC): "); Serial.println(cooldown_length*60);
-            delay(cooldown_length*60*1000L);
+            Serial.print("COOLDOWN (SEC): "); Serial.println(COOLDOWN_LENGHT_MIN*60);
+            delay(COOLDOWN_LENGHT_MIN*60*1000L);
             
             // STOP SESSION
             Serial.println("SESSION: END");
-            Serial.print("GLOBAL LP/MIN: "); Serial.println(cumsum_presses/(session_length/60000L));
-            Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
+            Serial.print("GLOBAL LP/MIN: "); Serial.println(CUMULATIVE_SUM_LP/SESSION_LENGTH_MIN);
+            Serial.print("CUMULATIVE LP: "); Serial.println(CUMULATIVE_SUM_LP);
             Serial.print("CUMULATIVE N PELLETS: "); Serial.println(N_PELLETS);
             while(1){}                                   // ENTER INFINITE LOOP TO ALLOW USER TO RESET BOARD
           }
           
           // ALLOW ACCESS TO THE LEVER
           /*##################################################################################*/
-          lp_inside = digitalRead(lp_inside_pin);
-          lp_outside = digitalRead(lp_outside_pin);
+          IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
+          IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
 
-          if (lp_inside == 1) {
-            while (lp_outside != 1) {
-              lp_myStepper.step(1);
+          if (IS_LEVER_INSIDE == 1) {
+            while (IS_LEVER_OUTSIDE != 1) {
+              LEVER_STEPPER.step(1);
               ///delay(20);
-              lp_outside = digitalRead(lp_outside_pin);
-              lp_inside = digitalRead(lp_inside_pin);
+              IS_LEVER_OUTSIDE = digitalRead(LEVER_OUT_DETECTOR_PIN);
+              IS_LEVER_INSIDE = digitalRead(LEVER_IN_DETECTOR_PIN);
             }
           }
 
@@ -378,7 +354,7 @@ void loop() {
             LP_AVG = LP / LP_MINS;
             Serial.print("GLOBAL LP/MIN: "); Serial.println(LP_AVG);
             Serial.print("LP/MIN - PREVIOUS MINUTE: "); Serial.println(LP_MIN);
-            Serial.print("CUMULATIVE LP: "); Serial.println(cumsum_presses);
+            Serial.print("CUMULATIVE LP: "); Serial.println(CUMULATIVE_SUM_LP);
             Serial.print("CUMULATIVE N PELLETS: "); Serial.println(N_PELLETS);
             Serial.print("ELAPSED TIME (SEC): "); Serial.println((session_current_time - session_start_time)/(1000L));
             LP_MIN = 0;
@@ -393,34 +369,34 @@ void loop() {
           /*##################################################################################*/
 
           // CHECK IF VI IS OVER
-          if (current_time - previous_time <= variable_interval) {
+          if (current_time - previous_time <= CURRENT_VI) {
             
             // IF NO THEN
-            access = false;                                // ACCESS TO VR == NUMBER OF LP NECESSARY TO ACTIVATE THE MAGAZINE
+            COUNT_TOWARDS_VR = false;                                // COUNT_TOWARDS_VR TO VR == NUMBER OF LP NECESSARY TO ACTIVATE THE MAGAZINE
 
           } else {
-            access = true;                                 // ALLOW THE LEVER PRESSES TO COUNT TOWARDS VR
+            COUNT_TOWARDS_VR = true;                                 // ALLOW THE LEVER PRESSES TO COUNT TOWARDS VR
           }
 
-          // ACCESS == TRUE > INITIATE VR
-          if (access == true) {
+          // COUNT_TOWARDS_VR == TRUE > INITIATE VR
+          if (COUNT_TOWARDS_VR == true) {
 
           // COUNT LEVER PRESSES NECESSARY FOR THE APPROPRIATE VR AND ACTIVATE MAGAZINE
           /*##################################################################################*/
-          if (counting_presses < variable_ratio){
+          if (LP_TOWARDS_CURRENT_VR_THRESHOLD < CURRENT_VR){
 
                   // DETECT LEVER STATE
-                  lever_state = digitalRead(lever_press);
+                  LEVER_STATE = digitalRead(LEVER_PIN);
 
                   // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
-                  if ((lever_state == HIGH) && (press_lapse == 0)) {
+                  if ((LEVER_STATE == HIGH) && (press_lapse == 0)) {
                     
                     press_lapse = 1;
                     Serial.println("LEVER > ON");
 
                     // KEEP TRACK OF MEASUREMENTS
                     LP ++;
-                    cumsum_presses ++;
+                    CUMULATIVE_SUM_LP ++;
                     LP_MIN ++;
 
                     // ADD SMALL DELAY 0.2s TO AVOID LP ARTIFACTS
@@ -432,22 +408,22 @@ void loop() {
                     }
 
                     // KEEP TRACK OF THE NUMBER OF LEVER PRESSES
-                    counting_presses ++;
+                    LP_TOWARDS_CURRENT_VR_THRESHOLD ++;
 
-                  } else if ((lever_state == HIGH) && (press_lapse == 1)){
+                  } else if ((LEVER_STATE == HIGH) && (press_lapse == 1)){
                     // DO NOTHING
-                  } else if ((lever_state == LOW) && (press_lapse == 1)) {
+                  } else if ((LEVER_STATE == LOW) && (press_lapse == 1)) {
                     press_lapse = 0;
                   } else {}
 
           } else {
             
             // DELIVER FOOD (N REVOLUTIONS IS SPECIFIC TO THE FEEDER)
-            if (feeder_type == 1) {             // 1 REPRESENTS MEDASSOCIATES
+            if (FEEDER_TYPE == 1) {             // 1 REPRESENTS MEDASSOCIATES
             
             for (int i = 0; i <4; i++) {
 
-              myStepper.step(1);
+              FEEDER_STEPPER.step(1);
               // ADD SMALL DELAY
               unsigned long start_ = millis();
               unsigned long current_ = millis();
@@ -458,25 +434,25 @@ void loop() {
               }
         
             }
-            } else if (feeder_type == 2) {      // 2 REPRESENTS COULBOURN
-              myStepper.step(stepsPerRevolution/4);
+            } else if (FEEDER_TYPE == 2) {      // 2 REPRESENTS COULBOURN
+              FEEDER_STEPPER.step(FEEDER_STEPS_PER_REVOLUTION/4);
             }
                
             Serial.println("FEEDER > ON");
             N_PELLETS ++;
             
          // RESET COUNTING PRESSES FOR VR
-            counting_presses = 0;
+            LP_TOWARDS_CURRENT_VR_THRESHOLD = 0;
 
             // RESET THE VR FOR NEXT TRIAL
-            variable_ratio = random(1, max_vr+1);
-            Serial.print("NEW VR (LP): "); Serial.println(variable_ratio);
+            CURRENT_VR = random(1, MAX_VR_LP+1);
+            Serial.print("NEW VR (LP): "); Serial.println(CURRENT_VR);
 
             // RE-INITIATE VI
-            access = false;                    // DETERMINES ACCESS TO MAGAZINE
+            COUNT_TOWARDS_VR = false;                    // DETERMINES COUNT_TOWARDS_VR TO MAGAZINE
             previous_time = millis();
-            variable_interval = random(1, max_vi+1) * 1000L;
-            Serial.print("NEXT VI (SEC): "); Serial.println(variable_interval / 1000);
+            CURRENT_VI = random(1, MAX_VI_SEC+1) * 1000L;
+            Serial.print("NEXT VI (SEC): "); Serial.println(CURRENT_VI / 1000);
           }
 
           // LOG LEVER PRESSES DURING VI30
@@ -485,16 +461,16 @@ void loop() {
 
                     // DETECT LEVER STATE AND COUNT THE PRESS
                     /*##################################################################################*/
-                    lever_state = digitalRead(lever_press);
+                    LEVER_STATE = digitalRead(LEVER_PIN);
 
                     // IF LEVER ON AND IF IT IS THE FIRST TIME IT HAS BEEN PRESSED
-                    if ((lever_state == HIGH) && (press_lapse == 0)) {
+                    if ((LEVER_STATE == HIGH) && (press_lapse == 0)) {
                       press_lapse = 1;
                       Serial.println("LEVER > ON");
 
                       // KEEP TRACK OF MEASUREMENTS
                       LP ++;
-                      cumsum_presses ++;
+                      CUMULATIVE_SUM_LP ++;
                       LP_MIN ++;
                       
                       // ADD SMALL DELAY 0.2s TO AVOID LP ARTIFACTS
@@ -505,9 +481,9 @@ void loop() {
                         ongoing_ = millis();
                       }
 
-                    } else if ((lever_state == HIGH) && (press_lapse == 1)){
+                    } else if ((LEVER_STATE == HIGH) && (press_lapse == 1)){
                     // DO NOTHING
-                    } else if ((lever_state == LOW) && (press_lapse == 1)) {
+                    } else if ((LEVER_STATE == LOW) && (press_lapse == 1)) {
                       press_lapse = 0;
                     } else {}
 
