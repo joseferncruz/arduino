@@ -14,7 +14,7 @@ Log lever presses and deliver food pellets when due.
 /*##################################################################################*/
           int N_TRIALS = 3;                            
 unsigned long TRIAL_LENGHT_MIN = 13;                    
-unsigned long ACCLIMATION_LENGHT_MIN = 3;                  
+unsigned long ACCLIMATION_LENGHT_MIN = 0;                  
 unsigned long COOLDOWN_LENGHT_MIN = 2;                     
 unsigned long LENGHT_WITH_LEVER_BEFORE_FIRST_CS = 5;  
           int INTER_TRIAL_INTERVAL_LIST[] = {120, 120, 120};  // IN SECONDS
@@ -123,7 +123,8 @@ int CUMULATIVE_SUM_LP = 0;
 // OTHER VARIABLES
 /*##################################################################################*/
 int button_state; 
-int CS_NUMBER = 1
+int CS_NUMBER = 1;
+int START_SWITCH_STATE = LOW;
 
 //##########################################################################################
 void setup() {

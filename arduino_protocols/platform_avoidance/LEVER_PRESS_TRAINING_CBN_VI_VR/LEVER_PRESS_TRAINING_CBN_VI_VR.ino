@@ -10,16 +10,15 @@ Log lever presses and deliver food pellets when due.
 */
 
 
-
 // SESSION AND TRIAL INFO >> TO MODIFY
 /*##################################################################################*/
 
 unsigned long SESSION_LENGTH_MIN = 25;
-unsigned long ACCLIMATION_LENGHT_MIN = 1;      
-unsigned long COOLDOWN_LENGHT_MIN = 1;
+unsigned long ACCLIMATION_LENGHT_MIN = 0;      
+unsigned long COOLDOWN_LENGHT_MIN = 0;
           int FEEDER_TYPE = 2;                    // 1 > MEDASSOCIATE 2 > COULDBOURN
-          int MAX_VR_LP = 4;         
-          int MAX_VI_SEC = 15;
+          int MAX_VR_LP = 1;         
+          int MAX_VI_SEC = 1;
           
 // ###################################################################################
 // ###################################################################################
@@ -168,9 +167,10 @@ void loop() {
   }
   }
   
-  // PRESS BUTTON FOR ONE SECOND OR GET INPUT FROM ARDUINO 02 FOR ONE SECOND
+  // START TRIAL
   /*##################################################################################*/
   START_SWITCH_STATE = digitalRead(START_SWITCH_PIN_GREEN);
+  
   if (START_SWITCH_STATE == HIGH) {
     
     unsigned long press_button_start = millis();
