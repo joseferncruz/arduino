@@ -1,8 +1,12 @@
+#include <Tone.h>
+
 /*
- * LeDoux Lab - DEC 2020
+ * LeDoux Lab - DEC 2021
  * jose [dot] cruz [at] nyu [dot] edu
  * 
  */
+
+ 
 
 // VARIABLES
 //#########################################################
@@ -30,6 +34,12 @@ const int speaker_pin = 3;
 
 const int shocker_r_pin = 4;
 const int shocker_l_pin = 5;
+
+const int buzzer_pin_r = 6;
+const int buzzer_pin_l = 7;
+
+Tone SPEAKER_RIGHT;
+Tone SPEAKER_LEFT;
 
 #include <SharpIR.h>
 #define ir_right A0
@@ -65,7 +75,11 @@ void setup() {
   Serial.begin(9600);
   
   // ASSIGN PINS 
-  pinMode(speaker_pin, OUTPUT);
+//  pinMode(speaker_pin, OUTPUT);
+
+  SPEAKER_RIGHT.begin(buzzer_pin_r);
+  SPEAKER_LEFT.begin(buzzer_pin_l);
+
   pinMode(shocker_r_pin, OUTPUT);
   pinMode(shocker_l_pin, OUTPUT);
   
@@ -192,7 +206,9 @@ void loop() {
       if (x == 0) {
 
           // TURN THE SPEAKER ON
-          digitalWrite(speaker_pin, HIGH);
+//          digitalWrite(speaker_pin, HIGH);
+          SPEAKER_RIGHT.play(5000);                        // FREQUENCY
+          SPEAKER_LEFT.play(5000);                         // FREQUENCY
           Serial.println("CS > ON");
 
           // TURN LED ON IN BOTH SIDES
@@ -225,7 +241,9 @@ void loop() {
             Serial.println("US_R > OFF");
             
             // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-            digitalWrite(speaker_pin, LOW);
+//            digitalWrite(speaker_pin, LOW);
+            SPEAKER_RIGHT.stop();                        
+            SPEAKER_LEFT.stop();                      
             Serial.println("CS > OFF");
 
             // RECORD LATENCY_END WHEN NO SHUTTLING
