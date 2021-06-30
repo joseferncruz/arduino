@@ -1,3 +1,4 @@
+
 #include <Tone.h>
 
 /*
@@ -14,6 +15,7 @@ const int N_TRIALS = 20;
 unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
 unsigned long TONE_DURATION = 15;                              // SECONDS 
 unsigned long SHOCK_DURATION = 1;                              // SECONDS
+int CS_FREQUENCY = 5000;                                  // IN HERTZ
 int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
 
 // LOCATION VARIABLES.
@@ -21,7 +23,6 @@ int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the in
 int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
 int RIGHT_ACTIVE;
 
-// TIME VARIABLES
 // ######################################
 unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
@@ -137,9 +138,11 @@ void loop() {
 
     // TEST TONE GENERATION
     Serial.println("TEST TONE GENERATION");
-    digitalWrite(speaker_pin, HIGH);
+    SPEAKER_RIGHT.play(CS_FREQUENCY); 
+    SPEAKER_LEFT.play(CS_FREQUENCY); 
     delay(3000);
-    digitalWrite(speaker_pin, LOW);  
+    SPEAKER_RIGHT.stop();
+    SPEAKER_LEFT.stop();
     
     // TEST SHOCK GENERATION LEFT, THEN RIGHT
     Serial.println("TEST SHOCKER");
@@ -207,8 +210,8 @@ void loop() {
 
           // TURN THE SPEAKER ON
 //          digitalWrite(speaker_pin, HIGH);
-          SPEAKER_RIGHT.play(5000);                        // FREQUENCY
-          SPEAKER_LEFT.play(5000);                         // FREQUENCY
+          SPEAKER_RIGHT.play(CS_FREQUENCY);                        // FREQUENCY
+          SPEAKER_LEFT.play(CS_FREQUENCY);                         // FREQUENCY
           Serial.println("CS > ON");
 
           // TURN LED ON IN BOTH SIDES
@@ -305,7 +308,8 @@ void loop() {
 
           // DELIVER TONE IN THE RIGHT COMPARTMENT
           Serial.println("RIGHT COMPARTMENT > ACTIVE");
-          digitalWrite(speaker_pin, HIGH);
+          SPEAKER_RIGHT.play(CS_FREQUENCY); 
+          SPEAKER_LEFT.play(CS_FREQUENCY); 
           Serial.println("CS > ON");
 
           // RECORD LATENCY_START
@@ -342,7 +346,8 @@ void loop() {
 
               // IF THE LEFT IS HIGH THEN TERMINATE TONE AND MOVE TO ITI
               // TERMINATES TONE IN THE RIGHT COMPARTMENT
-              digitalWrite(speaker_pin, LOW);
+              SPEAKER_RIGHT.stop(); 
+              SPEAKER_LEFT.stop(); 
               Serial.println("CS > OFF");
 
               // RECORD LATENCY_END WHEN SHUTTLING
@@ -381,7 +386,8 @@ void loop() {
               Serial.println("US_R > OFF");
               
               // TERMINATE TONE IN THE RIGHT COMPARTMENT IF AFTER SHOCK
-              digitalWrite(speaker_pin, LOW);
+              SPEAKER_RIGHT.stop(); 
+              SPEAKER_LEFT.stop(); 
               Serial.println("CS > OFF");
 
               // RECORD LATENCY_END WHEN NO SHUTTLING
@@ -402,7 +408,8 @@ void loop() {
           
           // DELIVER TONE IN THE LEFT COMPARTMENT
           Serial.println("LEFT COMPARTMENT > ACTIVE");
-          digitalWrite(speaker_pin, HIGH);
+          SPEAKER_RIGHT.play(CS_FREQUENCY); 
+          SPEAKER_LEFT.play(CS_FREQUENCY); 
           START_TONE = millis();
           CURRENT_TONE_DELAY = millis();
           Serial.println("CS > ON");
@@ -436,7 +443,8 @@ void loop() {
 
               // IF THE RIGHT IS HIGH THEN TERMINATE TONE AND MOVE TO ITI
               // TERMINATES TONE 
-              digitalWrite(speaker_pin, LOW);
+              SPEAKER_RIGHT.stop(); 
+              SPEAKER_LEFT.stop(); 
               Serial.println("CS > OFF");
 
               // RECORD LATENCY_END WHEN SHUTTLING
@@ -475,7 +483,8 @@ void loop() {
               Serial.println("US_L > OFF");
               
               // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-              digitalWrite(speaker_pin, LOW);
+              SPEAKER_RIGHT.stop(); 
+              SPEAKER_LEFT.stop(); 
               Serial.println("CS > OFF");
 
               // RECORD LATENCY_END WHEN NO SHUTTLING
