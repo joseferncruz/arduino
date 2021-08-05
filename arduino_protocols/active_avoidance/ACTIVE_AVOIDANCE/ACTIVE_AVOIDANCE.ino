@@ -1,5 +1,5 @@
-
 #include <Tone.h>
+
 
 /*
  * LeDoux Lab - DEC 2021
@@ -43,11 +43,36 @@ Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
 
 #include <SharpIR.h>
+
 #define ir_right A0
+#define ir_right2 A2
+#define ir_right3 A4
+#define ir_right4 A6
+#define ir_right5 A8
+
+
+
 #define ir_left A1
+#define ir_left2 A3
+#define ir_left3 A5
+#define ir_left4 A7
+#define ir_left5 A9
+
+
 #define model 1080
+
 SharpIR IR_SENSOR_R = SharpIR(ir_right, model);
+SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
+SharpIR IR_SENSOR_R3 = SharpIR(ir_right3, model);
+SharpIR IR_SENSOR_R4 = SharpIR(ir_right4, model);
+SharpIR IR_SENSOR_R5 = SharpIR(ir_right5, model);
+
 SharpIR IR_SENSOR_L = SharpIR(ir_left, model);
+SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
+SharpIR IR_SENSOR_L3 = SharpIR(ir_left3, model);
+SharpIR IR_SENSOR_L4 = SharpIR(ir_left4, model);
+SharpIR IR_SENSOR_L5 = SharpIR(ir_left5, model);
+
 int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 const int speaker_led_r = 9;
@@ -289,12 +314,18 @@ void loop() {
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
-        if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+        if (IR_SENSOR_R.distance() < IF_THRESHOLD || IR_SENSOR_R2.distance() < IF_THRESHOLD 
+        || IR_SENSOR_R3.distance() < IF_THRESHOLD ||IR_SENSOR_R4.distance() < IF_THRESHOLD || 
+        IR_SENSOR_R5.distance() < IF_THRESHOLD) {
           RIGHT_ACTIVE = HIGH;
           LEFT_ACTIVE = LOW;
-        } else if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+          
+        } else if (IR_SENSOR_L.distance() < IF_THRESHOLD || IR_SENSOR_L2.distance() < IF_THRESHOLD ||
+        IR_SENSOR_L3.distance() < IF_THRESHOLD || IR_SENSOR_L4.distance() < IF_THRESHOLD ||
+        IR_SENSOR_L5.distance() < IF_THRESHOLD) {
           LEFT_ACTIVE = HIGH;
           RIGHT_ACTIVE = LOW;
+          
         } else {
           RIGHT_ACTIVE = LOW;
           LEFT_ACTIVE = LOW;
@@ -332,9 +363,12 @@ void loop() {
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
-            if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_L.distance() < IF_THRESHOLD || IR_SENSOR_L2.distance() < IF_THRESHOLD ||
+            IR_SENSOR_L3.distance() < IF_THRESHOLD || IR_SENSOR_L4.distance() < IF_THRESHOLD ||
+            IR_SENSOR_L5.distance() < IF_THRESHOLD) {
               LEFT_ACTIVE = HIGH;
               RIGHT_ACTIVE = LOW;
+              
             } else {
               LEFT_ACTIVE = LOW;
               RIGHT_ACTIVE = LOW;
@@ -431,9 +465,12 @@ void loop() {
           while (true) {
 
             // CHECK IF RIGHT IS ACTIVE
-            if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_R.distance() < IF_THRESHOLD || IR_SENSOR_R2.distance() < IF_THRESHOLD ||
+        IR_SENSOR_R3.distance() < IF_THRESHOLD || IR_SENSOR_R4.distance() < IF_THRESHOLD ||
+        IR_SENSOR_R5.distance() < IF_THRESHOLD) {
               RIGHT_ACTIVE = HIGH;
               LEFT_ACTIVE = LOW;
+              
             } else {
               RIGHT_ACTIVE = LOW;
               LEFT_ACTIVE = LOW;
