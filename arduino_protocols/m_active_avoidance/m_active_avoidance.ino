@@ -15,27 +15,28 @@
 
 
 // VARIABLES
-//#########################################################
+//##################################################################################################################
 const int N_TRIALS = 20;
 unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
 unsigned long TONE_DURATION = 15;                              // SECONDS
 unsigned long SHOCK_DURATION = 1;                              // SECONDS
-int CS_FREQUENCY = 5000;                                  // IN HERTZ
+int CS_FREQUENCY = 5000;                                       // IN HERTZ
 int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
 
 // LOCATION VARIABLES.
-// ########################################################
-int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
+//##################################################################################################################
+int LEFT_ACTIVE;                                               // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
 int RIGHT_ACTIVE;
 
-// ######################################
+//##################################################################################################################
 unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
 unsigned long ITI_DURATION;
 
 // DIGITAL PINS
-// ########################################################
+//##################################################################################################################
+
 const int speaker_pin = 3;
 
 const int shocker_r_pin = 4;
@@ -94,7 +95,8 @@ const int test_switch_pin = 23;
 
 
 // VARIABLES FOR STATISTICS
-// ##########################################################
+//##################################################################################################################
+
 unsigned long ESCAPE_LATENCY_START;
 unsigned long ESCAPE_LATENCY_END;
 unsigned long ESCAPE_LATENCY_DELTA;
