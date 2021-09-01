@@ -72,7 +72,16 @@ SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
 SharpIR IR_SENSOR_L3 = SharpIR(ir_left3, model);
 SharpIR IR_SENSOR_L4 = SharpIR(ir_left4, model);
 
-int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
+// SENSOR THRESHOLDS
+const int IR_THRESHOLD_L1 = 19;
+const int IR_THRESHOLD_L2 = 18;
+const int IR_THRESHOLD_L3 = 18;
+const int IR_THRESHOLD_L4 = 20;
+
+const int IR_THRESHOLD_R1 = 22;
+const int IR_THRESHOLD_R2 = 21;
+const int IR_THRESHOLD_R3 = 22;
+const int IR_THRESHOLD_R4 = 19;
 
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
