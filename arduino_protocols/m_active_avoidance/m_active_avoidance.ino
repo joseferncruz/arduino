@@ -95,14 +95,36 @@ void setup() {
   Serial.println("PRESS GREEN SWITCH TO START...");
 
 
-  // UNCOMMENT TO TEST SENSORS
-//  while (true) {
-//    Serial.print("Left Sensor: ");
-//    Serial.println(IR_SENSOR_L.distance());
-//    Serial.print("Right Sensor: ");
-//    Serial.println(IR_SENSOR_R.distance());
-//    delay(1000);
-//  }
+  /*
+  // TEST SENSORS
+  // uncomment when you want to test
+  while (true){
+    Serial.print("Left 1: ");
+    Serial.println(IR_SENSOR_L.distance());
+    Serial.print("Left 2: ");
+    Serial.println(IR_SENSOR_L2.distance());
+    Serial.print("Left 3: ");
+    Serial.println(IR_SENSOR_L3.distance());
+    Serial.print("Left 4: ");
+    Serial.println(IR_SENSOR_L4.distance());
+   // Serial.print("Left 5: ");
+   // Serial.println(IR_SENSOR_L5.distance());
+
+    Serial.print("Right 1: ");
+    Serial.println(IR_SENSOR_R.distance());
+    Serial.print("Right 2: ");
+    Serial.println(IR_SENSOR_R2.distance());
+    Serial.print("Right 3: ");
+    Serial.println(IR_SENSOR_R3.distance());
+    Serial.print("Right 4: ");
+    Serial.println(IR_SENSOR_R4.distance());
+    // Serial.print("Right 5: ");
+    // Serial.println(IR_SENSOR_R5.distance());
+
+    delay(2000);
+    }
+    /**/
+
 
 }
 
