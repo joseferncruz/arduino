@@ -1,12 +1,16 @@
-
-#include <Tone.h>
-
 /*
  * LeDoux Lab - DEC 2021
  * jose [dot] cruz [at] nyu [dot] edu
  * ay2376 [at] nyu [dot] edu
  * snm427 [at] nyu [dot] edu
  */
+
+
+ /*
+    LIBRARIES
+ */
+ #include <SharpIR.h>
+ #include <Tone.h>
 
 
 
@@ -43,7 +47,6 @@ const int buzzer_pin_l = 7;
 Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
 
-#include <SharpIR.h>
 
 // ANALOG PINS
 // Right Sensors
