@@ -344,10 +344,16 @@ void loop() {
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
-        if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+        if (IR_SENSOR_R.distance() < IR_THRESHOLD_R1 ||
+        IR_SENSOR_R2.distance() < IR_THRESHOLD_R2 ||
+        IR_SENSOR_R3.distance() < IR_THRESHOLD_R3 ||
+        IR_SENSOR_R4.distance() < IR_THRESHOLD_R4) {
           RIGHT_ACTIVE = HIGH;
           LEFT_ACTIVE = LOW;
-        } else if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+        } else if (IR_SENSOR_L.distance() < IR_THRESHOLD_L1 ||
+        IR_SENSOR_L2.distance() < IR_THRESHOLD_L2 ||
+        IR_SENSOR_L3.distance() < IR_THRESHOLD_L3 ||
+        IR_SENSOR_L4.distance() < IR_THRESHOLD_L4) {
           LEFT_ACTIVE = HIGH;
           RIGHT_ACTIVE = LOW;
         } else {
@@ -387,7 +393,9 @@ void loop() {
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
-            if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_L.distance() < IR_THRESHOLD_L1 ||
+            IR_SENSOR_L2.distance() < IR_THRESHOLD_L2 ||
+            IR_SENSOR_L3.distance() < IR_THRESHOLD_L3) {
               LEFT_ACTIVE = HIGH;
               RIGHT_ACTIVE = LOW;
             } else {
@@ -486,7 +494,9 @@ void loop() {
           while (true) {
 
             // CHECK IF RIGHT IS ACTIVE
-            if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_R2.distance() < IR_THRESHOLD_R2 ||
+            IR_SENSOR_R3.distance() < IR_THRESHOLD_R3 ||
+            IR_SENSOR_R4.distance() < IR_THRESHOLD_R4) {
               RIGHT_ACTIVE = HIGH;
               LEFT_ACTIVE = LOW;
             } else {
