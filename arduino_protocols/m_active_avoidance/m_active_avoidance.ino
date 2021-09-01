@@ -55,11 +55,6 @@ const int buzzer_pin_l = 7;
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
 //##################################################################################################################
-
-Tone SPEAKER_RIGHT;
-Tone SPEAKER_LEFT;
-
-
 // ANALOG PINS
 // Right Sensors
 #define ir_right A0
@@ -72,6 +67,11 @@ Tone SPEAKER_LEFT;
 #define ir_left2 A3
 #define ir_left3 A5
 #define ir_left4 A7
+//##################################################################################################################
+
+
+Tone SPEAKER_RIGHT;
+Tone SPEAKER_LEFT;
 
 #define model 1080
 
