@@ -44,11 +44,34 @@ Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
 
 #include <SharpIR.h>
+
+// ANALOG PINS
+// Right Sensors
 #define ir_right A0
+#define ir_right2 A2
+#define ir_right3 A4
+#define ir_right4 A6
+
+// Left Sensors
 #define ir_left A1
+#define ir_left2 A3
+#define ir_left3 A5
+#define ir_left4 A7
+
 #define model 1080
+
+// Right Sensors
 SharpIR IR_SENSOR_R = SharpIR(ir_right, model);
+SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
+SharpIR IR_SENSOR_R3 = SharpIR(ir_right3, model);
+SharpIR IR_SENSOR_R4 = SharpIR(ir_right4, model);
+
+// Left Sensors
 SharpIR IR_SENSOR_L = SharpIR(ir_left, model);
+SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
+SharpIR IR_SENSOR_L3 = SharpIR(ir_left3, model);
+SharpIR IR_SENSOR_L4 = SharpIR(ir_left4, model);
+
 int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 const int speaker_led_r = 9;
