@@ -34,16 +34,27 @@ unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
 unsigned long ITI_DURATION;
 
-// DIGITAL PINS
-//##################################################################################################################
 
+/*
+    PIN ASSIGNMENTS
+*/
+//##################################################################################################################
+// DIGITAL PINS
+// Speakers
 const int speaker_pin = 3;
 
+// Shockers
 const int shocker_r_pin = 4;
 const int shocker_l_pin = 5;
 
+// Buzzers
 const int buzzer_pin_r = 6;
 const int buzzer_pin_l = 7;
+
+// LED Lights
+const int speaker_led_r = 9;
+const int speaker_led_l = 10;
+//##################################################################################################################
 
 Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
@@ -86,12 +97,6 @@ const int IR_THRESHOLD_R1 = 22;
 const int IR_THRESHOLD_R2 = 21;
 const int IR_THRESHOLD_R3 = 22;
 const int IR_THRESHOLD_R4 = 19;
-
-const int speaker_led_r = 9;
-const int speaker_led_l = 10;
-
-const int start_switch_pin = 22;
-const int test_switch_pin = 23;
 
 
 // VARIABLES FOR STATISTICS
