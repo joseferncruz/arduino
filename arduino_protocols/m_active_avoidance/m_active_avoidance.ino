@@ -174,15 +174,15 @@ void setup() {
     }
 
   // Find min and max values
-  int minR1 = checkR1[0];
-  int minR2 = checkR2[0];
-  int minR3 = checkR3[0];
-  int minR4 = checkR4[0];
+  unsigned int minR1 = checkR1[0];
+  unsigned int minR2 = checkR2[0];
+  unsigned int minR3 = checkR3[0];
+  unsigned int minR4 = checkR4[0];
 
-  int minL1 = checkL1[0];
-  int minL2 = checkL2[0];
-  int minL3 = checkL3[0];
-  int minL4 = checkL4[0];
+  unsigned int minL1 = checkL1[0];
+  unsigned int minL2 = checkL2[0];
+  unsigned int minL3 = checkL3[0];
+  unsigned int minL4 = checkL4[0];
 
   for (int i = 0; i < numReadings; i++){
     minR1 = min(checkR1[i], minR1);
@@ -204,7 +204,7 @@ void setup() {
   Serial.println(minL1);
   Serial.println(minL2);
   Serial.println(minL3);
-  Serial.println(minL4); 
+  Serial.println(minL4);
 
 
   /*
