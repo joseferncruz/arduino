@@ -64,9 +64,14 @@ const int shocker_l_pin = 5;
 const int buzzer_pin_r = 6;
 const int buzzer_pin_l = 7;
 
-// LED Lights
+// IR LED Lights
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
+
+// LED Check Lights (for UX design)
+const int check_red_LED = 11;
+const int check_yellow_LED = 12;
+const int check_green_LED = 13;
 //##################################################################################################################
 // ANALOG PINS
 // Right Sensors
@@ -139,6 +144,10 @@ void setup() {
 
   pinMode(start_switch_pin, INPUT);
   pinMode(test_switch_pin, INPUT);
+
+  pinMode(check_red_LED, OUTPUT);
+  pinMode(check_yellow_LED, OUTPUT);
+  pinMode(check_green_LED, OUTPUT); 
 
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
