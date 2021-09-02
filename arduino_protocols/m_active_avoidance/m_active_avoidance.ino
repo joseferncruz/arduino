@@ -19,7 +19,7 @@
 //##################################################################################################################
 // CHECK SENSORS VARIABLES
 // Reading arrays
-const unsigned int numReadings = 3000;                        // How many readings from each sensor
+const unsigned int numReadings = 400;                        // How many readings from each sensor
 //##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
