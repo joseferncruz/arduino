@@ -156,8 +156,6 @@ void setup() {
     Serial.println(IR_SENSOR_L3.distance());
     Serial.print("Left 4: ");
     Serial.println(IR_SENSOR_L4.distance());
-   // Serial.print("Left 5: ");
-   // Serial.println(IR_SENSOR_L5.distance());
 
     Serial.print("Right 1: ");
     Serial.println(IR_SENSOR_R1.distance());
@@ -167,8 +165,6 @@ void setup() {
     Serial.println(IR_SENSOR_R3.distance());
     Serial.print("Right 4: ");
     Serial.println(IR_SENSOR_R4.distance());
-    // Serial.print("Right 5: ");
-    // Serial.println(IR_SENSOR_R5.distance());
 
     delay(2000);
     }
