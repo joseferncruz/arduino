@@ -17,6 +17,10 @@
     VARIABLES
 */
 //##################################################################################################################
+// CHECK SENSORS VARIABLES
+// Reading arrays
+const unsigned int numReadings = 3000;                        // How many readings from each sensor
+//##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
 unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
@@ -145,6 +149,29 @@ void setup() {
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
 
+  // CHECK SENSORS
+  unsigned int checkR1[numReadings];
+  unsigned int checkR2[numReadings];
+  unsigned int checkR3[numReadings];
+  unsigned int checkR4[numReadings];
+
+  unsigned int checkL1[numReadings];
+  unsigned int checkL2[numReadings];
+  unsigned int checkL3[numReadings];
+  unsigned int checkL4[numReadings];
+
+  for (int i = 0; i < numReadings; i++){
+    checkR1[i] = IR_SENSOR_R1.distance();
+    checkR2[i] = IR_SENSOR_R2.distance();
+    checkR3[i] = IR_SENSOR_R3.distance();
+    checkR4[i] = IR_SENSOR_R4.distance();
+
+    checkL1[i] = IR_SENSOR_L1.distance();
+    checkL2[i] = IR_SENSOR_L2.distance();
+    checkL3[i] = IR_SENSOR_L3.distance();
+    checkL4[i] = IR_SENSOR_L4.distance();
+    }
+  
 
   /*
   // TEST SENSORS
