@@ -150,6 +150,7 @@ void setup() {
   Serial.println("PRESS GREEN SWITCH TO START...");
 
   // CHECK SENSORS
+  // Get 3000 readings from each sensor
   unsigned int checkR1[numReadings];
   unsigned int checkR2[numReadings];
   unsigned int checkR3[numReadings];
@@ -171,7 +172,30 @@ void setup() {
     checkL3[i] = IR_SENSOR_L3.distance();
     checkL4[i] = IR_SENSOR_L4.distance();
     }
-  
+
+  // Find min and max values
+  int minR1 = checkR1[0];
+  int minR2 = checkR2[0];
+  int minR3 = checkR3[0];
+  int minR4 = checkR4[0];
+
+  int minL1 = checkL1[0];
+  int minL2 = checkL2[0];
+  int minL3 = checkL3[0];
+  int minL4 = checkL4[0];
+
+  for (int i = 0; i < numReadings; i++){
+    minR1 = min(checkR1[i], minR1);
+    minR2 = min(checkR2[i], minR2);
+    minR3 = min(checkR3[i], minR3);
+    minR4 = min(checkR4[i], minR4);
+
+    minL1 = min(checkL1[i], minL1);
+    minL2 = min(checkL2[i], minL2);
+    minL3 = min(checkL3[i], minL3);
+    minL4 = min(checkL4[i], minL4);
+  }
+
 
   /*
   // TEST SENSORS
