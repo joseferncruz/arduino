@@ -44,7 +44,6 @@ float ESCAPE_LATENCY_CUMULATIVE;
 // SESSION
 int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
 int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
-//int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
 //##################################################################################################################
 
 
@@ -130,9 +129,6 @@ void setup() {
   // INITIATE SERIAL
   Serial.begin(9600);
 
-  // ASSIGN PINS
-//  pinMode(speaker_pin, OUTPUT);
-
   SPEAKER_RIGHT.begin(buzzer_pin_r);
   SPEAKER_LEFT.begin(buzzer_pin_l);
 
@@ -142,12 +138,9 @@ void setup() {
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
 
-  pinMode(start_switch_pin, INPUT);
-  pinMode(test_switch_pin, INPUT);
-
   pinMode(check_red_LED, OUTPUT);
   pinMode(check_yellow_LED, OUTPUT);
-  pinMode(check_green_LED, OUTPUT); 
+  pinMode(check_green_LED, OUTPUT);
 
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
@@ -290,7 +283,6 @@ void loop() {
       if (x == 0) {
 
           // TURN THE SPEAKER ON
-//          digitalWrite(speaker_pin, HIGH);
           SPEAKER_RIGHT.play(CS_FREQUENCY);                        // FREQUENCY
           SPEAKER_LEFT.play(CS_FREQUENCY);                         // FREQUENCY
           Serial.println("CS > ON");
@@ -325,7 +317,6 @@ void loop() {
             Serial.println("US_R > OFF");
 
             // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-//            digitalWrite(speaker_pin, LOW);
             SPEAKER_RIGHT.stop();
             SPEAKER_LEFT.stop();
             Serial.println("CS > OFF");
