@@ -171,7 +171,7 @@ void setup() {
     checkL2[i] = IR_SENSOR_L2.distance();
     checkL3[i] = IR_SENSOR_L3.distance();
     checkL4[i] = IR_SENSOR_L4.distance();
-    }
+  }
 
   // Find min and max values
   unsigned int minR1 = checkR1[0];
