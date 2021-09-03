@@ -211,12 +211,12 @@ void setup() {
   }
 
   if (check == 1){
-    Serial.println("Success");
-    // digitalWrite(check_green_LED, HIGH);
+    // Serial.println("Success");
+    digitalWrite(check_green_LED, HIGH);
   } else if (check == 0){
     while(true){
-      Serial.println("Fail");
-      // digitalWrite(check_yellow_LED, HIGH);
+      // Serial.println("Fail");
+      digitalWrite(check_yellow_LED, HIGH);
       delay(500);
     }
   } else {
