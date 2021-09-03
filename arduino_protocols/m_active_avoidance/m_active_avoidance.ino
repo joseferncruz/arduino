@@ -196,16 +196,7 @@ void setup() {
     minL4 = min(checkL4[i], minL4);
   }
 
-  Serial.println(minR1);
-  Serial.println(minR2);
-  Serial.println(minR3);
-  Serial.println(minR4);
-
-  Serial.println(minL1);
-  Serial.println(minL2);
-  Serial.println(minL3);
-  Serial.println(minL4);
-
+  
 
   /*
   // TEST SENSORS
