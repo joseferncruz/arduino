@@ -21,6 +21,10 @@
 // Reading arrays
 const unsigned int numReadings = 400;                        // How many readings from each sensor
 int check = 1;                                               // 0 if failed, 1 for default success
+
+// Timing variables for yellow light blink
+unsigned long previousMillis = 0;
+const long interval = 1000;
 //##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
@@ -175,6 +179,20 @@ void setup() {
     checkL2[i] = IR_SENSOR_L2.distance();
     checkL3[i] = IR_SENSOR_L3.distance();
     checkL4[i] = IR_SENSOR_L4.distance();
+
+    // Blink yellow LED
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= interval) {
+      previousMillis = currentMillis;
+      int yellow_state = LOW;
+      if (yellow_state == LOW){
+        yellow_state = HIGH;
+      } else{
+        yellow_state = LOW;
+      }
+      digitalWrite(check_yellow_LED, yellow_state); 
+    }
   }
 
   // Find min and max values
@@ -220,7 +238,7 @@ void setup() {
       } else {
         ledState = LOW;
       }
-      digitalWrite(check_red_LED, ledState); 
+      digitalWrite(check_red_LED, ledState);
       delay(500);
     }
   } else {
