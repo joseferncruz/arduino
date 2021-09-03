@@ -213,8 +213,14 @@ void setup() {
   if (check == 1){
     digitalWrite(check_green_LED, HIGH);
   } else if (check == 0){
+    int ledState = LOW;
     while(true){
-      digitalWrite(check_red_LED, HIGH);
+      if (ledState == LOW){
+        ledState = HIGH;
+      } else {
+        ledState = LOW;
+      }
+      digitalWrite(check_red_LED, ledState); 
       delay(500);
     }
   } else {
