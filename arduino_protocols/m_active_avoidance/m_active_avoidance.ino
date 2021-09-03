@@ -158,7 +158,12 @@ void setup() {
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
 
-  // CHECK SENSORS
+  // CHECK Sensors
+  // Turn off all LED lights
+  digitalWrite(check_red_LED, LOW);
+  digitalWrite(check_yellow_LED, LOW);
+  digitalWrite(check_green_LED, LOW); 
+
   // Get 3000 readings from each sensor
   unsigned int checkR1[numReadings];
   unsigned int checkR2[numReadings];
@@ -230,7 +235,7 @@ void setup() {
 
   if (check == 1){
     digitalWrite(check_green_LED, HIGH);
-    digitalWrite(check_yellow_LED, LOW); 
+    digitalWrite(check_yellow_LED, LOW);
   } else if (check == 0){
     digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
