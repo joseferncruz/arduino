@@ -196,7 +196,12 @@ void setup() {
     minL4 = min(checkL4[i], minL4);
   }
 
-  
+  unsigned int arrayMin[8] = {minL1, minL2, minL3, minL4,
+                              minR1, minR2, minR3, minR4};
+
+  for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
+    arrayMin[i] -= 2; 
+  }
 
   /*
   // TEST SENSORS
