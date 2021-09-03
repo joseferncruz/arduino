@@ -25,6 +25,7 @@ int check = 1;                                               // 0 if failed, 1 f
 // Timing variables for yellow light blink
 unsigned long previousMillis = 0;
 const long interval = 1000;
+int yellow_state = LOW;
 //##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
@@ -185,13 +186,12 @@ void setup() {
 
     if (currentMillis - previousMillis >= interval) {
       previousMillis = currentMillis;
-      int yellow_state = LOW;
       if (yellow_state == LOW){
         yellow_state = HIGH;
       } else{
         yellow_state = LOW;
       }
-      digitalWrite(check_yellow_LED, yellow_state); 
+      digitalWrite(check_yellow_LED, yellow_state);
     }
   }
 
