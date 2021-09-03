@@ -156,13 +156,13 @@ void setup() {
   pinMode(check_green_LED, OUTPUT);
 
   // PRINT ENTRY MESSAGE
-  Serial.println("PRESS GREEN SWITCH TO START...");
+  Serial.println("CHECKING SENSOR READINGS...");
 
   // CHECK Sensors
   // Turn off all LED lights
   digitalWrite(check_red_LED, LOW);
   digitalWrite(check_yellow_LED, LOW);
-  digitalWrite(check_green_LED, LOW); 
+  digitalWrite(check_green_LED, LOW);
 
   // Get 3000 readings from each sensor
   unsigned int checkR1[numReadings];
@@ -237,6 +237,7 @@ void setup() {
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
   } else if (check == 0){
+    Serial.println("Sensors are not ready for use. Please either contact Rodrigo or Audrey.")
     digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
     while(true){
