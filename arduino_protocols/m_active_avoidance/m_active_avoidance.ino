@@ -20,6 +20,7 @@
 // CHECK SENSORS VARIABLES
 // Reading arrays
 const unsigned int numReadings = 400;                        // How many readings from each sensor
+int check = 1;                                               // 0 if failed, 1 for default success
 //##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
@@ -124,6 +125,9 @@ const int IR_THRESHOLD_R1 = 22;
 const int IR_THRESHOLD_R2 = 21;
 const int IR_THRESHOLD_R3 = 22;
 const int IR_THRESHOLD_R4 = 19;
+
+unsigned int IR_THRESHOLDS[] = {IR_THRESHOLD_L1, IR_THRESHOLD_L2, IR_THRESHOLD_L3, IR_THRESHOLD_L4,
+                                IR_THRESHOLD_R1, IR_THRESHOLD_R2, IR_THRESHOLD_R3, IR_THRESHOLD_R4};
 //##################################################################################################################
 
 
@@ -200,7 +204,11 @@ void setup() {
                               minR1, minR2, minR3, minR4};
 
   for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
-    arrayMin[i] -= 2; 
+    arrayMin[i] -= 2;
+    if (arrayMin[i] < IR_THRESHOLDS[i]){
+      check = 0; 
+    }
+
   }
 
   /*
