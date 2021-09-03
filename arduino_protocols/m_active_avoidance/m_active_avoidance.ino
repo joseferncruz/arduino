@@ -230,7 +230,9 @@ void setup() {
 
   if (check == 1){
     digitalWrite(check_green_LED, HIGH);
+    digitalWrite(check_yellow_LED, LOW); 
   } else if (check == 0){
+    digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
     while(true){
       if (ledState == LOW){
