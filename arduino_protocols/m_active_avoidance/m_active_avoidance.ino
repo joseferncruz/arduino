@@ -206,9 +206,21 @@ void setup() {
   for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
     arrayMin[i] -= 2;
     if (arrayMin[i] < IR_THRESHOLDS[i]){
-      check = 0; 
+      check = 0;
     }
+  }
 
+  if (check == 1){
+    Serial.println("Success");
+    // digitalWrite(check_green_LED, HIGH);
+  } else if (check == 0){
+    while(true){
+      Serial.println("Fail");
+      // digitalWrite(check_yellow_LED, HIGH);
+      delay(500);
+    }
+  } else {
+    digitalWrite(check_yellow_LED, HIGH);
   }
 
   /*
