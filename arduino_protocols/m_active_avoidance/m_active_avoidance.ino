@@ -216,7 +216,7 @@ void setup() {
   } else if (check == 0){
     while(true){
       // Serial.println("Fail");
-      digitalWrite(check_yellow_LED, HIGH);
+      digitalWrite(check_red_LED, HIGH);
       delay(500);
     }
   } else {
