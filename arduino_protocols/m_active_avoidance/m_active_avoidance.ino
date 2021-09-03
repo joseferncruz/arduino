@@ -237,7 +237,7 @@ void setup() {
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
   } else if (check == 0){
-    Serial.println("Sensors are not ready for use. Please either contact Rodrigo or Audrey.")
+    Serial.println("Sensors are not ready for use. Please either contact Rodrigo or Audrey."); 
     digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
     while(true){
