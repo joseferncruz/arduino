@@ -158,11 +158,11 @@ void setup() {
   // PRINT ENTRY MESSAGE
   delay(5000);
   Serial.println("CHECK SENSOR READINGS...");
-  Serial.println("IF THE LIGHT IS: ")
-  Serial.print("\t"); Serial.println("SOLID RED, PLEASE RESET THE ARDUINO BOARD")
-  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING YELLOW, THE BOARD IS CHECKING THE SENSORS")
-  Serial.print("\t"); Serial.println("IF THE LIGHT IS GREEN, CONTINUE WITH THE EXPERIMENT :)")
-  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING RED, SENSOR CHECK HAS FAILED :(")
+  Serial.println("IF THE LIGHT IS: ");
+  Serial.print("\t"); Serial.println("SOLID RED, PLEASE RESET THE ARDUINO BOARD");
+  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING YELLOW, THE BOARD IS CHECKING THE SENSORS");
+  Serial.print("\t"); Serial.println("IF THE LIGHT IS GREEN, CONTINUE WITH THE EXPERIMENT :)");
+  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING RED, SENSOR CHECK HAS FAILED :(");
 
   // CHECK Sensors
   // Turn off all LED lights
@@ -170,7 +170,7 @@ void setup() {
   digitalWrite(check_yellow_LED, LOW);
   digitalWrite(check_green_LED, LOW);
 
-  Serial.println("COLLECTING AND EVALUATING SENSOR READINGS..."); 
+  Serial.println("COLLECTING AND EVALUATING SENSOR READINGS...");
 
   // Get 3000 readings from each sensor
   unsigned int checkR1[numReadings];
@@ -248,7 +248,7 @@ void setup() {
   if (test_pass){
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
-    Serial.println("Sensor check complete! Continue with the experiment.")
+    Serial.println("Sensor check complete! Continue with the experiment.");
   } else if (!test_pass){
     Serial.println("Sensor check has failed. Please either contact Rodrigo or Audrey.");
     digitalWrite(check_yellow_LED, LOW);
