@@ -198,12 +198,11 @@ void setup() {
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= interval) {
+      yellow_state = HIGH;
       previousMillis = currentMillis;
-      if (yellow_state == LOW){
-        yellow_state = HIGH;
-      } else{
-        yellow_state = LOW;
-      }
+      digitalWrite(check_yellow_LED, yellow_state);
+    } else {
+      yellow_state = LOW;
       digitalWrite(check_yellow_LED, yellow_state);
     }
   }
