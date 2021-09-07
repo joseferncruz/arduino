@@ -200,9 +200,9 @@ void setup() {
     checkL4[i] = IR_SENSOR_L4.distance();
 
     // Blink yellow LED
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= blink_interval) {
-      previousMillis = currentMillis;
+    unsigned long yellow_LED_start_time = millis();
+    if (yellow_LED_start_time - previousMillis >= blink_interval) {
+      previousMillis = yellow_LED_start_time;
       if (yellow_state == LOW){
         yellow_state = HIGH;
       } else{
