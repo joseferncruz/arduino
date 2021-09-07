@@ -160,9 +160,9 @@ void setup() {
   Serial.println("CHECK SENSOR READINGS...");
   Serial.println("IF THE LIGHT IS: ");
   Serial.print("\t"); Serial.println("SOLID RED, PLEASE RESET THE ARDUINO BOARD");
-  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING YELLOW, THE BOARD IS CHECKING THE SENSORS");
-  Serial.print("\t"); Serial.println("IF THE LIGHT IS GREEN, CONTINUE WITH THE EXPERIMENT :)");
-  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING RED, SENSOR CHECK HAS FAILED :(");
+  Serial.print("\t"); Serial.println("BLINKING YELLOW, THE BOARD IS CHECKING THE SENSORS");
+  Serial.print("\t"); Serial.println("GREEN, CONTINUE WITH THE EXPERIMENT :)");
+  Serial.print("\t"); Serial.println("BLINKING RED, SENSOR CHECK HAS FAILED :(");
 
   // CHECK Sensors
   // Turn off all LED lights
@@ -170,7 +170,9 @@ void setup() {
   digitalWrite(check_yellow_LED, LOW);
   digitalWrite(check_green_LED, LOW);
 
+  Serial.println();
   Serial.println("COLLECTING AND EVALUATING SENSOR READINGS...");
+  Serial.println();
 
   // Get 3000 readings from each sensor
   unsigned int checkR1[numReadings];
