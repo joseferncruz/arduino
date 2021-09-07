@@ -242,6 +242,7 @@ void setup() {
   if (test_pass){
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
+    Serial.println("Sensor check complete! Continue with the experiment.")
   } else if (!test_pass){
     Serial.println("Sensor check has failed. Please either contact Rodrigo or Audrey.");
     digitalWrite(check_yellow_LED, LOW);
