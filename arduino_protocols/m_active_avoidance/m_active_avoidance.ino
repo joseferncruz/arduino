@@ -24,7 +24,7 @@ bool test_pass = true;
 
 // Timing variables for yellow light blink
 unsigned long previousMillis = 0;
-const long interval = 1000;
+const long blink_interval = 1000;
 int yellow_state = LOW;
 //##################################################################################################################
 // EXPERIMENTAL VARIABLES
@@ -201,7 +201,7 @@ void setup() {
 
     // Blink yellow LED
     unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= interval) {
+    if (currentMillis - previousMillis >= blink_interval) {
       previousMillis = currentMillis;
       if (yellow_state == LOW){
         yellow_state = HIGH;
@@ -259,7 +259,7 @@ void setup() {
   } else if (!test_pass){
     Serial.println("Sensor check has failed. Please either contact Rodrigo or Audrey.");
     digitalWrite(check_red_LED, LOW);
-    digitalWrite(check_yellow_LED, LOW); 
+    digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
     while(true){
       if (ledState == LOW){
