@@ -156,7 +156,13 @@ void setup() {
   pinMode(check_green_LED, OUTPUT);
 
   // PRINT ENTRY MESSAGE
+  delay(5000);
   Serial.println("CHECKING SENSOR READINGS...");
+  Serial.println("IF THE LIGHT IS: ")
+  Serial.print("\t"); Serial.println("SOLID RED, PLEASE RESET THE ARDUINO BOARD")
+  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING YELLOW, THE BOARD IS CHECKING THE SENSORS")
+  Serial.print("\t"); Serial.println("IF THE LIGHT IS GREEN, CONTINUE WITH THE EXPERIMENT :)")
+  Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING RED, SENSOR CHECK HAS FAILED :(")
 
   // CHECK Sensors
   // Turn off all LED lights
@@ -237,7 +243,7 @@ void setup() {
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
   } else if (check == 0){
-    Serial.println("Sensors are not ready for use. Please either contact Rodrigo or Audrey."); 
+    Serial.println("Sensor check has failed. Please either contact Rodrigo or Audrey.");
     digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
     while(true){
