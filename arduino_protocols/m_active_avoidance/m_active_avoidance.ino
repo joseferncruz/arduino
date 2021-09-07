@@ -165,16 +165,18 @@ void setup() {
   Serial.print("\t"); Serial.println("BLINKING RED, SENSOR CHECK HAS FAILED :(");
 
   // CHECK Sensors
-  // Turn off all LED lights
+  // Turn off LED lights except for reed
   digitalWrite(check_red_LED, HIGH);
   digitalWrite(check_yellow_LED, LOW);
   digitalWrite(check_green_LED, LOW);
 
+  // PRINT MESSAGE TO USER
   Serial.println();
   Serial.println("COLLECTING AND EVALUATING SENSOR READINGS...");
   Serial.println();
 
-  // Get 3000 readings from each sensor
+  // COLLECT 400 SENSOR READINGS
+  // Create empty arrays
   unsigned int checkR1[numReadings];
   unsigned int checkR2[numReadings];
   unsigned int checkR3[numReadings];
@@ -185,6 +187,7 @@ void setup() {
   unsigned int checkL3[numReadings];
   unsigned int checkL4[numReadings];
 
+  // Fill arrays
   for (int i = 0; i < numReadings; i++){
     checkR1[i] = IR_SENSOR_R1.distance();
     checkR2[i] = IR_SENSOR_R2.distance();
@@ -198,9 +201,7 @@ void setup() {
 
     // Blink yellow LED
     unsigned long currentMillis = millis();
-
     if (currentMillis - previousMillis >= interval) {
-      // put yellow_state = HIGH
       previousMillis = currentMillis;
       if (yellow_state == LOW){
         yellow_state = HIGH;
@@ -211,9 +212,8 @@ void setup() {
     }
   }
 
-
-
-  // Find min and max values
+  // FIND MIN VALUES
+  // Create min variables
   unsigned int minR1 = checkR1[0];
   unsigned int minR2 = checkR2[0];
   unsigned int minR3 = checkR3[0];
@@ -225,6 +225,7 @@ void setup() {
   unsigned int minL4 = checkL4[0];
 
   for (int i = 0; i < numReadings; i++){
+    // Documentation: https://www.arduino.cc/reference/en/language/functions/math/min/
     minR1 = min(checkR1[i], minR1);
     minR2 = min(checkR2[i], minR2);
     minR3 = min(checkR3[i], minR3);
@@ -236,6 +237,7 @@ void setup() {
     minL4 = min(checkL4[i], minL4);
   }
 
+  // COMPARE MIN VALUES WITH IR THRESHOLDS SET
   unsigned int arrayMin[8] = {minL1, minL2, minL3, minL4,
                               minR1, minR2, minR3, minR4};
 
@@ -248,6 +250,7 @@ void setup() {
     }
   }
 
+  // TURN ON LED LIGHT BASED ON CHECK SENSOR OUTCOME
   if (test_pass){
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
