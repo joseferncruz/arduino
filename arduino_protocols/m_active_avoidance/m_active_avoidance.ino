@@ -20,7 +20,7 @@
 // CHECK SENSORS VARIABLES
 // Reading arrays
 const unsigned int numReadings = 400;                        // How many readings from each sensor
-int check = 1;                                               // 0 if failed, 1 for default success
+bool test_pass = true;
 
 // Timing variables for yellow light blink
 unsigned long previousMillis = 0;
@@ -235,14 +235,14 @@ void setup() {
   for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
     arrayMin[i] -= 2;
     if (arrayMin[i] < IR_THRESHOLDS[i]){
-      check = 0;
+      test_pass = false;
     }
   }
 
-  if (check == 1){
+  if (test_pass){
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
-  } else if (check == 0){
+  } else if (!test_pass){
     Serial.println("Sensor check has failed. Please either contact Rodrigo or Audrey.");
     digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
