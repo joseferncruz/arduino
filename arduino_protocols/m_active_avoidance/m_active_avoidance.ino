@@ -23,7 +23,7 @@ const unsigned int numReadings = 400;                        // How many reading
 bool test_pass = true;
 
 // Timing variables for yellow light blink
-unsigned long previousMillis = 0;
+unsigned long yellow_LED_end_time = 0;
 const long blink_interval = 1000;
 int yellow_state = LOW;
 //##################################################################################################################
@@ -201,8 +201,8 @@ void setup() {
 
     // Blink yellow LED
     unsigned long yellow_LED_start_time = millis();
-    if (yellow_LED_start_time - previousMillis >= blink_interval) {
-      previousMillis = yellow_LED_start_time;
+    if (yellow_LED_start_time - yellow_LED_end_time >= blink_interval) {
+      yellow_LED_end_time = yellow_LED_start_time;
       if (yellow_state == LOW){
         yellow_state = HIGH;
       } else{
