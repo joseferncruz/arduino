@@ -157,7 +157,7 @@ void setup() {
 
   // PRINT ENTRY MESSAGE
   delay(5000);
-  Serial.println("CHECKING SENSOR READINGS...");
+  Serial.println("CHECK SENSOR READINGS...");
   Serial.println("IF THE LIGHT IS: ")
   Serial.print("\t"); Serial.println("SOLID RED, PLEASE RESET THE ARDUINO BOARD")
   Serial.print("\t"); Serial.println("IF THE LIGHT IS BLINKING YELLOW, THE BOARD IS CHECKING THE SENSORS")
@@ -169,6 +169,8 @@ void setup() {
   digitalWrite(check_red_LED, LOW);
   digitalWrite(check_yellow_LED, LOW);
   digitalWrite(check_green_LED, LOW);
+
+  Serial.println("COLLECTING AND EVALUATING SENSOR READINGS..."); 
 
   // Get 3000 readings from each sensor
   unsigned int checkR1[numReadings];
@@ -206,6 +208,8 @@ void setup() {
     }
   }
 
+
+
   // Find min and max values
   unsigned int minR1 = checkR1[0];
   unsigned int minR2 = checkR2[0];
@@ -234,7 +238,7 @@ void setup() {
 
   for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
     // The minimum found using 400 values is always greater than the true minimum.
-    // We subtract 2 from the minimum found using 400 values to approximate the true minimum. 
+    // We subtract 2 from the minimum found using 400 values to approximate the true minimum.
     arrayMin[i] -= 2;
     if (arrayMin[i] < IR_THRESHOLDS[i]){
       test_pass = false;
