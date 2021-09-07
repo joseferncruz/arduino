@@ -748,4 +748,8 @@ void loop() {
 
   }
 
+  // CHANGE LED TO INDICATE RESET STATUS
+  digitalWrite(check_green_LED, LOW);
+  digitalWrite(check_red_LED, HIGH);
+
 }
