@@ -157,12 +157,12 @@ void setup() {
 
   // PRINT ENTRY MESSAGE
   delay(5000);
-  Serial.println("CHECK SENSOR READINGS...");
+  Serial.println("***CHECK SENSOR READINGS***");
   Serial.println("IF THE LIGHT IS: ");
-  Serial.print("\t"); Serial.println("SOLID RED, PLEASE RESET THE ARDUINO BOARD");
-  Serial.print("\t"); Serial.println("BLINKING YELLOW, THE BOARD IS CHECKING THE SENSORS");
-  Serial.print("\t"); Serial.println("GREEN, CONTINUE WITH THE EXPERIMENT :)");
-  Serial.print("\t"); Serial.println("BLINKING RED, SENSOR CHECK HAS FAILED :(");
+  Serial.print("\t"); Serial.println("SOLID RED >>> RESET THE BOARD");
+  Serial.print("\t"); Serial.println("BLINKING YELLOW >>> WAIT, BOARD IS CHECKING SENSORS");
+  Serial.print("\t"); Serial.println("BLINKING RED >>> SENSOR CHECK HAS FAILED :(");
+  Serial.print("\t"); Serial.println("GREEN >>> CONTINUE WITH THE EXPERIMENT :)");
 
   // CHECK Sensors
   // Turn off LED lights except for reed
