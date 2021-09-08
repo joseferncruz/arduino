@@ -290,13 +290,13 @@ void setup() {
         x = 0;
         TEST_START = false;
 
-        Serial.println("Minimum sensor value readings: ");
+        Serial.println("Minimum values: ");
         Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
         for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
           Serial.print(arrayMin[i]); Serial.print(" ");
         }
         Serial.println();
-        Serial.println("Sensor thresholds set: ");
+        Serial.println("Sensor thresholds: ");
         Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
         for (int i = 0; i < (sizeof(IR_THRESHOLDS) / sizeof(IR_THRESHOLDS[0])); i++){
           Serial.print(IR_THRESHOLDS[i]); Serial.print(" ");
