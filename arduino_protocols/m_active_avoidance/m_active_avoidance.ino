@@ -277,7 +277,7 @@ void setup() {
         ledState = LOW;
       }
       digitalWrite(check_red_LED, ledState);
-      delay(500);
+      delay(300);
 
       // Recover minimum values from readings
       int x = Serial.parseInt();
