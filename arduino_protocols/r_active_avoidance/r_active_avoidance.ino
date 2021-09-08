@@ -300,10 +300,12 @@ void loop() {
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
-        if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+        if (IR_SENSOR_R1.distance() < IF_THRESHOLD ||
+        IR_SENSOR_R2.distance() < IF_THRESHOLD) {
           RIGHT_ACTIVE = HIGH;
           LEFT_ACTIVE = LOW;
-        } else if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+        } else if (IR_SENSOR_L2.distance() < IF_THRESHOLD ||
+          IR_SENSOR_L2.distance() < IF_THRESHOLD) {
           LEFT_ACTIVE = HIGH;
           RIGHT_ACTIVE = LOW;
         } else {
@@ -343,7 +345,8 @@ void loop() {
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
-            if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_L1.distance() < IF_THRESHOLD ||
+            IR_SENSOR_L2.distance() < IF_THRESHOLD) {
               LEFT_ACTIVE = HIGH;
               RIGHT_ACTIVE = LOW;
             } else {
@@ -442,7 +445,8 @@ void loop() {
           while (true) {
 
             // CHECK IF RIGHT IS ACTIVE
-            if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_R1.distance() < IF_THRESHOLD ||
+            IR_SENSOR_R2.distance() < IF_THRESHOLD) {
               RIGHT_ACTIVE = HIGH;
               LEFT_ACTIVE = LOW;
             } else {
