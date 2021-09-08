@@ -269,14 +269,14 @@ void setup() {
     // Turn on LEDs
     digitalWrite(check_red_LED, LOW);
     digitalWrite(check_yellow_LED, LOW);
-    int ledState = LOW;
+    int red_state = LOW;
     while(true){
-      if (ledState == LOW){
-        ledState = HIGH;
+      if (red_state == LOW){
+        red_state = HIGH;
       } else {
-        ledState = LOW;
+        red_state = LOW;
       }
-      digitalWrite(check_red_LED, ledState);
+      digitalWrite(check_red_LED, red_state);
       delay(300);
 
       // Recover minimum values from readings
