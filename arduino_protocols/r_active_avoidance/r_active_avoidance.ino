@@ -23,6 +23,10 @@ int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the in
 int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
 int RIGHT_ACTIVE;
 
+// FORCE LOCATION SEARCH VARIABLES ()
+const long FORCE_INTERVAL = 30000;
+unsigned long FORCE_START;
+unsigned long FORCE_END;
 // ######################################
 unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
@@ -300,6 +304,9 @@ void loop() {
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
+        // Start time for force search
+        FORCE_START = millis();
+
         if (IR_SENSOR_R1.distance() < IR_THRESHOLD ||
         IR_SENSOR_R2.distance() < IR_THRESHOLD) {
           RIGHT_ACTIVE = HIGH;
@@ -311,6 +318,37 @@ void loop() {
         } else {
           RIGHT_ACTIVE = LOW;
           LEFT_ACTIVE = LOW;
+        }
+
+        // Deliver force movement
+        if ((FORCE_START - 0) > FORCE_INTERVAL){
+          // shock generation
+          digitalWrite(shocker_r_pin, HIGH);
+          digitalWrite(shocker_l_pin, HIGH);
+          Serial.println("US > ON");
+
+          for (int i = 0; i < SHOCK_DURATION; i++) {
+            delay(1000);
+          }
+
+          digitalWrite(shocker_r_pin, LOW);
+          digitalWrite(shocker_l_pin, LOW);
+          Serial.println("US > OFF");
+
+          // Search for location again
+          if (IR_SENSOR_R1.distance() < IR_THRESHOLD ||
+          IR_SENSOR_R2.distance() < IR_THRESHOLD) {
+            RIGHT_ACTIVE = HIGH;
+            LEFT_ACTIVE = LOW;
+          } else if (IR_SENSOR_L2.distance() < IR_THRESHOLD ||
+            IR_SENSOR_L2.distance() < IR_THRESHOLD) {
+            LEFT_ACTIVE = HIGH;
+            RIGHT_ACTIVE = LOW;
+          } else {
+            RIGHT_ACTIVE = LOW;
+            LEFT_ACTIVE = LOW;
+          }
+
         }
 
         // RESET VARIABLES FOR SHUTTLING
