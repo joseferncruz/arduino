@@ -261,6 +261,8 @@ void setup() {
     digitalWrite(check_red_LED, LOW);
 
   } else if (!test_pass){
+    bool TEST_START = false;
+
     // Message to user
     Serial.println("Sensor check has failed. Please contact either Rodrigo or Audrey.");
 
@@ -276,6 +278,31 @@ void setup() {
       }
       digitalWrite(check_red_LED, ledState);
       delay(500);
+
+      // Recover minimum values from readings
+      int x = Serial.parseInt();
+      if (x==2){
+        TEST_START = true;
+      }
+
+      if (TEST_START){
+        // Reset serial input from Bonsai
+        x = 0;
+        TEST_START = false;
+
+        Serial.println("Minimum sensor value readings: ");
+        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
+        for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
+          Serial.print(arrayMin[i]); Serial.print(" ");
+        }
+        Serial.println();
+        Serial.println("Sensor thresholds set: ");
+        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
+        for int(i = 0; i < (sizeof(IR_THRESHOLDS) / sizeof(IR_THRESHOLDS[0])); i++){
+          Serial.print(IR_THRESHOLDS[i]); Serial.print(" ");
+        }
+        Serial.println(); 
+      }
     }
 
   } else {
