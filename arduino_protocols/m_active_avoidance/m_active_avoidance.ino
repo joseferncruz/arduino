@@ -252,12 +252,19 @@ void setup() {
 
   // TURN ON LED LIGHT BASED ON CHECK SENSOR OUTCOME
   if (test_pass){
+    // Message to user
+    Serial.println("Sensor check complete! Continue with the experiment.");
+
+    // Turn on LEDs
     digitalWrite(check_green_LED, HIGH);
     digitalWrite(check_yellow_LED, LOW);
     digitalWrite(check_red_LED, LOW);
-    Serial.println("Sensor check complete! Continue with the experiment.");
+
   } else if (!test_pass){
+    // Message to user
     Serial.println("Sensor check has failed. Please contact either Rodrigo or Audrey.");
+
+    // Turn on LEDs
     digitalWrite(check_red_LED, LOW);
     digitalWrite(check_yellow_LED, LOW);
     int ledState = LOW;
@@ -270,6 +277,7 @@ void setup() {
       digitalWrite(check_red_LED, ledState);
       delay(500);
     }
+
   } else {
     digitalWrite(check_yellow_LED, HIGH);
   }
