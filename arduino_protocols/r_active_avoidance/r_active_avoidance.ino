@@ -337,20 +337,13 @@ void loop() {
           digitalWrite(shocker_l_pin, LOW);
           Serial.println("US > OFF");
 
-          // Search for location again
-          if (IR_SENSOR_R1.distance() < IR_THRESHOLD ||
-          IR_SENSOR_R2.distance() < IR_THRESHOLD) {
-            RIGHT_ACTIVE = HIGH;
-            LEFT_ACTIVE = LOW;
-          } else if (IR_SENSOR_L2.distance() < IR_THRESHOLD ||
-            IR_SENSOR_L2.distance() < IR_THRESHOLD) {
-            LEFT_ACTIVE = HIGH;
-            RIGHT_ACTIVE = LOW;
-          } else {
-            RIGHT_ACTIVE = LOW;
-            LEFT_ACTIVE = LOW;
-          }
+          // TRIAL ENDS, PRINT STATISTICS
+          TOTAL_AVOIDANCE_FAILURE ++;
 
+          ESCAPE_LATENCY_END = 0;
+          ESCAPE_LATENCY_START = 0;
+
+          break; 
         }
 
         // RESET VARIABLES FOR SHUTTLING
