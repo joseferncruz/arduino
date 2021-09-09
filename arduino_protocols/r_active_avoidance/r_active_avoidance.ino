@@ -36,15 +36,27 @@ unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
 unsigned long ITI_DURATION;
 
-// DIGITAL PINS
+/*
+    PIN ASSIGNMENTS
+*/
 //##################################################################################################################
+// DIGITAL PINS
+// Speakers
 const int speaker_pin = 3;
 
+// Shockers
 const int shocker_r_pin = 4;
 const int shocker_l_pin = 5;
 
+// Buzzers
 const int buzzer_pin_r = 6;
 const int buzzer_pin_l = 7;
+
+// IR LED lights
+const int speaker_led_r = 9;
+const int speaker_led_l = 10;
+//##################################################################################################################
+
 
 Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
@@ -60,8 +72,6 @@ SharpIR IR_SENSOR_L1 = SharpIR(ir_left, model);
 SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
 int IR_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
-const int speaker_led_r = 9;
-const int speaker_led_l = 10;
 
 const int start_switch_pin = 22;
 const int test_switch_pin = 23;
