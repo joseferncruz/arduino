@@ -19,8 +19,8 @@
 //##################################################################################################################
 // CHECK SENSORS VARIABLES
 // Reading arrays
-const unsigned int numReadings = 400;                        // How many readings from each sensor
-bool test_pass = true;
+const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
+bool TEST_PASS = true;
 
 // Timing variables for yellow light blink
 unsigned long YELLOW_LED_END_TIME = 0;
@@ -177,18 +177,18 @@ void setup() {
 
   // COLLECT 400 SENSOR READINGS
   // Create empty arrays
-  unsigned int checkR1[numReadings];
-  unsigned int checkR2[numReadings];
-  unsigned int checkR3[numReadings];
-  unsigned int checkR4[numReadings];
+  unsigned int checkR1[_NUM_READINGS];
+  unsigned int checkR2[_NUM_READINGS];
+  unsigned int checkR3[_NUM_READINGS];
+  unsigned int checkR4[_NUM_READINGS];
 
-  unsigned int checkL1[numReadings];
-  unsigned int checkL2[numReadings];
-  unsigned int checkL3[numReadings];
-  unsigned int checkL4[numReadings];
+  unsigned int checkL1[_NUM_READINGS];
+  unsigned int checkL2[_NUM_READINGS];
+  unsigned int checkL3[_NUM_READINGS];
+  unsigned int checkL4[_NUM_READINGS];
 
   // Fill arrays
-  for (int i = 0; i < numReadings; i++){
+  for (int i = 0; i < _NUM_READINGS; i++){
     checkR1[i] = IR_SENSOR_R1.distance();
     checkR2[i] = IR_SENSOR_R2.distance();
     checkR3[i] = IR_SENSOR_R3.distance();
@@ -224,7 +224,7 @@ void setup() {
   unsigned int minL3 = checkL3[0];
   unsigned int minL4 = checkL4[0];
 
-  for (int i = 0; i < numReadings; i++){
+  for (int i = 0; i < _NUM_READINGS; i++){
     // Documentation: https://www.arduino.cc/reference/en/language/functions/math/min/
     minR1 = min(checkR1[i], minR1);
     minR2 = min(checkR2[i], minR2);
@@ -246,12 +246,12 @@ void setup() {
     // We subtract 2 from the minimum found using 400 values to approximate the true minimum.
     arrayMin[i] -= 2;
     if (arrayMin[i] < IR_THRESHOLDS[i]){
-      test_pass = false;
+      TEST_PASS = false;
     }
   }
 
   // TURN ON LED LIGHT BASED ON CHECK SENSOR OUTCOME
-  if (test_pass){
+  if (TEST_PASS){
     // Message to user
     Serial.println("Sensor check complete! Continue with the experiment.");
 
@@ -260,7 +260,7 @@ void setup() {
     digitalWrite(check_yellow_LED, LOW);
     digitalWrite(check_red_LED, LOW);
 
-  } else if (!test_pass){
+  } else if (!TEST_PASS){
     bool TEST_START = false;
 
     // Message to user
