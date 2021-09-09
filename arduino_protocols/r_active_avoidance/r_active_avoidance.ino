@@ -35,6 +35,17 @@ unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
 unsigned long ITI_DURATION;
+// VARIABLES FOR STATISTICS
+//##################################################################################################################
+unsigned long ESCAPE_LATENCY_START;
+unsigned long ESCAPE_LATENCY_END;
+unsigned long ESCAPE_LATENCY_DELTA;
+float ESCAPE_LATENCY_CUMULATIVE;
+
+// SESSION
+int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
+int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
+
 
 /*
     PIN ASSIGNMENTS
@@ -90,16 +101,6 @@ const int start_switch_pin = 22;
 const int test_switch_pin = 23;
 
 
-// VARIABLES FOR STATISTICS
-//##################################################################################################################
-unsigned long ESCAPE_LATENCY_START;
-unsigned long ESCAPE_LATENCY_END;
-unsigned long ESCAPE_LATENCY_DELTA;
-float ESCAPE_LATENCY_CUMULATIVE;
-
-// SESSION
-int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
-int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
 
 
 void setup() {
