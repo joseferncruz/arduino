@@ -56,15 +56,17 @@ const int buzzer_pin_l = 7;
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
 //##################################################################################################################
+// ANALOG PINS
+#define ir_right A0
+#define ir_right2 A2
 
+#define ir_left A1
+#define ir_left2 A3
+//##################################################################################################################
 
 Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
 
-#define ir_right A0
-#define ir_right2 A2
-#define ir_left A1
-#define ir_left2 A3
 #define model 1080
 SharpIR IR_SENSOR_R1 = SharpIR(ir_right, model);
 SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
