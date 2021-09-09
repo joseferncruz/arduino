@@ -75,7 +75,6 @@ float ESCAPE_LATENCY_CUMULATIVE;
 // SESSION
 int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
 int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
-//int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
 
 
 void setup() {
@@ -84,8 +83,6 @@ void setup() {
   Serial.begin(9600);
 
   // ASSIGN PINS
-//  pinMode(speaker_pin, OUTPUT);
-
   SPEAKER_RIGHT.begin(buzzer_pin_r);
   SPEAKER_LEFT.begin(buzzer_pin_l);
 
@@ -224,7 +221,6 @@ void loop() {
       if (x == 0) {
 
           // TURN THE SPEAKER ON
-//          digitalWrite(speaker_pin, HIGH);
           SPEAKER_RIGHT.play(CS_FREQUENCY);                        // FREQUENCY
           SPEAKER_LEFT.play(CS_FREQUENCY);                         // FREQUENCY
           Serial.println("CS > ON");
@@ -259,7 +255,6 @@ void loop() {
             Serial.println("US_R > OFF");
 
             // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-//            digitalWrite(speaker_pin, LOW);
             SPEAKER_RIGHT.stop();
             SPEAKER_LEFT.stop();
             Serial.println("CS > OFF");
