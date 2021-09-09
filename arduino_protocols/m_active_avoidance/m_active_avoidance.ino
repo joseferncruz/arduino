@@ -23,9 +23,9 @@ const unsigned int numReadings = 400;                        // How many reading
 bool test_pass = true;
 
 // Timing variables for yellow light blink
-unsigned long yellow_LED_end_time = 0;
-const long blink_interval = 1000;
-int yellow_state = LOW;
+unsigned long YELLOW_LED_END_TIME = 0;
+const long BLINK_INTERVAL = 1000;
+int YELLOW_STATE = LOW;
 //##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
@@ -200,15 +200,15 @@ void setup() {
     checkL4[i] = IR_SENSOR_L4.distance();
 
     // Blink yellow LED
-    unsigned long yellow_LED_start_time = millis();
-    if (yellow_LED_start_time - yellow_LED_end_time >= blink_interval) {
-      yellow_LED_end_time = yellow_LED_start_time;
-      if (yellow_state == LOW){
-        yellow_state = HIGH;
+    unsigned long YELLOW_LED_START_TIME = millis();
+    if (YELLOW_LED_START_TIME - YELLOW_LED_END_TIME >= BLINK_INTERVAL) {
+      YELLOW_LED_END_TIME = YELLOW_LED_START_TIME;
+      if (YELLOW_STATE == LOW){
+        YELLOW_STATE = HIGH;
       } else{
-        yellow_state = LOW;
+        YELLOW_STATE = LOW;
       }
-      digitalWrite(check_yellow_LED, yellow_state);
+      digitalWrite(check_yellow_LED, YELLOW_STATE);
     }
   }
 
@@ -269,14 +269,14 @@ void setup() {
     // Turn on LEDs
     digitalWrite(check_red_LED, LOW);
     digitalWrite(check_yellow_LED, LOW);
-    int red_state = LOW;
+    int RED_STATE = LOW;
     while(true){
-      if (red_state == LOW){
-        red_state = HIGH;
+      if (RED_STATE == LOW){
+        RED_STATE = HIGH;
       } else {
-        red_state = LOW;
+        RED_STATE = LOW;
       }
-      digitalWrite(check_red_LED, red_state);
+      digitalWrite(check_red_LED, RED_STATE);
       delay(300);
 
       // Recover minimum values from readings
