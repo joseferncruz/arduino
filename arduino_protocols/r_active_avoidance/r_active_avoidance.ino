@@ -64,14 +64,25 @@ const int speaker_led_l = 10;
 #define ir_left2 A3
 //##################################################################################################################
 
+
+/*
+    INITIALIZING LIBRARIES
+*/
+//##################################################################################################################
+// TONE LIBRARY
 Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
-
+//##################################################################################################################
+// IR SENSOR LIBRARY
 #define model 1080
+
 SharpIR IR_SENSOR_R1 = SharpIR(ir_right, model);
 SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
+
 SharpIR IR_SENSOR_L1 = SharpIR(ir_left, model);
 SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
+
+// SENSOR THRESHOLDS
 int IR_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 
