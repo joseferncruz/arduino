@@ -23,8 +23,8 @@ int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the in
 int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
 int RIGHT_ACTIVE;
 
-// FORCE LOCATION SEARCH VARIABLES ()
-const long FORCE_INTERVAL = 30000;
+// FORCED US, TIMING VARIABLES
+const long FORCE_INTERVAL = 30000;                            // MILLISECONDS
 unsigned long FORCE_START;
 unsigned long FORCE_END;
 // ######################################
@@ -301,6 +301,7 @@ void loop() {
 
       }
 
+      // START TIME FOR FORCE US
       FORCE_END = millis();
 
       // DETECT POSITION, DELIVER CS AND US
@@ -319,10 +320,9 @@ void loop() {
           LEFT_ACTIVE = LOW;
         }
 
-        // Start time for force search
         FORCE_START = millis();
 
-        // Deliver force movement
+        // DELIVER FORCE US AFTER 30 SEC
         if ((FORCE_START - FORCE_END) >= FORCE_INTERVAL){
           // TRIGGER US
           digitalWrite(shocker_l_pin, HIGH);
