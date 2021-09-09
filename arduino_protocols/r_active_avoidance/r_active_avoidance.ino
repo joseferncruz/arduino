@@ -324,18 +324,22 @@ void loop() {
 
         // Deliver force movement
         if ((FORCE_START - FORCE_END) >= FORCE_INTERVAL){
-          // shock generation
-          digitalWrite(shocker_r_pin, HIGH);
+          // TRIGGER US
           digitalWrite(shocker_l_pin, HIGH);
-          Serial.println("US > ON");
+          Serial.println("US_L > ON");
+          digitalWrite(shocker_r_pin, HIGH);
+          Serial.println("US_R > ON");
 
+          // KEEP US FOR SPECIFIC TIME DELAY
           for (int i = 0; i < SHOCK_DURATION; i++) {
             delay(1000);
           }
 
-          digitalWrite(shocker_r_pin, LOW);
+          // TERMINATE SHOCKER
           digitalWrite(shocker_l_pin, LOW);
-          Serial.println("US > OFF");
+          Serial.println("US_L > OFF");
+          digitalWrite(shocker_r_pin, LOW);
+          Serial.println("US_R > OFF");
 
           // TRIAL ENDS, PRINT STATISTICS
           TOTAL_AVOIDANCE_FAILURE ++;
@@ -343,7 +347,7 @@ void loop() {
           ESCAPE_LATENCY_END = 0;
           ESCAPE_LATENCY_START = 0;
 
-          break; 
+          break;
         }
 
         // RESET VARIABLES FOR SHUTTLING
