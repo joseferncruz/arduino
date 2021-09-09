@@ -99,11 +99,7 @@ SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
 
 // SENSOR THRESHOLDS
 int IR_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
-
-
-const int start_switch_pin = 22;
-const int test_switch_pin = 23;
-
+//##################################################################################################################
 
 
 
