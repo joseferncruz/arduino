@@ -301,11 +301,10 @@ void loop() {
 
       }
 
+      FORCE_END = millis();
+
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
-
-        // Start time for force search
-        FORCE_START = millis();
 
         if (IR_SENSOR_R1.distance() < IR_THRESHOLD ||
         IR_SENSOR_R2.distance() < IR_THRESHOLD) {
@@ -320,8 +319,11 @@ void loop() {
           LEFT_ACTIVE = LOW;
         }
 
+        // Start time for force search
+        FORCE_START = millis();
+
         // Deliver force movement
-        if ((FORCE_START - 0) > FORCE_INTERVAL){
+        if ((FORCE_START - FORCE_END) >= FORCE_INTERVAL){
           // shock generation
           digitalWrite(shocker_r_pin, HIGH);
           digitalWrite(shocker_l_pin, HIGH);
