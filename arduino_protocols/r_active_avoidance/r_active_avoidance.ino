@@ -118,9 +118,6 @@ void setup() {
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
 
-  pinMode(start_switch_pin, INPUT);
-  pinMode(test_switch_pin, INPUT);
-
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
 
