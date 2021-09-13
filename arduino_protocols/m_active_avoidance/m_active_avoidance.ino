@@ -19,13 +19,13 @@
 //##################################################################################################################
 // CHECK SENSORS VARIABLES
 // Reading arrays
-const unsigned int numReadings = 400;                        // How many readings from each sensor
-bool test_pass = true;
+const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
+bool TEST_PASS = true;
 
 // Timing variables for yellow light blink
-unsigned long yellow_LED_end_time = 0;
-const long blink_interval = 1000;
-int yellow_state = LOW;
+unsigned long YELLOW_LED_END_TIME = 0;
+const long BLINK_INTERVAL = 1000;
+int YELLOW_STATE = LOW;
 //##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
@@ -177,81 +177,81 @@ void setup() {
 
   // COLLECT 400 SENSOR READINGS
   // Create empty arrays
-  unsigned int checkR1[numReadings];
-  unsigned int checkR2[numReadings];
-  unsigned int checkR3[numReadings];
-  unsigned int checkR4[numReadings];
+  unsigned int CHECK_R1[_NUM_READINGS];
+  unsigned int CHECK_R2[_NUM_READINGS];
+  unsigned int CHECK_R3[_NUM_READINGS];
+  unsigned int CHECK_R4[_NUM_READINGS];
 
-  unsigned int checkL1[numReadings];
-  unsigned int checkL2[numReadings];
-  unsigned int checkL3[numReadings];
-  unsigned int checkL4[numReadings];
+  unsigned int CHECK_L1[_NUM_READINGS];
+  unsigned int CHECK_L2[_NUM_READINGS];
+  unsigned int CHECK_L3[_NUM_READINGS];
+  unsigned int CHECK_L4[_NUM_READINGS];
 
   // Fill arrays
-  for (int i = 0; i < numReadings; i++){
-    checkR1[i] = IR_SENSOR_R1.distance();
-    checkR2[i] = IR_SENSOR_R2.distance();
-    checkR3[i] = IR_SENSOR_R3.distance();
-    checkR4[i] = IR_SENSOR_R4.distance();
+  for (int i = 0; i < _NUM_READINGS; i++){
+    CHECK_R1[i] = IR_SENSOR_R1.distance();
+    CHECK_R2[i] = IR_SENSOR_R2.distance();
+    CHECK_R3[i] = IR_SENSOR_R3.distance();
+    CHECK_R4[i] = IR_SENSOR_R4.distance();
 
-    checkL1[i] = IR_SENSOR_L1.distance();
-    checkL2[i] = IR_SENSOR_L2.distance();
-    checkL3[i] = IR_SENSOR_L3.distance();
-    checkL4[i] = IR_SENSOR_L4.distance();
+    CHECK_L1[i] = IR_SENSOR_L1.distance();
+    CHECK_L2[i] = IR_SENSOR_L2.distance();
+    CHECK_L3[i] = IR_SENSOR_L3.distance();
+    CHECK_L4[i] = IR_SENSOR_L4.distance();
 
     // Blink yellow LED
-    unsigned long yellow_LED_start_time = millis();
-    if (yellow_LED_start_time - yellow_LED_end_time >= blink_interval) {
-      yellow_LED_end_time = yellow_LED_start_time;
-      if (yellow_state == LOW){
-        yellow_state = HIGH;
+    unsigned long YELLOW_LED_START_TIME = millis();
+    if (YELLOW_LED_START_TIME - YELLOW_LED_END_TIME >= BLINK_INTERVAL) {
+      YELLOW_LED_END_TIME = YELLOW_LED_START_TIME;
+      if (YELLOW_STATE == LOW){
+        YELLOW_STATE = HIGH;
       } else{
-        yellow_state = LOW;
+        YELLOW_STATE = LOW;
       }
-      digitalWrite(check_yellow_LED, yellow_state);
+      digitalWrite(check_yellow_LED, YELLOW_STATE);
     }
   }
 
   // FIND MIN VALUES
   // Create min variables
-  unsigned int minR1 = checkR1[0];
-  unsigned int minR2 = checkR2[0];
-  unsigned int minR3 = checkR3[0];
-  unsigned int minR4 = checkR4[0];
+  unsigned int MIN_R1 = CHECK_R1[0];
+  unsigned int MIN_R2 = CHECK_R2[0];
+  unsigned int MIN_R3 = CHECK_R3[0];
+  unsigned int MIN_R4 = CHECK_R4[0];
 
-  unsigned int minL1 = checkL1[0];
-  unsigned int minL2 = checkL2[0];
-  unsigned int minL3 = checkL3[0];
-  unsigned int minL4 = checkL4[0];
+  unsigned int MIN_L1 = CHECK_L1[0];
+  unsigned int MIN_L2 = CHECK_L2[0];
+  unsigned int MIN_L3 = CHECK_L3[0];
+  unsigned int MIN_L4 = CHECK_L4[0];
 
-  for (int i = 0; i < numReadings; i++){
+  for (int i = 0; i < _NUM_READINGS; i++){
     // Documentation: https://www.arduino.cc/reference/en/language/functions/math/min/
-    minR1 = min(checkR1[i], minR1);
-    minR2 = min(checkR2[i], minR2);
-    minR3 = min(checkR3[i], minR3);
-    minR4 = min(checkR4[i], minR4);
+    MIN_R1 = min(CHECK_R1[i], MIN_R1);
+    MIN_R2 = min(CHECK_R2[i], MIN_R2);
+    MIN_R3 = min(CHECK_R3[i], MIN_R3);
+    MIN_R4 = min(CHECK_R4[i], MIN_R4);
 
-    minL1 = min(checkL1[i], minL1);
-    minL2 = min(checkL2[i], minL2);
-    minL3 = min(checkL3[i], minL3);
-    minL4 = min(checkL4[i], minL4);
+    MIN_L1 = min(CHECK_L1[i], MIN_L1);
+    MIN_L2 = min(CHECK_L2[i], MIN_L2);
+    MIN_L3 = min(CHECK_L3[i], MIN_L3);
+    MIN_L4 = min(CHECK_L4[i], MIN_L4);
   }
 
   // COMPARE MIN VALUES WITH IR THRESHOLDS SET
-  unsigned int arrayMin[8] = {minL1, minL2, minL3, minL4,
-                              minR1, minR2, minR3, minR4};
+  unsigned int MIN_ARRAY[8] = {MIN_L1, MIN_L2, MIN_L3, MIN_L4,
+                              MIN_R1, MIN_R2, MIN_R3, MIN_R4};
 
-  for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
+  for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
     // The minimum found using 400 values is always greater than the true minimum.
     // We subtract 2 from the minimum found using 400 values to approximate the true minimum.
-    arrayMin[i] -= 2;
-    if (arrayMin[i] < IR_THRESHOLDS[i]){
-      test_pass = false;
+    MIN_ARRAY[i] -= 2;
+    if (MIN_ARRAY[i] < IR_THRESHOLDS[i]){
+      TEST_PASS = false;
     }
   }
 
   // TURN ON LED LIGHT BASED ON CHECK SENSOR OUTCOME
-  if (test_pass){
+  if (TEST_PASS){
     // Message to user
     Serial.println("Sensor check complete! Continue with the experiment.");
 
@@ -260,7 +260,7 @@ void setup() {
     digitalWrite(check_yellow_LED, LOW);
     digitalWrite(check_red_LED, LOW);
 
-  } else if (!test_pass){
+  } else if (!TEST_PASS){
     bool TEST_START = false;
 
     // Message to user
@@ -269,14 +269,14 @@ void setup() {
     // Turn on LEDs
     digitalWrite(check_red_LED, LOW);
     digitalWrite(check_yellow_LED, LOW);
-    int red_state = LOW;
+    int RED_STATE = LOW;
     while(true){
-      if (red_state == LOW){
-        red_state = HIGH;
+      if (RED_STATE == LOW){
+        RED_STATE = HIGH;
       } else {
-        red_state = LOW;
+        RED_STATE = LOW;
       }
-      digitalWrite(check_red_LED, red_state);
+      digitalWrite(check_red_LED, RED_STATE);
       delay(300);
 
       // Recover minimum values from readings
@@ -292,8 +292,8 @@ void setup() {
 
         Serial.println("Minimum values: ");
         Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
-        for (int i = 0; i < (sizeof(arrayMin) / sizeof(arrayMin[0])); i++){
-          Serial.print(arrayMin[i]); Serial.print(" ");
+        for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+          Serial.print(MIN_ARRAY[i]); Serial.print(" ");
         }
         Serial.println();
         Serial.println("Sensor thresholds: ");
