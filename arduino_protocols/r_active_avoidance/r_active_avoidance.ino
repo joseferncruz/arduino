@@ -113,8 +113,6 @@ void setup() {
   Serial.begin(9600);
 
   // ASSIGN PINS
-//  pinMode(speaker_pin, OUTPUT);
-
   SPEAKER_RIGHT.begin(buzzer_pin_r);
   SPEAKER_LEFT.begin(buzzer_pin_l);
 
@@ -193,8 +191,6 @@ void loop() {
     digitalWrite(shocker_l_pin, HIGH);
     delay(3000);
     digitalWrite(shocker_l_pin, LOW);
-
-    // TEST PIR SENSOR LEFT, THEN RIGHT
 
   }
 
