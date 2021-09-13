@@ -229,7 +229,6 @@ void loop() {
     Serial.println("SESSION > START");
 
     // ACCLIMATION PERIOD
-    // ##################
     Serial.print("ACCLIMATION (SEC): "); Serial.println(ACCLIMATION_DURATION);
     delay(ACCLIMATION_DURATION*1000);
 
@@ -244,7 +243,6 @@ void loop() {
       if (x == 0) {
 
           // TURN THE SPEAKER ON
-//          digitalWrite(speaker_pin, HIGH);
           SPEAKER_RIGHT.play(CS_FREQUENCY);                        // FREQUENCY
           SPEAKER_LEFT.play(CS_FREQUENCY);                         // FREQUENCY
           Serial.println("CS > ON");
@@ -279,7 +277,6 @@ void loop() {
             Serial.println("US_R > OFF");
 
             // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-//            digitalWrite(speaker_pin, LOW);
             SPEAKER_RIGHT.stop();
             SPEAKER_LEFT.stop();
             Serial.println("CS > OFF");
