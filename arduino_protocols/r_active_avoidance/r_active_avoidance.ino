@@ -37,23 +37,40 @@ unsigned long MOTION_DETECTION_START;
 unsigned long MOTION_DETECTION_CURR;
 unsigned long MOTION_DETECTION_DURATION = 30;               // SECONDS
 
-// DIGITAL PINS
+/*
+    PIN ASSIGNMENTS
+*/
 // ########################################################
+// DIGITAL PINS
+// Speakers
 const int speaker_pin = 3;
 
+// Shockers
 const int shocker_r_pin = 4;
 const int shocker_l_pin = 5;
 
+// Buzzers
 const int buzzer_pin_r = 6;
 const int buzzer_pin_l = 7;
 
-Tone SPEAKER_RIGHT;
-Tone SPEAKER_LEFT;
+// LED Lights
+const int speaker_led_r = 9;
+const int speaker_led_l = 10;
 
+// Start and Test Pins
+const int start_switch_pin = 22;
+const int test_switch_pin = 23;
+//##################################################################################################################
+// ANALOG PINS
 #define ir_right1 A0
 #define ir_right2 A2
+
 #define ir_left1 A1
 #define ir_left2 A3
+//##################################################################################################################
+
+Tone SPEAKER_RIGHT;
+Tone SPEAKER_LEFT;
 #define model 1080
 SharpIR IR_SENSOR_R1 = SharpIR(ir_right1, model);
 SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
@@ -61,11 +78,6 @@ SharpIR IR_SENSOR_L1 = SharpIR(ir_left1, model);
 SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
 int IR_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
-const int speaker_led_r = 9;
-const int speaker_led_l = 10;
-
-const int start_switch_pin = 22;
-const int test_switch_pin = 23;
 
 
 // VARIABLES FOR STATISTICS
