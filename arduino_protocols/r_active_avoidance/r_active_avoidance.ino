@@ -49,7 +49,6 @@ float ESCAPE_LATENCY_CUMULATIVE;
 // SESSION VARIABLES
 int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
 int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
-//int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
 //##################################################################################################################
 
 
@@ -72,10 +71,6 @@ const int buzzer_pin_l = 7;
 // LED Lights
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
-
-// Start and Test Pins
-const int start_switch_pin = 22;
-const int test_switch_pin = 23;
 //##################################################################################################################
 // ANALOG PINS
 #define ir_right1 A0
@@ -124,9 +119,6 @@ void setup() {
 
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
-
-  pinMode(start_switch_pin, INPUT);
-  pinMode(test_switch_pin, INPUT);
 
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
