@@ -59,7 +59,7 @@ int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT O
 /*
     PIN ASSIGNMENTS
 */
-// ########################################################
+//##################################################################################################################
 // DIGITAL PINS
 // Speakers
 const int speaker_pin = 3;
