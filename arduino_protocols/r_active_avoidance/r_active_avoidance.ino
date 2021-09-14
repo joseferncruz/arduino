@@ -137,6 +137,10 @@ void setup() {
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
 
+  pinMode(check_red_LED, OUTPUT);
+  pinMode(check_yellow_LED, OUTPUT);
+  pinMode(check_green_LED, OUTPUT); 
+
   // PRINT ENTRY MESSAGE
   delay(5000);
   Serial.println("***CHECK SENSOR READINGS***");
