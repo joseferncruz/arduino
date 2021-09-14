@@ -44,6 +44,10 @@ unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
 unsigned long ITI_DURATION;
+
+// For control of motion detection
+unsigned long MOTION_DETECTION_START;
+unsigned long MOTION_DETECTION_CURR;
 //##################################################################################################################
 // VARIABLES FOR STATISTICS
 unsigned long ESCAPE_LATENCY_START;
