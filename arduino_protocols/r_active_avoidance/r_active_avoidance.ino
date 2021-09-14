@@ -172,6 +172,19 @@ void setup() {
 
     CHECK_L1[i] = IR_SENSOR_L1.distance();
     CHECK_L2[i] = IR_SENSOR_L2.distance();
+
+    // Blink yellow LED
+    unsigned long YELLOW_LED_START_TIME = millis();
+    if (YELLOW_LED_START_TIME - YELLOW_LED_END_TIME >= BLINK_INTERVAL) {
+      YELLOW_LED_END_TIME = YELLOW_LED_START_TIME;
+      if (YELLOW_STATE == LOW){
+        YELLOW_STATE = HIGH;
+      } else{
+        YELLOW_STATE = LOW;
+      }
+      digitalWrite(check_yellow_LED, YELLOW_STATE);
+    }
+
   }
 
   /*
