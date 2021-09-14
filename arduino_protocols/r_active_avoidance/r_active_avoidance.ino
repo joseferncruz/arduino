@@ -217,6 +217,65 @@ void setup() {
     }
   }
 
+  // TURN ON LED LIGHT BASED ON CHECK SENSOR OUTCOME
+  if (TEST_PASS){
+    // Message to user
+    Serial.println("Sensor check complete! Continue with the experiment.");
+
+    // Turn on LEDs
+    digitalWrite(check_green_LED, HIGH);
+    digitalWrite(check_yellow_LED, LOW);
+    digitalWrite(check_red_LED, LOW);
+
+  } else if (!TEST_PASS){
+    bool TEST_START = false;
+
+    // Message to user
+    Serial.println("Sensor check has failed. Please contact either Rodrigo or Audrey.");
+
+    // Turn on LEDs
+    digitalWrite(check_red_LED, LOW);
+    digitalWrite(check_yellow_LED, LOW);
+    int RED_STATE = LOW;
+    while(true){
+      if (RED_STATE == LOW){
+        RED_STATE = HIGH;
+      } else {
+        RED_STATE = LOW;
+      }
+      digitalWrite(check_red_LED, RED_STATE);
+      delay(300);
+
+      // Recover minimum values from readings
+      int x = Serial.parseInt();
+      if (x==2){
+        TEST_START = true;
+      }
+
+      if (TEST_START){
+        // Reset serial input from Bonsai
+        x = 0;
+        TEST_START = false;
+
+        Serial.println("Minimum values: ");
+        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
+        for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+          Serial.print(MIN_ARRAY[i]); Serial.print(" ");
+        }
+        Serial.println();
+        Serial.println("Sensor thresholds: ");
+        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
+        for (int i = 0; i < (sizeof(IR_THRESHOLDS) / sizeof(IR_THRESHOLDS[0])); i++){
+          Serial.print(IR_THRESHOLDS[i]); Serial.print(" ");
+        }
+        Serial.println();
+      }
+    }
+
+  } else {
+    digitalWrite(check_yellow_LED, HIGH);
+  }
+
   /*
   // UNCOMMENT TO TEST SENSORS
   while (true) {
