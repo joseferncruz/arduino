@@ -87,9 +87,9 @@ const int speaker_led_r = 9;
 const int speaker_led_l = 10;
 
 // LED Check Lights (for UX design)
-const int check_red_LED = 13;
-const int check_yellow_LED = 12;
-const int check_green_LED = 11;
+const int check_red_LED = 23;
+const int check_yellow_LED = 25;
+const int check_green_LED = 27;
 //##################################################################################################################
 // ANALOG PINS
 #define ir_right1 A0
