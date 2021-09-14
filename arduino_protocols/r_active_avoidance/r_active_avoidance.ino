@@ -87,9 +87,9 @@ const int speaker_led_r = 9;
 const int speaker_led_l = 10;
 
 // LED Check Lights (for UX design)
-const int check_red_LED = 47;
-const int check_yellow_LED = 49;
-const int check_green_LED = 51;
+const int check_red_LED = 13;
+const int check_yellow_LED = 12;
+const int check_green_LED = 11;
 //##################################################################################################################
 // ANALOG PINS
 #define ir_right1 A0
@@ -139,7 +139,7 @@ void setup() {
 
   pinMode(check_red_LED, OUTPUT);
   pinMode(check_yellow_LED, OUTPUT);
-  pinMode(check_green_LED, OUTPUT); 
+  pinMode(check_green_LED, OUTPUT);
 
   // PRINT ENTRY MESSAGE
   delay(5000);
