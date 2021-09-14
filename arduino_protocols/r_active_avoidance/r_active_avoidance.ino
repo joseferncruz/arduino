@@ -44,6 +44,16 @@ unsigned long ITI_DURATION;
 unsigned long MOTION_DETECTION_START;
 unsigned long MOTION_DETECTION_CURR;
 //##################################################################################################################
+// CHECK SENSORS VARIABLES
+// Reading arrays
+const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
+bool TEST_PASS = true;
+
+// Timing variables for yellow light blink
+unsigned long YELLOW_LED_END_TIME = 0;
+const long BLINK_INTERVAL = 1000;
+int YELLOW_STATE = LOW;
+//##################################################################################################################
 // VARIABLES FOR STATISTICS
 unsigned long ESCAPE_LATENCY_START;
 unsigned long ESCAPE_LATENCY_END;
@@ -72,9 +82,14 @@ const int shocker_l_pin = 5;
 const int buzzer_pin_r = 6;
 const int buzzer_pin_l = 7;
 
-// LED Lights
+// IR LED Lights
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
+
+// LED Check Lights (for UX design)
+const int check_red_LED = 47;
+const int check_yellow_LED = 49;
+const int check_green_LED = 51;
 //##################################################################################################################
 // ANALOG PINS
 #define ir_right1 A0
