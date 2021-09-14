@@ -258,15 +258,15 @@ void setup() {
         TEST_START = false;
 
         Serial.println("Minimum values: ");
-        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
+        Serial.println("L1 L2 R1 R2");
         for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
           Serial.print(MIN_ARRAY[i]); Serial.print(" ");
         }
         Serial.println();
         Serial.println("Sensor thresholds: ");
-        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
-        for (int i = 0; i < (sizeof(IR_THRESHOLDS) / sizeof(IR_THRESHOLDS[0])); i++){
-          Serial.print(IR_THRESHOLDS[i]); Serial.print(" ");
+        Serial.println("L1 L2 R1 R2");
+        for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+          Serial.print(IR_THRESHOLD); Serial.print(" ");
         }
         Serial.println();
       }
