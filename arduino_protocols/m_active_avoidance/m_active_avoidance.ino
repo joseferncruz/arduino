@@ -754,8 +754,37 @@ void loop() {
           break;
 
 
-        } else {
-          // IN THE ABSSENCE OF MOVEMENT IN EITHER COMPARTMENT, DO NOTHING
+        } else if (!LEFT_ACTIVE &&
+        !RIGHT_ACTIVE &&
+        (MOTION_DETECTION_CURR - MOTION_DETECTION_START) >= (MOTION_DETECTION_DURATION * 1000)) {
+          // SERIAL OUTPUT MESSAGE TO USER
+          Serial.println("MOTION DETECTION FAILED");
+          Serial.print("NO MOTION DETECTED IN "); Serial.print(MOTION_DETECTION_DURATION); Serial.println(" SECONDS");
+
+          // TRIGGER US
+          digitalWrite(shocker_l_pin, HIGH);
+          Serial.println("US_L > ON");
+          digitalWrite(shocker_r_pin, HIGH);
+          Serial.println("US_R > ON");
+
+          // KEEP US FOR SPECIFIC TIME DELAY
+          for (int i = 0; i < SHOCK_DURATION; i++) {
+            delay(1000);
+          }
+
+          // TERMINATE SHOCKER
+          digitalWrite(shocker_l_pin, LOW);
+          Serial.println("US_L > OFF");
+          digitalWrite(shocker_r_pin, LOW);
+          Serial.println("US_R > OFF");
+
+          // RECORD LATENCY_END WHEN NO SHUTTLING
+          ESCAPE_LATENCY_END = -1;
+
+          // COUNT ONE TOWARDS AVOIDANCE FAILURE
+          TOTAL_AVOIDANCE_FAILURE ++;
+
+          break;
         }
 
       }
