@@ -17,6 +17,16 @@
     VARIABLES
 */
 //##################################################################################################################
+// CHECK SENSORS VARIABLES
+// Reading arrays
+const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
+bool TEST_PASS = true;
+
+// Timing variables for yellow light blink
+unsigned long YELLOW_LED_END_TIME = 0;
+const long BLINK_INTERVAL = 1000;
+int YELLOW_STATE = LOW;
+//##################################################################################################################
 // EXPERIMENTAL VARIABLES
 const int N_TRIALS = 20;
 unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
@@ -44,7 +54,6 @@ float ESCAPE_LATENCY_CUMULATIVE;
 // SESSION
 int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
 int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
-//int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
 //##################################################################################################################
 
 
@@ -64,9 +73,14 @@ const int shocker_l_pin = 5;
 const int buzzer_pin_r = 6;
 const int buzzer_pin_l = 7;
 
-// LED Lights
+// IR LED Lights
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
+
+// LED Check Lights (for UX design)
+const int check_red_LED = 47;
+const int check_yellow_LED = 49;
+const int check_green_LED = 51;
 //##################################################################################################################
 // ANALOG PINS
 // Right Sensors
@@ -95,13 +109,13 @@ Tone SPEAKER_LEFT;
 #define model 1080
 
 // Right Sensors
-SharpIR IR_SENSOR_R = SharpIR(ir_right, model);
+SharpIR IR_SENSOR_R1 = SharpIR(ir_right, model);
 SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
 SharpIR IR_SENSOR_R3 = SharpIR(ir_right3, model);
 SharpIR IR_SENSOR_R4 = SharpIR(ir_right4, model);
 
 // Left Sensors
-SharpIR IR_SENSOR_L = SharpIR(ir_left, model);
+SharpIR IR_SENSOR_L1 = SharpIR(ir_left, model);
 SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
 SharpIR IR_SENSOR_L3 = SharpIR(ir_left3, model);
 SharpIR IR_SENSOR_L4 = SharpIR(ir_left4, model);
@@ -116,6 +130,9 @@ const int IR_THRESHOLD_R1 = 22;
 const int IR_THRESHOLD_R2 = 21;
 const int IR_THRESHOLD_R3 = 22;
 const int IR_THRESHOLD_R4 = 19;
+
+unsigned int IR_THRESHOLDS[] = {IR_THRESHOLD_L1, IR_THRESHOLD_L2, IR_THRESHOLD_L3, IR_THRESHOLD_L4,
+                                IR_THRESHOLD_R1, IR_THRESHOLD_R2, IR_THRESHOLD_R3, IR_THRESHOLD_R4};
 //##################################################################################################################
 
 
@@ -124,9 +141,6 @@ void setup() {
 
   // INITIATE SERIAL
   Serial.begin(9600);
-
-  // ASSIGN PINS
-//  pinMode(speaker_pin, OUTPUT);
 
   SPEAKER_RIGHT.begin(buzzer_pin_r);
   SPEAKER_LEFT.begin(buzzer_pin_l);
@@ -137,38 +151,185 @@ void setup() {
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
 
-  pinMode(start_switch_pin, INPUT);
-  pinMode(test_switch_pin, INPUT);
+  pinMode(check_red_LED, OUTPUT);
+  pinMode(check_yellow_LED, OUTPUT);
+  pinMode(check_green_LED, OUTPUT);
 
   // PRINT ENTRY MESSAGE
-  Serial.println("PRESS GREEN SWITCH TO START...");
+  delay(5000);
+  Serial.println("***CHECK SENSOR READINGS***");
+  Serial.println("IF THE LIGHT IS: ");
+  Serial.print("\t"); Serial.println("SOLID RED >>> RESET THE BOARD");
+  Serial.print("\t"); Serial.println("BLINKING YELLOW >>> WAIT, BOARD IS CHECKING SENSORS");
+  Serial.print("\t"); Serial.println("BLINKING RED >>> SENSOR CHECK HAS FAILED :(");
+  Serial.print("\t"); Serial.println("GREEN >>> CONTINUE WITH THE EXPERIMENT :)");
 
+  // CHECK Sensors
+  // Turn off LED lights except for reed
+  digitalWrite(check_red_LED, HIGH);
+  digitalWrite(check_yellow_LED, LOW);
+  digitalWrite(check_green_LED, LOW);
+
+  // PRINT MESSAGE TO USER
+  Serial.println();
+  Serial.println("COLLECTING AND EVALUATING SENSOR READINGS...");
+  Serial.println();
+
+  // COLLECT 400 SENSOR READINGS
+  // Create empty arrays
+  unsigned int CHECK_R1[_NUM_READINGS];
+  unsigned int CHECK_R2[_NUM_READINGS];
+  unsigned int CHECK_R3[_NUM_READINGS];
+  unsigned int CHECK_R4[_NUM_READINGS];
+
+  unsigned int CHECK_L1[_NUM_READINGS];
+  unsigned int CHECK_L2[_NUM_READINGS];
+  unsigned int CHECK_L3[_NUM_READINGS];
+  unsigned int CHECK_L4[_NUM_READINGS];
+
+  // Fill arrays
+  for (int i = 0; i < _NUM_READINGS; i++){
+    CHECK_R1[i] = IR_SENSOR_R1.distance();
+    CHECK_R2[i] = IR_SENSOR_R2.distance();
+    CHECK_R3[i] = IR_SENSOR_R3.distance();
+    CHECK_R4[i] = IR_SENSOR_R4.distance();
+
+    CHECK_L1[i] = IR_SENSOR_L1.distance();
+    CHECK_L2[i] = IR_SENSOR_L2.distance();
+    CHECK_L3[i] = IR_SENSOR_L3.distance();
+    CHECK_L4[i] = IR_SENSOR_L4.distance();
+
+    // Blink yellow LED
+    unsigned long YELLOW_LED_START_TIME = millis();
+    if (YELLOW_LED_START_TIME - YELLOW_LED_END_TIME >= BLINK_INTERVAL) {
+      YELLOW_LED_END_TIME = YELLOW_LED_START_TIME;
+      if (YELLOW_STATE == LOW){
+        YELLOW_STATE = HIGH;
+      } else{
+        YELLOW_STATE = LOW;
+      }
+      digitalWrite(check_yellow_LED, YELLOW_STATE);
+    }
+  }
+
+  // FIND MIN VALUES
+  // Create min variables
+  unsigned int MIN_R1 = CHECK_R1[0];
+  unsigned int MIN_R2 = CHECK_R2[0];
+  unsigned int MIN_R3 = CHECK_R3[0];
+  unsigned int MIN_R4 = CHECK_R4[0];
+
+  unsigned int MIN_L1 = CHECK_L1[0];
+  unsigned int MIN_L2 = CHECK_L2[0];
+  unsigned int MIN_L3 = CHECK_L3[0];
+  unsigned int MIN_L4 = CHECK_L4[0];
+
+  for (int i = 0; i < _NUM_READINGS; i++){
+    // Documentation: https://www.arduino.cc/reference/en/language/functions/math/min/
+    MIN_R1 = min(CHECK_R1[i], MIN_R1);
+    MIN_R2 = min(CHECK_R2[i], MIN_R2);
+    MIN_R3 = min(CHECK_R3[i], MIN_R3);
+    MIN_R4 = min(CHECK_R4[i], MIN_R4);
+
+    MIN_L1 = min(CHECK_L1[i], MIN_L1);
+    MIN_L2 = min(CHECK_L2[i], MIN_L2);
+    MIN_L3 = min(CHECK_L3[i], MIN_L3);
+    MIN_L4 = min(CHECK_L4[i], MIN_L4);
+  }
+
+  // COMPARE MIN VALUES WITH IR THRESHOLDS SET
+  unsigned int MIN_ARRAY[8] = {MIN_L1, MIN_L2, MIN_L3, MIN_L4,
+                              MIN_R1, MIN_R2, MIN_R3, MIN_R4};
+
+  for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+    // The minimum found using 400 values is always greater than the true minimum.
+    // We subtract 2 from the minimum found using 400 values to approximate the true minimum.
+    MIN_ARRAY[i] -= 2;
+    if (MIN_ARRAY[i] < IR_THRESHOLDS[i]){
+      TEST_PASS = false;
+    }
+  }
+
+  // TURN ON LED LIGHT BASED ON CHECK SENSOR OUTCOME
+  if (TEST_PASS){
+    // Message to user
+    Serial.println("Sensor check complete! Continue with the experiment.");
+
+    // Turn on LEDs
+    digitalWrite(check_green_LED, HIGH);
+    digitalWrite(check_yellow_LED, LOW);
+    digitalWrite(check_red_LED, LOW);
+
+  } else if (!TEST_PASS){
+    bool TEST_START = false;
+
+    // Message to user
+    Serial.println("Sensor check has failed. Please contact either Rodrigo or Audrey.");
+
+    // Turn on LEDs
+    digitalWrite(check_red_LED, LOW);
+    digitalWrite(check_yellow_LED, LOW);
+    int RED_STATE = LOW;
+    while(true){
+      if (RED_STATE == LOW){
+        RED_STATE = HIGH;
+      } else {
+        RED_STATE = LOW;
+      }
+      digitalWrite(check_red_LED, RED_STATE);
+      delay(300);
+
+      // Recover minimum values from readings
+      int x = Serial.parseInt();
+      if (x==2){
+        TEST_START = true;
+      }
+
+      if (TEST_START){
+        // Reset serial input from Bonsai
+        x = 0;
+        TEST_START = false;
+
+        Serial.println("Minimum values: ");
+        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
+        for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+          Serial.print(MIN_ARRAY[i]); Serial.print(" ");
+        }
+        Serial.println();
+        Serial.println("Sensor thresholds: ");
+        Serial.println("L1 L2 L3 L4 R1 R2 R3 R4");
+        for (int i = 0; i < (sizeof(IR_THRESHOLDS) / sizeof(IR_THRESHOLDS[0])); i++){
+          Serial.print(IR_THRESHOLDS[i]); Serial.print(" ");
+        }
+        Serial.println();
+      }
+    }
+
+  } else {
+    digitalWrite(check_yellow_LED, HIGH);
+  }
 
   /*
   // TEST SENSORS
   // uncomment when you want to test
   while (true){
     Serial.print("Left 1: ");
-    Serial.println(IR_SENSOR_L.distance());
+    Serial.println(IR_SENSOR_L1.distance());
     Serial.print("Left 2: ");
     Serial.println(IR_SENSOR_L2.distance());
     Serial.print("Left 3: ");
     Serial.println(IR_SENSOR_L3.distance());
     Serial.print("Left 4: ");
     Serial.println(IR_SENSOR_L4.distance());
-   // Serial.print("Left 5: ");
-   // Serial.println(IR_SENSOR_L5.distance());
 
     Serial.print("Right 1: ");
-    Serial.println(IR_SENSOR_R.distance());
+    Serial.println(IR_SENSOR_R1.distance());
     Serial.print("Right 2: ");
     Serial.println(IR_SENSOR_R2.distance());
     Serial.print("Right 3: ");
     Serial.println(IR_SENSOR_R3.distance());
     Serial.print("Right 4: ");
     Serial.println(IR_SENSOR_R4.distance());
-    // Serial.print("Right 5: ");
-    // Serial.println(IR_SENSOR_R5.distance());
 
     delay(2000);
     }
@@ -281,7 +442,6 @@ void loop() {
       if (x == 0) {
 
           // TURN THE SPEAKER ON
-//          digitalWrite(speaker_pin, HIGH);
           SPEAKER_RIGHT.play(CS_FREQUENCY);                        // FREQUENCY
           SPEAKER_LEFT.play(CS_FREQUENCY);                         // FREQUENCY
           Serial.println("CS > ON");
@@ -316,7 +476,6 @@ void loop() {
             Serial.println("US_R > OFF");
 
             // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-//            digitalWrite(speaker_pin, LOW);
             SPEAKER_RIGHT.stop();
             SPEAKER_LEFT.stop();
             Serial.println("CS > OFF");
@@ -361,13 +520,13 @@ void loop() {
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
-        if (IR_SENSOR_R.distance() < IR_THRESHOLD_R1 ||
+        if (IR_SENSOR_R1.distance() < IR_THRESHOLD_R1 ||
         IR_SENSOR_R2.distance() < IR_THRESHOLD_R2 ||
         IR_SENSOR_R3.distance() < IR_THRESHOLD_R3 ||
         IR_SENSOR_R4.distance() < IR_THRESHOLD_R4) {
           RIGHT_ACTIVE = HIGH;
           LEFT_ACTIVE = LOW;
-        } else if (IR_SENSOR_L.distance() < IR_THRESHOLD_L1 ||
+        } else if (IR_SENSOR_L1.distance() < IR_THRESHOLD_L1 ||
         IR_SENSOR_L2.distance() < IR_THRESHOLD_L2 ||
         IR_SENSOR_L3.distance() < IR_THRESHOLD_L3 ||
         IR_SENSOR_L4.distance() < IR_THRESHOLD_L4) {
@@ -410,7 +569,7 @@ void loop() {
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
-            if (IR_SENSOR_L.distance() < IR_THRESHOLD_L1 ||
+            if (IR_SENSOR_L1.distance() < IR_THRESHOLD_L1 ||
             IR_SENSOR_L2.distance() < IR_THRESHOLD_L2 ||
             IR_SENSOR_L3.distance() < IR_THRESHOLD_L3) {
               LEFT_ACTIVE = HIGH;
@@ -620,6 +779,9 @@ void loop() {
       Serial.print("SESSION MEAN SHUTTLING LATENCY (SEC): "); Serial.println((float)ESCAPE_LATENCY_CUMULATIVE / (float)TOTAL_AVOIDANCE_SUCCESS);
     }
 
+  // CHANGE LED TO INDICATE RESET STATUS
+  digitalWrite(check_green_LED, LOW);
+  digitalWrite(check_red_LED, HIGH);
 
 
   }
