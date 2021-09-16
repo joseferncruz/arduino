@@ -823,6 +823,11 @@ void loop() {
   digitalWrite(check_green_LED, LOW);
   digitalWrite(check_red_LED, HIGH);
 
+  // ENTER ENDLESS LOOP > FORCE USER TO RESET ARDUINO
+  while (true){
+    // DO NOTHING
+  }
+
 
   }
 
