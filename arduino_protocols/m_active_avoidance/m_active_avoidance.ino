@@ -754,9 +754,8 @@ void loop() {
           break;
 
 
-        } else if (!LEFT_ACTIVE &&
-        !RIGHT_ACTIVE &&
-        (MOTION_DETECTION_CURR - MOTION_DETECTION_START) >= (MOTION_DETECTION_DURATION * 1000)){
+        } else if (!LEFT_ACTIVE && !RIGHT_ACTIVE
+                   && (MOTION_DETECTION_CURR - MOTION_DETECTION_START) >= (MOTION_DETECTION_DURATION * 1000)){
             // SERIAL OUTPUT MESSAGE TO USER
             Serial.println("MOTION DETECTION FAILED");
             Serial.print("NO MOTION DETECTED IN "); Serial.print(MOTION_DETECTION_DURATION); Serial.println(" SECONDS");
