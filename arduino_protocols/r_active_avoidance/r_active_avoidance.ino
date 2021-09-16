@@ -718,7 +718,7 @@ void loop() {
           Serial.println("US_R > OFF");
 
           // RECORD LATENCY_END WHEN NO SHUTTLING
-          ESCAPE_LATENCY_END = 0;
+          ESCAPE_LATENCY_END = -1;
 
           // COUNT ONE TOWARDS AVOIDANCE FAILURE
           TOTAL_AVOIDANCE_FAILURE ++;
