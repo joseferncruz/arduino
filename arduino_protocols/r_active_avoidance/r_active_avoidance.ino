@@ -29,6 +29,11 @@ unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
 unsigned long ITI_DURATION;
 
+// timing variables for motion detection
+unsigned long MOTION_DETECTION_START;
+unsigned long MOTION_DETECTION_CURR;
+unsigned long MOTION_DETECTION_DURATION = 30;               // SECONDS
+
 // DIGITAL PINS
 // ########################################################
 const int speaker_pin = 3;
@@ -43,12 +48,16 @@ Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
 
 #include <SharpIR.h>
-#define ir_right A0
-#define ir_left A1
+#define ir_right1 A0
+#define ir_right2 A2
+#define ir_left1 A1
+#define ir_left2 A3
 #define model 1080
-SharpIR IR_SENSOR_R = SharpIR(ir_right, model);
-SharpIR IR_SENSOR_L = SharpIR(ir_left, model);
-int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
+SharpIR IR_SENSOR_R1 = SharpIR(ir_right1, model);
+SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
+SharpIR IR_SENSOR_L1 = SharpIR(ir_left1, model);
+SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
+int IR_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 const int speaker_led_r = 9;
 const int speaker_led_l = 10;
@@ -93,15 +102,20 @@ void setup() {
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
 
-
+  /*
   // UNCOMMENT TO TEST SENSORS
-//  while (true) {
-//    Serial.print("Left Sensor: ");
-//    Serial.println(IR_SENSOR_L.distance());
-//    Serial.print("Right Sensor: ");
-//    Serial.println(IR_SENSOR_R.distance());
-//    delay(1000);
-//  }
+  while (true) {
+    Serial.print("L1: ");
+    Serial.println(IR_SENSOR_L1.distance());
+    Serial.print("L2: ");
+    Serial.println(IR_SENSOR_L2.distance());
+    Serial.print("R1: ");
+    Serial.println(IR_SENSOR_R1.distance());
+    Serial.print("R2: ");
+    Serial.println(IR_SENSOR_R2.distance());
+    delay(1000);
+  }
+  /**/
 
 }
 
@@ -286,18 +300,23 @@ void loop() {
 
       }
 
+      MOTION_DETECTION_START = millis();
+
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
-        if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+        if (IR_SENSOR_R1.distance() < IR_THRESHOLD ||
+        IR_SENSOR_R2.distance() < IR_THRESHOLD) {
           RIGHT_ACTIVE = HIGH;
           LEFT_ACTIVE = LOW;
-        } else if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+        } else if (IR_SENSOR_L1.distance() < IR_THRESHOLD ||
+        IR_SENSOR_L2.distance() < IR_THRESHOLD) {
           LEFT_ACTIVE = HIGH;
           RIGHT_ACTIVE = LOW;
         } else {
           RIGHT_ACTIVE = LOW;
           LEFT_ACTIVE = LOW;
+          MOTION_DETECTION_CURR = millis();
         }
 
         // RESET VARIABLES FOR SHUTTLING
@@ -332,7 +351,8 @@ void loop() {
           while (true) {
 
             // CHECK IF LEFT IS ACTIVE
-            if (IR_SENSOR_L.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_L1.distance() < IR_THRESHOLD ||
+            IR_SENSOR_L2.distance() < IR_THRESHOLD) {
               LEFT_ACTIVE = HIGH;
               RIGHT_ACTIVE = LOW;
             } else {
@@ -431,7 +451,8 @@ void loop() {
           while (true) {
 
             // CHECK IF RIGHT IS ACTIVE
-            if (IR_SENSOR_R.distance() < IF_THRESHOLD) {
+            if (IR_SENSOR_R1.distance() < IR_THRESHOLD ||
+            IR_SENSOR_R2.distance() < IR_THRESHOLD) {
               RIGHT_ACTIVE = HIGH;
               LEFT_ACTIVE = LOW;
             } else {
@@ -503,8 +524,39 @@ void loop() {
           break;
 
 
-        } else {
-          // IN THE ABSSENCE OF MOVEMENT IN EITHER COMPARTMENT, DO NOTHING
+        } else if (!LEFT_ACTIVE &&
+        !RIGHT_ACTIVE &&
+        (MOTION_DETECTION_CURR - MOTION_DETECTION_START) >= (MOTION_DETECTION_DURATION * 1000)) {
+          // SERIAL OUTPUT MESSAGE TO USER
+          Serial.println("MOTION DETECTION FAILED");
+          Serial.print("NO MOTION DETECTED IN "); Serial.print(MOTION_DETECTION_DURATION); Serial.println(" SECONDS"); 
+
+          // TRIGGER US
+          digitalWrite(shocker_l_pin, HIGH);
+          Serial.println("US_L > ON");
+          digitalWrite(shocker_r_pin, HIGH);
+          Serial.println("US_R > ON");
+
+          // KEEP US FOR SPECIFIC TIME DELAY
+          for (int i = 0; i < SHOCK_DURATION; i++) {
+            delay(1000);
+          }
+
+          // TERMINATE SHOCKER
+          digitalWrite(shocker_l_pin, LOW);
+          Serial.println("US_L > OFF");
+          digitalWrite(shocker_r_pin, LOW);
+          Serial.println("US_R > OFF");
+
+          // RECORD LATENCY_END WHEN NO SHUTTLING
+          ESCAPE_LATENCY_END = 0;
+
+          // COUNT ONE TOWARDS AVOIDANCE FAILURE
+          TOTAL_AVOIDANCE_FAILURE ++;
+
+          break;
+
+
         }
 
       }
