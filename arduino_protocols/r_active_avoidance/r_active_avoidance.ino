@@ -763,4 +763,9 @@ void loop() {
 
   }
 
+  // ENTER ENDLESS LOOP > FORCE USER TO RESET ARDUINO
+  while (true){
+    // DO NOTHING
+  }
+
 }
