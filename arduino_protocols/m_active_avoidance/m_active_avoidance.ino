@@ -522,6 +522,9 @@ void loop() {
 
       }
 
+      // START TIME FOR MOTION DETECTION FEATURE. LIMIT 30 SECONDS
+      MOTION_DETECTION_START = millis();
+
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
@@ -540,6 +543,8 @@ void loop() {
         } else {
           RIGHT_ACTIVE = LOW;
           LEFT_ACTIVE = LOW;
+          // END TIME FOR MOTION DETECTION FEATURE. LIMIT 30 SECONDS
+          MOTION_DETECTION_CURR = millis();
         }
 
         // RESET VARIABLES FOR SHUTTLING
