@@ -1,6 +1,8 @@
 
 # files
 desktop.ini
+.DS_Store
 
 #folder
 arduino_model/
+.DS_Store/
