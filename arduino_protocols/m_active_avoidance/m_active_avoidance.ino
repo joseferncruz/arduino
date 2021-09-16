@@ -522,7 +522,7 @@ void loop() {
 
       }
 
-      // START TIME FOR MOTION DETECTION FEATURE. LIMIT 30 SECONDS
+      // START TIME FOR MOTION DETECTION FEATURE
       MOTION_DETECTION_START = millis();
 
       // DETECT POSITION, DELIVER CS AND US
@@ -543,7 +543,7 @@ void loop() {
         } else {
           RIGHT_ACTIVE = LOW;
           LEFT_ACTIVE = LOW;
-          // END TIME FOR MOTION DETECTION FEATURE. LIMIT 30 SECONDS
+          // END TIME FOR MOTION DETECTION FEATURE
           MOTION_DETECTION_CURR = millis();
         }
 
@@ -783,7 +783,7 @@ void loop() {
 
             // COUNT ONE TOWARDS AVOIDANCE FAILURE
             TOTAL_AVOIDANCE_FAILURE ++;
-            
+
             break;
         }
 
