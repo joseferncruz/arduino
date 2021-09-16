@@ -759,13 +759,12 @@ void loop() {
       Serial.print("SESSION MEAN SHUTTLING LATENCY (SEC): "); Serial.println((float)ESCAPE_LATENCY_CUMULATIVE / (float)TOTAL_AVOIDANCE_SUCCESS);
     }
 
-
+    // ENTER ENDLESS LOOP > FORCE USER TO RESET ARDUINO
+    while (true){
+      // DO NOTHING
+    }
 
   }
 
-  // ENTER ENDLESS LOOP > FORCE USER TO RESET ARDUINO
-  while (true){
-    // DO NOTHING
-  }
 
 }
