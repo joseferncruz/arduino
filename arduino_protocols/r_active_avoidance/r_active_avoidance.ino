@@ -49,9 +49,9 @@ Tone SPEAKER_LEFT;
 #define ir_left2 A3
 #define model 1080
 SharpIR IR_SENSOR_R1 = SharpIR(ir_right1, model);
-SharpIR IR_SENSOR_L2 = SharpIR(ir_left1, model);
+SharpIR IR_SENSOR_L1 = SharpIR(ir_left1, model);
 SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
-SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model)
+SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
 int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 const int speaker_led_r = 9;
