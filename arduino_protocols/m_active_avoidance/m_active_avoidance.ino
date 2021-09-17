@@ -17,6 +17,15 @@
     VARIABLES
 */
 //##################################################################################################################
+// EXPERIMENTAL VARIABLES
+const int N_TRIALS = 20;
+unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
+unsigned long TONE_DURATION = 15;                              // SECONDS
+unsigned long SHOCK_DURATION = 1;                              // SECONDS
+int CS_FREQUENCY = 5000;                                       // IN HERTZ
+int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
+unsigned long MOTION_DETECTION_DURATION = 30;                  // SECONDS
+//##################################################################################################################
 // CHECK SENSORS VARIABLES
 // Reading arrays
 const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
@@ -26,15 +35,6 @@ bool TEST_PASS = true;
 unsigned long YELLOW_LED_END_TIME = 0;
 const long BLINK_INTERVAL = 1000;
 int YELLOW_STATE = LOW;
-//##################################################################################################################
-// EXPERIMENTAL VARIABLES
-const int N_TRIALS = 20;
-unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
-unsigned long TONE_DURATION = 15;                              // SECONDS
-unsigned long SHOCK_DURATION = 1;                              // SECONDS
-int CS_FREQUENCY = 5000;                                       // IN HERTZ
-int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
-unsigned long MOTION_DETECTION_DURATION = 30;                  // SECONDS
 //##################################################################################################################
 // LOCATION VARIABLES
 int LEFT_ACTIVE;                                               // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
