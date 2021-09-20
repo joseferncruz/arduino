@@ -170,7 +170,21 @@ void setup() {
 
     MIN_L1 = min(CHECK_L1[i], MIN_L1);
     MIN_L2 = min(CHECK_L2[i], MIN_L2);
-  } 
+  }
+
+  // COMPARE MIN VALUES WITH IR THRESHOLDS SET
+  unsigned int MIN_ARRAY[4] = {MIN_L1, MIN_L2,
+                              MIN_R1, MIN_R2};
+
+  for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+    // The minimum found using 400 values is always greater than the true minimum.
+    // We subtract 2 from the minimum found using 400 values to approximate the true minimum.
+    MIN_ARRAY[i] -= 2;
+    if (MIN_ARRAY[i] < IF_THRESHOLD){
+      TEST_PASS = false;
+    }
+  }
+
 
   /*
   // UNCOMMENT TO TEST SENSORS
