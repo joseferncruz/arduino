@@ -137,6 +137,24 @@ void setup() {
   Serial.println("COLLECTING AND EVALUATING SENSOR READINGS...");
   Serial.println();
 
+  // COLLECT 400 SENSOR readings
+  // Create empty arrays
+  unsigned int CHECK_R1[_NUM_READINGS];
+  unsigned int CHECK_R2[_NUM_READINGS];
+
+  unsigned int CHECK_L1[_NUM_READINGS];
+  unsigned int CHECK_L2[_NUM_READINGS];
+
+  // Fill arrays
+  for (int i = 0; i < _NUM_READINGS; i++){
+    CHECK_R1[i] = IR_SENSOR_R1.distance();
+    CHECK_R2[i] = IR_SENSOR_R2.distance();
+
+    CHECK_L1[i] = IR_SENSOR_L1.distance();
+    CHECK_L2[i] = IR_SENSOR_L2.distance();
+
+  }
+
   /*
   // UNCOMMENT TO TEST SENSORS
   while (true) {
