@@ -53,6 +53,11 @@ const int shocker_l_pin = 5;
 const int buzzer_pin_r = 6;
 const int buzzer_pin_l = 7;
 
+// LED Check Lights (for UX design)
+const int check_red_LED = 23;
+const int check_yellow_LED = 25;
+const int check_green_LED = 27;
+
 Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
 
