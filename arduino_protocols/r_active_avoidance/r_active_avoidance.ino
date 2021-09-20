@@ -164,7 +164,7 @@ void setup() {
       }
       digitalWrite(check_yellow_LED, YELLOW_STATE);
     }
-    
+
   }
 
   // FIND MIN VALUES
@@ -195,6 +195,40 @@ void setup() {
     if (MIN_ARRAY[i] < IF_THRESHOLD){
       TEST_PASS = false;
     }
+  }
+
+  // TURN ON LED LIGHT BASED ON CHECK SENSOR OUTCOME
+  if (TEST_PASS){
+    // Message to user
+    Serial.println("Sensor check complete! Continue with the experiment.");
+
+    // Turn on LEDs
+    digitalWrite(check_green_LED, HIGH);
+    digitalWrite(check_yellow_LED, LOW);
+    digitalWrite(check_red_LED, LOW);
+
+  } else if (!TEST_PASS){
+    bool TEST_START = false;
+
+    // Message to user
+    Serial.println("Sensor check has failed. Please contact either Rodrigo or Audrey.");
+
+    // Turn on LEDs
+    digitalWrite(check_red_LED, LOW);
+    digitalWrite(check_yellow_LED, LOW);
+    int RED_STATE = LOW;
+    while(true){
+      if (RED_STATE == LOW){
+        RED_STATE = HIGH;
+      } else {
+        RED_STATE = LOW;
+      }
+      digitalWrite(check_red_LED, RED_STATE);
+      delay(300);
+    }
+
+  } else {
+    digitalWrite(check_yellow_LED, HIGH);
   }
 
 
