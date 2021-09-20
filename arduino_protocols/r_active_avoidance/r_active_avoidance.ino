@@ -745,6 +745,10 @@ void loop() {
       Serial.print("SESSION MEAN SHUTTLING LATENCY (SEC): "); Serial.println((float)ESCAPE_LATENCY_CUMULATIVE / (float)TOTAL_AVOIDANCE_SUCCESS);
     }
 
+    // CHANGE LED TO INDICATE RESET STATUS
+    digitalWrite(check_green_LED, LOW);
+    digitalWrite(check_red_LED, HIGH);
+
 
 
   }
