@@ -113,6 +113,10 @@ void setup() {
   pinMode(start_switch_pin, INPUT);
   pinMode(test_switch_pin, INPUT);
 
+  pinMode(check_red_LED, OUTPUT);
+  pinMode(check_yellow_LED, OUTPUT);
+  pinMode(check_green_LED, OUTPUT);
+
   // PRINT ENTRY MESSAGE
   Serial.println("PRESS GREEN SWITCH TO START...");
 
