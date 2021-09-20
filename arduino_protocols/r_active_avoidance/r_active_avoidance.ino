@@ -126,7 +126,16 @@ void setup() {
   Serial.print("\t"); Serial.println("BLINKING RED >>> SENSOR CHECK HAS FAILED :(");
   Serial.print("\t"); Serial.println("GREEN >>> CONTINUE WITH THE EXPERIMENT :)");
 
+  // CHECK Sensors
+  // Turn off LED lights except for reed
+  digitalWrite(check_red_LED, HIGH);
+  digitalWrite(check_yellow_LED, LOW);
+  digitalWrite(check_green_LED, LOW);
 
+  // PRINT MESSAGE TO USER
+  Serial.println();
+  Serial.println("COLLECTING AND EVALUATING SENSOR READINGS...");
+  Serial.println();
 
   /*
   // UNCOMMENT TO TEST SENSORS
