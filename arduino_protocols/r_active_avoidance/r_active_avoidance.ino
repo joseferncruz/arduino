@@ -23,6 +23,11 @@ unsigned long MOTION_DETECTION_DURATION = 30;                  // SECONDS
 // Reading arrays
 const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
 bool TEST_PASS = true;
+
+// Timing variables for yellow light blink
+unsigned long YELLOW_LED_END_TIME = 0;
+const long BLINK_INTERVAL = 1000;
+int YELLOW_STATE = LOW;
 // LOCATION VARIABLES.
 // ########################################################
 int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
