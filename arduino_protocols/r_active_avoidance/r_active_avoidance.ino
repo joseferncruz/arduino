@@ -155,6 +155,23 @@ void setup() {
 
   }
 
+  // FIND MIN VALUES
+  // Create min variables
+  unsigned int MIN_R1 = CHECK_R1[0];
+  unsigned int MIN_R2 = CHECK_R2[0];
+
+  unsigned int MIN_L1 = CHECK_L1[0];
+  unsigned int MIN_L2 = CHECK_L2[0];
+
+  for (int i = 0; i < _NUM_READINGS; i++){
+    // Documentation: https://www.arduino.cc/reference/en/language/functions/math/min/
+    MIN_R1 = min(CHECK_R1[i], MIN_R1);
+    MIN_R2 = min(CHECK_R2[i], MIN_R2);
+
+    MIN_L1 = min(CHECK_L1[i], MIN_L1);
+    MIN_L2 = min(CHECK_L2[i], MIN_L2);
+  } 
+
   /*
   // UNCOMMENT TO TEST SENSORS
   while (true) {
