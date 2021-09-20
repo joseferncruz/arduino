@@ -825,6 +825,9 @@ void loop() {
   digitalWrite(check_green_LED, LOW);
   digitalWrite(check_red_LED, HIGH);
 
+  while(true){
+    // DO NOTHING. CAUSES PROGRAM TO ENTER AN ENDLESS LOOP AND STALL, FORCING USER TO RESTART
+  }
 
   }
 
