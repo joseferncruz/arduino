@@ -18,7 +18,11 @@ unsigned long SHOCK_DURATION = 1;                              // SECONDS
 int CS_FREQUENCY = 5000;                                  // IN HERTZ
 int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
 unsigned long MOTION_DETECTION_DURATION = 30;                  // SECONDS
-
+// ########################################################
+// CHECK SENSORS VARIABLES
+// Reading arrays
+const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
+bool TEST_PASS = true;
 // LOCATION VARIABLES.
 // ########################################################
 int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
