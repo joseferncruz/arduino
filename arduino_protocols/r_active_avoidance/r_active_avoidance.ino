@@ -118,7 +118,14 @@ void setup() {
   pinMode(check_green_LED, OUTPUT);
 
   // PRINT ENTRY MESSAGE
-  Serial.println("PRESS GREEN SWITCH TO START...");
+  delay(5000);
+  Serial.println("***CHECK SENSOR READINGS***");
+  Serial.println("IF THE LIGHT IS: ");
+  Serial.print("\t"); Serial.println("SOLID RED >>> RESET THE BOARD");
+  Serial.print("\t"); Serial.println("BLINKING YELLOW >>> WAIT, BOARD IS CHECKING SENSORS");
+  Serial.print("\t"); Serial.println("BLINKING RED >>> SENSOR CHECK HAS FAILED :(");
+  Serial.print("\t"); Serial.println("GREEN >>> CONTINUE WITH THE EXPERIMENT :)");
+
 
 
   /*
