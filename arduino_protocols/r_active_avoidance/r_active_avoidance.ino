@@ -117,6 +117,21 @@ void setup() {
   pinMode(check_yellow_LED, OUTPUT);
   pinMode(check_green_LED, OUTPUT);
 
+  /*
+  // UNCOMMENT TO TEST SENSORS
+  while (true) {
+    Serial.print("L1: ");
+    Serial.println(IR_SENSOR_L1.distance());
+    Serial.print("L2: ");
+    Serial.println(IR_SENSOR_L2.distance());
+    Serial.print("R1: ");
+    Serial.println(IR_SENSOR_R1.distance());
+    Serial.print("R2: ");
+    Serial.println(IR_SENSOR_R2.distance());
+    delay(1000);
+  }
+  /**/
+
   // PRINT ENTRY MESSAGE
   delay(5000);
   Serial.println("***CHECK SENSOR READINGS***");
@@ -255,22 +270,6 @@ void setup() {
   } else {
     digitalWrite(check_yellow_LED, HIGH);
   }
-
-
-  /*
-  // UNCOMMENT TO TEST SENSORS
-  while (true) {
-    Serial.print("L1: ");
-    Serial.println(IR_SENSOR_L1.distance());
-    Serial.print("L2: ");
-    Serial.println(IR_SENSOR_L2.distance());
-    Serial.print("R1: ");
-    Serial.println(IR_SENSOR_R1.distance());
-    Serial.print("R2: ");
-    Serial.println(IR_SENSOR_R2.distance());
-    delay(1000);
-  }
-  /**/
 
 }
 
