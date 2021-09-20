@@ -225,6 +225,31 @@ void setup() {
       }
       digitalWrite(check_red_LED, RED_STATE);
       delay(300);
+
+      // Recover minimum values from readings
+      int x = Serial.parseInt();
+      if (x==2){
+        TEST_START = true;
+      }
+
+      if (TEST_START){
+        // Reset serial input from Bonsai
+        x = 0;
+        TEST_START = false;
+
+        Serial.println("Minimum values: ");
+        Serial.println("L1 L2 R1 R2");
+        for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+          Serial.print(MIN_ARRAY[i]); Serial.print(" ");
+        }
+        Serial.println();
+        Serial.println("Sensor thresholds: ");
+        Serial.println("L1 L2 R1 R2");
+        for (int i = 0; i < (sizeof(MIN_ARRAY) / sizeof(MIN_ARRAY[0])); i++){
+          Serial.print(IF_THRESHOLD); Serial.print(" ");
+        }
+        Serial.println();
+      }
     }
 
   } else {
