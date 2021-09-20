@@ -301,6 +301,9 @@ void loop() {
 
       }
 
+      // BEGIN MOTION DETECTION TIMER
+      MOTION_DETECTION_START = millis();
+
       // DETECT POSITION, DELIVER CS AND US
       while (true) {
 
@@ -315,6 +318,9 @@ void loop() {
         } else {
           RIGHT_ACTIVE = LOW;
           LEFT_ACTIVE = LOW;
+          
+          // END MOTION DETECTION TIMER
+          MOTION_DETECTION_CURR = millis();
         }
 
         // RESET VARIABLES FOR SHUTTLING
