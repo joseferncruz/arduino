@@ -1,11 +1,15 @@
-
-#include <Tone.h>
-
 /*
  * LeDoux Lab - DEC 2021
  * jose [dot] cruz [at] nyu [dot] edu
  *
  */
+
+
+ /*
+    LIBRARIES
+ */
+ #include <SharpIR.h>
+ #include <Tone.h>
 
 
 
@@ -61,7 +65,6 @@ const int check_green_LED = 27;
 Tone SPEAKER_RIGHT;
 Tone SPEAKER_LEFT;
 
-#include <SharpIR.h>
 #define ir_right1 A0
 #define ir_left1 A1
 #define ir_right2 A2
