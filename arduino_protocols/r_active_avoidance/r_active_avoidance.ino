@@ -68,9 +68,6 @@ int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT O
 */
 //##################################################################################################################
 // DIGITAL PINS
-// Speakers
-const int speaker_pin = 3;
-
 // Shockers
 const int shocker_r_pin = 4;
 const int shocker_l_pin = 5;
@@ -109,8 +106,6 @@ SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
 int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
 
 
-const int start_switch_pin = 22;
-const int test_switch_pin = 23;
 
 
 
@@ -120,8 +115,6 @@ void setup() {
   Serial.begin(9600);
 
   // ASSIGN PINS
-//  pinMode(speaker_pin, OUTPUT);
-
   SPEAKER_RIGHT.begin(buzzer_pin_r);
   SPEAKER_LEFT.begin(buzzer_pin_l);
 
@@ -130,9 +123,6 @@ void setup() {
 
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
-
-  pinMode(start_switch_pin, INPUT);
-  pinMode(test_switch_pin, INPUT);
 
   pinMode(check_red_LED, OUTPUT);
   pinMode(check_yellow_LED, OUTPUT);
@@ -398,7 +388,6 @@ void loop() {
       if (x == 0) {
 
           // TURN THE SPEAKER ON
-//          digitalWrite(speaker_pin, HIGH);
           SPEAKER_RIGHT.play(CS_FREQUENCY);                        // FREQUENCY
           SPEAKER_LEFT.play(CS_FREQUENCY);                         // FREQUENCY
           Serial.println("CS > ON");
@@ -433,7 +422,6 @@ void loop() {
             Serial.println("US_R > OFF");
 
             // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-//            digitalWrite(speaker_pin, LOW);
             SPEAKER_RIGHT.stop();
             SPEAKER_LEFT.stop();
             Serial.println("CS > OFF");
