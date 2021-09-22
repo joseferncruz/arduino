@@ -12,9 +12,10 @@
  #include <Tone.h>
 
 
-
-// VARIABLES
-//#########################################################
+ /*
+     VARIABLES
+ */
+//##################################################################################################################
 const int N_TRIALS = 20;
 unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
 unsigned long TONE_DURATION = 15;                              // SECONDS
@@ -22,7 +23,11 @@ unsigned long SHOCK_DURATION = 1;                              // SECONDS
 int CS_FREQUENCY = 5000;                                  // IN HERTZ
 int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
 unsigned long MOTION_DETECTION_DURATION = 30;                  // SECONDS
-// ########################################################
+//##################################################################################################################
+//##################################################################################################################
+//##################################################################################################################
+//##################################################################################################################
+//##################################################################################################################
 // CHECK SENSORS VARIABLES
 // Reading arrays
 const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
@@ -32,12 +37,12 @@ bool TEST_PASS = true;
 unsigned long YELLOW_LED_END_TIME = 0;
 const long BLINK_INTERVAL = 1000;
 int YELLOW_STATE = LOW;
-// LOCATION VARIABLES.
-// ########################################################
+//##################################################################################################################
+// LOCATION VARIABLES
 int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
 int RIGHT_ACTIVE;
-
-// ######################################
+//##################################################################################################################
+// TIMING VARIABLES
 unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
@@ -46,6 +51,17 @@ unsigned long ITI_DURATION;
 // For control of motion detection
 unsigned long MOTION_DETECTION_START;
 unsigned long MOTION_DETECTION_CURR;
+//##################################################################################################################
+// VARIABLES FOR STATISTICS
+unsigned long ESCAPE_LATENCY_START;
+unsigned long ESCAPE_LATENCY_END;
+unsigned long ESCAPE_LATENCY_DELTA;
+float ESCAPE_LATENCY_CUMULATIVE;
+
+// SESSION
+int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
+int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
+
 
 // DIGITAL PINS
 // ########################################################
@@ -82,18 +98,6 @@ const int speaker_led_l = 10;
 const int start_switch_pin = 22;
 const int test_switch_pin = 23;
 
-
-// VARIABLES FOR STATISTICS
-// ##########################################################
-unsigned long ESCAPE_LATENCY_START;
-unsigned long ESCAPE_LATENCY_END;
-unsigned long ESCAPE_LATENCY_DELTA;
-float ESCAPE_LATENCY_CUMULATIVE;
-
-// SESSION
-int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
-int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
-//int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
 
 
 void setup() {
