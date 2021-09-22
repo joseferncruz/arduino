@@ -726,8 +726,7 @@ void loop() {
             Serial.println("US_R > OFF");
 
             // RECORD LATENCY_END WHEN NO SHUTTLING
-            // Set to -1 to differentiate from normal failed trials
-            ESCAPE_LATENCY_END = -1;
+            ESCAPE_LATENCY_END = 0;
 
             // COUNT ONE TOWARDS AVOIDANCE FAILURE
             TOTAL_AVOIDANCE_FAILURE ++;
