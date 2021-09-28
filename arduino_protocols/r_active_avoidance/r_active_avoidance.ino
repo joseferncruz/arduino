@@ -1,16 +1,21 @@
-
-#include <Tone.h>
-
 /*
  * LeDoux Lab - DEC 2021
  * jose [dot] cruz [at] nyu [dot] edu
- *
+ * ay2376 [at] nyu [dot] edu
  */
 
 
+ /*
+    LIBRARIES
+ */
+ #include <SharpIR.h>
+ #include <Tone.h>
 
-// VARIABLES
-//#########################################################
+
+ /*
+     VARIABLES
+ */
+//##################################################################################################################
 const int N_TRIALS = 20;
 unsigned long ACCLIMATION_DURATION = 20;                       // SECONDS
 unsigned long TONE_DURATION = 15;                              // SECONDS
@@ -18,7 +23,11 @@ unsigned long SHOCK_DURATION = 1;                              // SECONDS
 int CS_FREQUENCY = 5000;                                  // IN HERTZ
 int ITI_INTERVALS[] = {40, 60, 80, 100, 120};                  // list of the inter-trial-intervals: ITI
 unsigned long MOTION_DETECTION_DURATION = 30;                  // SECONDS
-// ########################################################
+//##################################################################################################################
+//##################################################################################################################
+//##################################################################################################################
+//##################################################################################################################
+//##################################################################################################################
 // CHECK SENSORS VARIABLES
 // Reading arrays
 const unsigned int _NUM_READINGS = 400;                        // How many readings from each sensor
@@ -28,12 +37,12 @@ bool TEST_PASS = true;
 unsigned long YELLOW_LED_END_TIME = 0;
 const long BLINK_INTERVAL = 1000;
 int YELLOW_STATE = LOW;
-// LOCATION VARIABLES.
-// ########################################################
+//##################################################################################################################
+// LOCATION VARIABLES
 int LEFT_ACTIVE;                                        // HIGH IF A COMPARTMENT IS ACTIVE, ELSE LOW
 int RIGHT_ACTIVE;
-
-// ######################################
+//##################################################################################################################
+// TIMING VARIABLES
 unsigned long CURRENT_TONE_DELAY;
 unsigned long START_TONE;
 unsigned long DELTA_TONE_SHOCK = TONE_DURATION - SHOCK_DURATION;
@@ -42,46 +51,8 @@ unsigned long ITI_DURATION;
 // For control of motion detection
 unsigned long MOTION_DETECTION_START;
 unsigned long MOTION_DETECTION_CURR;
-
-// DIGITAL PINS
-// ########################################################
-const int speaker_pin = 3;
-
-const int shocker_r_pin = 4;
-const int shocker_l_pin = 5;
-
-const int buzzer_pin_r = 6;
-const int buzzer_pin_l = 7;
-
-// LED Check Lights (for UX design)
-const int check_red_LED = 23;
-const int check_yellow_LED = 25;
-const int check_green_LED = 27;
-
-Tone SPEAKER_RIGHT;
-Tone SPEAKER_LEFT;
-
-#include <SharpIR.h>
-#define ir_right1 A0
-#define ir_left1 A1
-#define ir_right2 A2
-#define ir_left2 A3
-#define model 1080
-SharpIR IR_SENSOR_R1 = SharpIR(ir_right1, model);
-SharpIR IR_SENSOR_L1 = SharpIR(ir_left1, model);
-SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
-SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
-int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
-
-const int speaker_led_r = 9;
-const int speaker_led_l = 10;
-
-const int start_switch_pin = 22;
-const int test_switch_pin = 23;
-
-
+//##################################################################################################################
 // VARIABLES FOR STATISTICS
-// ##########################################################
 unsigned long ESCAPE_LATENCY_START;
 unsigned long ESCAPE_LATENCY_END;
 unsigned long ESCAPE_LATENCY_DELTA;
@@ -90,7 +61,64 @@ float ESCAPE_LATENCY_CUMULATIVE;
 // SESSION
 int TOTAL_AVOIDANCE_SUCCESS = 0;                           // CUMULATIVE COUNT OF SUCCESSFUL AVOIDANCE RESPONSES
 int TOTAL_AVOIDANCE_FAILURE = 0;                           // CUMULATIVE COUNT OF FAILED AVOIDANCE RESPONSES
-//int ESCAPE_LATENCY_INDIVIDUAL[N_TRIALS];                   // LIST WITH THE LATENCY. 0 == NO SHUTTLE (== FAILURE)
+
+
+/*
+    PIN ASSIGNMENTS
+*/
+//##################################################################################################################
+// DIGITAL PINS
+// Shockers
+const int shocker_r_pin = 4;
+const int shocker_l_pin = 5;
+
+// Buzzers
+const int buzzer_pin_r = 6;
+const int buzzer_pin_l = 7;
+
+// IR LED lights
+const int speaker_led_r = 9;
+const int speaker_led_l = 10;
+
+// LED Check Lights (for UX design)
+const int check_red_LED = 23;
+const int check_yellow_LED = 25;
+const int check_green_LED = 27;
+//##################################################################################################################
+// ANALOG PINS
+// Right Sensors
+#define ir_right1 A0
+#define ir_left1 A1
+
+// Left Sensors
+#define ir_right2 A2
+#define ir_left2 A3
+//##################################################################################################################
+
+
+/*
+    INITIALIZING LIBRARIES
+*/
+//##################################################################################################################
+// TONE LIBRARY
+Tone SPEAKER_RIGHT;
+Tone SPEAKER_LEFT;
+//##################################################################################################################
+// IR SENSOR LIBRARY
+#define model 1080
+
+// Right Sensors
+SharpIR IR_SENSOR_R1 = SharpIR(ir_right1, model);
+SharpIR IR_SENSOR_L1 = SharpIR(ir_left1, model);
+
+// Left Sensors
+SharpIR IR_SENSOR_R2 = SharpIR(ir_right2, model);
+SharpIR IR_SENSOR_L2 = SharpIR(ir_left2, model);
+
+// SENSOR THRESHOLDS
+int IF_THRESHOLD = 20;                                   // CM > DISTANCE FROM SENSOR TO OPPOSITE WALL.
+//##################################################################################################################
+
 
 
 void setup() {
@@ -99,8 +127,6 @@ void setup() {
   Serial.begin(9600);
 
   // ASSIGN PINS
-//  pinMode(speaker_pin, OUTPUT);
-
   SPEAKER_RIGHT.begin(buzzer_pin_r);
   SPEAKER_LEFT.begin(buzzer_pin_l);
 
@@ -109,9 +135,6 @@ void setup() {
 
   pinMode(speaker_led_r, OUTPUT);
   pinMode(speaker_led_l, OUTPUT);
-
-  pinMode(start_switch_pin, INPUT);
-  pinMode(test_switch_pin, INPUT);
 
   pinMode(check_red_LED, OUTPUT);
   pinMode(check_yellow_LED, OUTPUT);
@@ -377,7 +400,6 @@ void loop() {
       if (x == 0) {
 
           // TURN THE SPEAKER ON
-//          digitalWrite(speaker_pin, HIGH);
           SPEAKER_RIGHT.play(CS_FREQUENCY);                        // FREQUENCY
           SPEAKER_LEFT.play(CS_FREQUENCY);                         // FREQUENCY
           Serial.println("CS > ON");
@@ -412,7 +434,6 @@ void loop() {
             Serial.println("US_R > OFF");
 
             // TERMINATE TONE IN THE COMPARTMENT IF AFTER SHOCK
-//            digitalWrite(speaker_pin, LOW);
             SPEAKER_RIGHT.stop();
             SPEAKER_LEFT.stop();
             Serial.println("CS > OFF");
