@@ -1,20 +1,45 @@
-# Arduino and Bonsai
-
-The repository holds several arduino scripts and bonsai layouts that I use to control the hardware and data aquisition pipelines used in my behavioral tasks.
-
-(This repo is being continuously developed and errors/bugs may exist in the code despite my relentless will to remove them!)
-
-## Software
-
-[Arduino](https://www.arduino.cc/): Framework used to interact with single-board microcontrollers.  
-
-[Bonsai](https://bonsai-rx.org/): Data aquisition software.  
-
-[Fritzing](https://fritzing.org/): software used to design the electronics and schematics used in the tasks.
+# Arduino sketches and Bonsai layouts to control laboratory equipment
+---
 
 
-## Contents
+📖 Introduction
+---
 
-- `arduino_procotols/`: contains ready to use scripts and also wiring schematics of the hardware.  
-- `bonsai_layouts/`: containa bonsai workflows for data acquisition and storage.  
-- `test-sketch/`: contains small scripts to control electronic components.
+The repository hosts Arduino sketches and bonsai layouts used at the [LeDoux Lab](https://www.cns.nyu.edu/ledoux/index.html) to control lab equipment and data acquisition pipelines in several behavioral experiments.
+
+
+⚠️ This **repo is in development** and _**bugs may exist**_ in the code despite the relentless will to remove them! Make sure to run all appropriate tests before using it.
+
+
+📂 Repository content
+---
+
+```
+- arduino_sketches         # lab sketches and wiring schematics
+| - external_libraries
+| - sketches
+
+- bonsai_layouts           # workflows for data acquisition  
+| - bonsai_room_1113
+| - bonsai_room_1114
+| - bonsai_room_1115
+
+- README.md
+- LICENSE
+- .gitignore
+```
+
+🔨 Requirements
+---
+
+The contents of this repo will require one or more of the frameworks below:
+
+- [Arduino](https://www.arduino.cc/): Opensource framework to interact with microcontrollers.  
+- [Bonsai](https://bonsai-rx.org/): Opensource data acquisition software.  
+- [Fritzing](https://fritzing.org/): Software used to draw the wiring schematics.
+
+
+✏️ Resources
+---
+
+The easiest way to get started is by completing the projects of the (awesome) [arduino starting kit](https://store.arduino.cc/products/arduino-starter-kit-multi-language). It contains several interesting projects that introduce the newcomers to all that is needed (including coding) to build great stuff!
